@@ -1,0 +1,128 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <IsPackable>false</IsPackable>
+    <SpaRoot>ClientApp\</SpaRoot>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+    <UserSecretsId>efec8be5-cb22-469a-9343-c343c1adfa21</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp\src\components\pages\adminDeleteCar\**" />
+    <Compile Remove="ClientApp\src\components\pages\adminEditCar\**" />
+    <Compile Remove="ClientApp\src\components\pages\adminViewCars\**" />
+    <Compile Remove="ClientApp\src\components\pages\adminViewDrivers\**" />
+    <Compile Remove="ClientApp\src\components\pages\carTableList\**" />
+    <Compile Remove="ClientApp\src\components\pages\Home2\**" />
+    <Compile Remove="ClientApp\src\components\pages\NewFolder1\**" />
+    <Compile Remove="ClientApp\src\components\pages\pageNotFound\**" />
+    <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp\src\components\pages\adminDeleteCar\**" />
+    <Content Remove="ClientApp\src\components\pages\adminEditCar\**" />
+    <Content Remove="ClientApp\src\components\pages\adminViewCars\**" />
+    <Content Remove="ClientApp\src\components\pages\adminViewDrivers\**" />
+    <Content Remove="ClientApp\src\components\pages\carTableList\**" />
+    <Content Remove="ClientApp\src\components\pages\Home2\**" />
+    <Content Remove="ClientApp\src\components\pages\NewFolder1\**" />
+    <Content Remove="ClientApp\src\components\pages\pageNotFound\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\pages\adminDeleteCar\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\pages\adminEditCar\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\pages\adminViewCars\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\pages\adminViewDrivers\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\pages\carTableList\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\pages\Home2\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\pages\NewFolder1\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\pages\pageNotFound\**" />
+    <None Remove="$(SpaRoot)**" />
+    <None Remove="ClientApp\src\components\pages\adminDeleteCar\**" />
+    <None Remove="ClientApp\src\components\pages\adminEditCar\**" />
+    <None Remove="ClientApp\src\components\pages\adminViewCars\**" />
+    <None Remove="ClientApp\src\components\pages\adminViewDrivers\**" />
+    <None Remove="ClientApp\src\components\pages\carTableList\**" />
+    <None Remove="ClientApp\src\components\pages\Home2\**" />
+    <None Remove="ClientApp\src\components\pages\NewFolder1\**" />
+    <None Remove="ClientApp\src\components\pages\pageNotFound\**" />
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
+    <None Remove="ClientApp\src\index.tsx~RF4a36eaa.TMP" />
+    <None Remove="ClientApp\src\reduxStore\admin.ts" />
+    <None Remove="ClientApp\src\reduxStore\car.ts" />
+    <None Remove="ClientApp\src\reduxStore\driver.ts" />
+    <None Remove="ClientApp\src\reduxStore\driver_car.ts" />
+    <None Remove="ClientApp\src\reduxStore\store.ts" />
+    <None Remove="SQLScripts\01-Tables.sql" />
+    <None Remove="SQLScripts\02-Inserts.sql" />
+    <None Remove="SQLScripts\03-Procedures.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ClientApp\src\assets\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.30" />
+    <PackageReference Include="dbup" Version="4.3.0" />
+    <PackageReference Include="dbup-mysql" Version="4.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.20" />
+    <PackageReference Include="toastr" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SQLScripts\03-Procedures.sql" />
+    <EmbeddedResource Include="SQLScripts\02-Inserts.sql" />
+    <EmbeddedResource Include="SQLScripts\01-Tables.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\reduxStore\car.ts" />
+    <TypeScriptCompile Include="ClientApp\src\reduxStore\driver.ts" />
+    <TypeScriptCompile Include="ClientApp\src\reduxStore\admin.ts" />
+    <TypeScriptCompile Include="ClientApp\src\reduxStore\driver_car.ts" />
+    <TypeScriptCompile Include="ClientApp\src\reduxStore\store.ts" />
+  </ItemGroup>
+
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+  </Target>
+
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+
+    <!-- Include the newly-built files in the publish output -->
+    <ItemGroup>
+      <DistFiles Include="$(SpaRoot)build\**; $(SpaRoot)build-ssr\**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
+</Project>

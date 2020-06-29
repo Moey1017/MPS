@@ -1,0 +1,353 @@
+@import "../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-inputs/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-react-dropdowns/styles/material.css";
+
+/* Provide sufficient contrast against white background */
+/*
+    image manipulation
+    banner / back image
+*/
+
+/*myown */
+.table_container {
+    background-image: url(./assets/backgroundImageWhite);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 40em;
+    width: 100%;
+}
+
+.button_div {
+    display: flex;
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.home-add-button {
+    padding: 1em 3em;
+    margin-right: 8%;
+}
+
+.home-retrieve-button {
+    padding: 1em 2em;
+}
+
+
+.b-image {
+    background-image: url(./assets/backgroundImageWhite);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 40em;
+    width: 100%;
+}
+
+.b-banner-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* Preserve aspet ratio */
+    min-width: 100%;
+    min-height: 100%;
+    background-image: url(./assets/banner.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/*
+    custom margins
+*/
+.cus-margin-l {
+    margin-left: -2.4em;
+    margin-bottom: 7em;
+}
+
+.cus-margin-xl {
+    margin-left: -2.4em;
+    margin-bottom: 20em;
+}
+
+.cus-margin-m {
+    margin-left: -2.3em;
+    margin-bottom: 3em;
+}
+
+.cus-margin-l > button {
+    width: 10em;
+    height: 3em;
+    font-size: xx-large;
+}
+
+/*
+    custom buttons
+*/
+.cus-btn {
+    padding-top: 0.7em;
+    width: 10em;
+    height: 3em;
+    font-size: xx-large;
+}
+
+.cus-btn-home {
+    padding-top: 0.7em;
+    position: fixed;
+    margin-right: 0.2em;
+    float: right;
+    width: 10em;
+    height: 3em;
+    font-size: xx-large;
+}
+
+.btn-primary {
+    background-color: mediumblue;
+}
+
+/*
+    login 
+*/
+.p-center {
+    padding-left: 2.5em;
+}
+
+.cus-input {
+    width: 100%;
+    height: 3em;
+    font-size: xx-large;
+}
+
+/*
+    options 
+*/
+.p-center-options {
+    margin-top: 0.9em;
+    padding-left: 4.5em;
+}
+
+.cus-margin-options {
+    margin-top: 2.8em
+}
+
+/*
+    driver 
+*/
+.p-center-driver {
+    margin-top: 0.8em;
+    padding-left: 4.6em;
+}
+
+.cus-input-driver {
+    width: 100%;
+    height: 2em;
+    font-size: x-large;
+}
+
+/*
+    car 
+*/
+.p-center-car {
+    margin-top: 0.8em;
+    padding-left: 5.2em;
+}
+
+.cus-input-car {
+    width: 100%;
+    height: 2em;
+    font-size: x-large;
+}
+
+/*
+    retrieve car
+*/
+
+.cus-btn-retrieve {
+    padding-top: 1.6em;
+    width: 10em;
+    margin: 0.3em;
+    height: 5em;
+    font-size: x-large;
+}
+
+.cus-btn-retrieve-margin {
+    margin-left: 5em;
+}
+.cus-outer-margin {
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* Preserve aspet ratio */
+    min-width: 100%;
+    min-height: 100%;
+}
+
+.cus-row-top {
+    margin-top: 1.3em;
+}
+
+.cus-row {
+    margin-left: 11em;
+}
+
+.cus-margin-home {
+    margin-top: 2.1em;
+    margin-left: 0.05em;
+    margin-bottom: -5em;
+}
+
+.retrieve-vehicle-title {
+    margin-top: 4em;
+    margin-left: 11em;
+}
+
+.btn-reg {
+    padding-top: 1.6em;
+    width: 10em;
+    margin: 0.3em;
+    height: 5em;
+    font-weight: 500;
+    font-size: x-large;
+    border-color: black;
+    border-width: 0.1em;
+    color: black;
+    background-color: white;
+}
+
+    .btn-reg:hover {
+        padding-top: 1.6em;
+        width: 10em;
+        margin: 0.3em;
+        height: 5em;
+        font-size: x-large;
+        font-weight: 500;
+        border-color: black;
+        color: black;
+        background-color: orange;
+        border-width: 0.1em;
+        transition: ease-in;
+    }
+
+.btn-reg-margin {
+    padding-top: 1.6em;
+    width: 10em;
+    margin-left: 5em;
+    height: 5em;
+    font-weight: 500;
+    font-size: x-large;
+    border-color: black;
+    border-width: 0.1em;
+    color: black;
+    background-color: white;
+}
+
+    .btn-reg-margin:hover {
+        padding-top: 1.6em;
+        width: 10em;
+        margin-left: 5em;
+        height: 5em;
+        font-size: x-large;
+        font-weight: 500;
+        border-color: black;
+        color: black;
+        background-color: orange;
+        border-width: 0.1em;
+        transition: ease-in;
+    }
+
+/*
+    Store
+*/
+
+.terms-container {
+    width: 45em;
+    height: 25em;
+    margin-left: 25em;
+    margin-top: 5em;
+    background-color: rgb(240,240,240);
+}
+
+.cus-title-store {
+    margin-top: 0.4em;
+    margin-left: 1.7em;
+}
+
+.cus-btn-store {
+    padding-top: 0.2em;
+    width: 10em;
+    height: 3em;
+    font-size: xx-large;
+}
+
+.cus-checkbox {
+    margin-top: 2.4em;
+    width: 1.5em;
+    height: 1.5em;
+    margin-left: 24.7em;
+}
+
+.cus-terms-label {
+    margin-top: 2.4em;
+    margin-left: 0.5em;
+}
+
+.cus-margin-terms {
+    margin-left: 3em;
+}
+
+.cus-terms-title {
+    margin-left: 3.6em;
+}
+
+.cus-notice-title {
+    margin-left: -7.2em;
+    margin-right: 4.3em;
+}
+
+.cus-process {
+    margin-top: 0.4em;
+    text-align: center;
+}
+.cus-margin-modal-store {
+    width: 45.5em;
+    height: 26em;
+    margin-left: 25.5em;
+    margin-top: 12em;
+    padding-right: 2.4em;
+    background-color: white;
+}
+
+.notice {
+    background-color: rgb(14, 15,159);
+    color: white;
+}
+
+    .notice .close {
+        opacity: 1;
+        color: white;
+
+    }
+
+        .notice .close:hover {
+            opacity: 1;
+            color: red;
+            background-color: white;
+            border-radius: 0 0 25px 25px;
+        }
+/*
+    Driver
+*/
+
+.cus-margin-modal-driver {
+    width: 45.5em;
+    height: 21.5em;
+    margin-left: 25.5em;
+    margin-top: 13em;
+    padding-right: 2.4em;
+
+    background-color: white;
+}
+
+/*
+    AdminEditDetails 
+*/
