@@ -61,6 +61,15 @@ class AdminEditCar extends React.Component<CarPropsAndDriverState, any>
 
     handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
+
+        const newCarObj = {
+            registration: this.state.registration,
+            driver: this.state.driver,
+            make: this.state.make,
+            model: this.state.model,
+            colour: this.state.colour
+        };
+        this.props.updateCar(newCarObj);
     }
 
 
