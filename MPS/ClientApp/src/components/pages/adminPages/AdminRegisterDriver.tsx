@@ -19,7 +19,7 @@ class AdminRegisterDriver extends React.Component<DriverProps,any> // first Para
             driverName: '',
             driverId: 0, // 0 => null for testing while integrating with backend 
             email:'',
-            tellNo:''
+            telNo:''
         };
 
         //this.handleOpenModal = this.handleOpenModal.bind(this);
@@ -37,7 +37,7 @@ class AdminRegisterDriver extends React.Component<DriverProps,any> // first Para
             driverId: this.state.driverId,
             driverName: this.state.driverName,
             email: this.state.email,
-            tellNo: this.state.tellNo
+            telNo: this.state.telNo
         };
 
         // pass in driver object here 
@@ -95,7 +95,7 @@ class AdminRegisterDriver extends React.Component<DriverProps,any> // first Para
 
                         <FormGroup>
                             <Label className="d-block">Mobile Number</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="tellNo" value={this.state.tellNo} onChange={this.handleChange}></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="telNo" value={this.state.telNo} onChange={this.handleChange}></Input>
                         </FormGroup>
 
                         <Link className="btn btn-danger cus-btn mr-5" to='/admin-options'>

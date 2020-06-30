@@ -13,11 +13,11 @@ namespace MPS.Data.Repository
         public IEnumerable<Store> GetAllRegistration();
 
         //Driver Interface Repository 
-        public IEnumerable<Driver> getAllDrivers();
-        public bool CreateDriver(Driver driver);
+        public IEnumerable<Driver> GetAllDrivers();
+        public bool InsertDriver(Driver driver);
 
 
         //Car Interface Repository 
-        public IEnumerable<Car> getAllCars();
+        public IEnumerable<Car> GetAllCars();
     }
 }

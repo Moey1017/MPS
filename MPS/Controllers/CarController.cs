@@ -21,9 +21,9 @@ namespace MPS.Controllers
 
         // Get all cars
         [HttpGet("get-cars")]
-        public IEnumerable<Car> getAllCars()
+        public IEnumerable<Car> GetAllCars()
         {
-            var carsData = _dataRepository.getAllCars();
+            var carsData = _dataRepository.GetAllCars();
             return carsData;
         }
     }

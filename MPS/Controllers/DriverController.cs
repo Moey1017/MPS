@@ -20,19 +20,19 @@ namespace MPS.Controllers
 
         // Get all drivers
         [HttpGet("get-drivers")]
-        public IEnumerable<Driver> getAllDrivers()
+        public IEnumerable<Driver> GetAllDrivers()
         {
-            var driversData = _dataRepository.getAllDrivers();
+            var driversData = _dataRepository.GetAllDrivers();
             return driversData;
         }
 
-        [HttpPost("create-driver")]
-        public IActionResult CreateDriver([FromBody] Driver driver)
+        [HttpPost("insert-driver")]
+        public IActionResult InsertDriver([FromBody] Driver driver)
         {
             //serverside validation require here 
             if (driver != null)
             {
-                _dataRepository.CreateDriver(driver);
+                _dataRepository.InsertDriver(driver);
             }
             return Ok();
         }

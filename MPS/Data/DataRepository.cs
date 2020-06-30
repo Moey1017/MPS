@@ -35,14 +35,14 @@ namespace MPS.Data.Repository
 
 
         //Driver Repository
-        public IEnumerable<Driver> getAllDrivers()
+        public IEnumerable<Driver> GetAllDrivers()
         {
             var sql = "SELECT driverID, name, telNo, email FROM drivers;";
             var result = this._conn.Query<Driver>(sql).ToList();
             return result;
         }
 
-        public bool CreateDriver(Driver driver)
+        public bool InsertDriver(Driver driver)
         {
             bool toReturn = false;
 
@@ -72,7 +72,7 @@ namespace MPS.Data.Repository
 
 
         //Car
-        public IEnumerable<Car> getAllCars()
+        public IEnumerable<Car> GetAllCars()
         {
             var sql = "SELECT registration, make, colour, model FROM cars;";
             var result = this._conn.Query<Car>(sql).ToList();

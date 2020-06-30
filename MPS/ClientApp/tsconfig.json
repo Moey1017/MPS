@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "es5",
     "sourceMap": false, // https://code.visualstudio.com/docs/typescript/typescript-compiling prevent auto generating map 
-    "noEmit": true, 
+    "declarationMap": false,
+    "noEmit": true,
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

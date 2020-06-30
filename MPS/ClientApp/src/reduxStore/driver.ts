@@ -1,6 +1,8 @@
 ﻿import { Action, Reducer } from 'redux';
 import { AppThunkAction } from './';
 import { history } from '../index';
+import axios from 'axios';
+
 
 // In Admin system DB (Registered CarRegList, Registered Drivers, Admin State), Driver Table
 export interface DriverState {
@@ -12,7 +14,7 @@ export interface DriverState {
 export interface Driver {
     readonly driverId: number;
     readonly driverName: string;
-    readonly tellNo: string;
+    readonly telNo: string;
     readonly email: string;
     // carsList : Car[]; ?? 
 }
@@ -81,19 +83,19 @@ type DriverAction = RequestDriversListAction | ReceiveDriversListAction | Insert
 var tempDriver1 = {
     driverId: 1,
     driverName: "11324N",
-    tellNo: "2323423",
+    telNo: "2323423",
     email:"r232r23"
 };
 var tempDriver2 = {
     driverId: 2,
     driverName: "21324N",
-    tellNo: "2323423",
+    telNo: "2323423",
     email: "r232r23"
 };
 var tempDriver3 = {
     driverId: 3,
     driverName: "31324N",
-    tellNo: "2323423",
+    telNo: "2323423",
     email: "r232r23"
 };
 
@@ -124,11 +126,29 @@ export const actionCreators = {
     },
     insertDriver: (driverFromClient: Driver): AppThunkAction<DriverAction> => (dispatch) => {
         //TODO : modify into dbs, auto increment driver Id 
+        axios.post('api/driver/insert-driver', driverFromClient)
+            .then(res => {
+                if (res.data) {
+                    if (res.data.errorMessage) {
+                        console.log(res.data.errorMessage)
+                    }
+                    else {
+                        //TODO: get the new driver from the database, dispatch with the driver from database
+                        dispatch({ type: INSERTING_DRIVER, driver: driverFromClient });
+                        dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)
+                        console.log("Driver Added.")
+                        history.push('/admin-view-drivers');//redirect back to view all drivers 
+                    }
+                } else {
+                    console.log("something went wrong driver's not added")
+                }
+            })
+        //here
 
-        //TODO: get the new driver from the database, dispatch with the driver from database
-        dispatch({ type: INSERTING_DRIVER, driver: driverFromClient });
-        dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)
-        history.push('/admin-view-drivers');//redirect back to view all drivers 
+        
+        //dispatch({ type: INSERTING_DRIVER, driver: driverFromClient });
+        //dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)
+        //history.push('/admin-view-drivers');//redirect back to view all drivers 
     },
     deleteDriver: (driverIdToDelete: number): AppThunkAction<DriverAction> => (dispatch) => {
         //TODO : modify into dbs
@@ -164,7 +184,7 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 const unloadedDriverState: DriverState = {
-    drivers: [], driver: { driverId: 0, driverName: '', tellNo: '', email:'' }, isLoading: false
+    drivers: [], driver: { driverId: 0, driverName: '', telNo: '', email:'' }, isLoading: false
 }; 
 
 export const reducer: Reducer<DriverState> = (state: DriverState | undefined, incomingAction: Action): DriverState => {
