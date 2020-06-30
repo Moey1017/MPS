@@ -15,7 +15,7 @@ using Dapper;
 using System.Linq;
 using MPS.Models;
 using Microsoft.EntityFrameworkCore;
-//using MPS.Data.Repository;
+using MPS.Data.Repository;
 //using MPS.Data.Services;
 
 namespace MPS_Main
@@ -45,6 +45,8 @@ namespace MPS_Main
 
             var connectionString = Configuration.GetConnectionString("MpsDbConnection");
 
+
+            // Configuring DbUp to do migrations - Pg365 
             EnsureDatabase.For.MySqlDatabase(connectionString);
 
             var upgrader = DeployChanges.To
@@ -55,12 +57,15 @@ namespace MPS_Main
                 .LogToConsole()
                 .Build();
 
+            //Check whether there are any pending SQL Scripts
             if (upgrader.IsUpgradeRequired())
             {
-                upgrader.PerformUpgrade();
+                upgrader.PerformUpgrade(); // do the actual migration
             }
 
-            //services.AddScoped<IDataRepository, DataRepository>();
+            services.AddControllers();
+
+            services.AddScoped<IDataRepository, DataRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

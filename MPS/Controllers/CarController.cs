@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MPS.Data.Repository;
 using MPS.Models;
 
 namespace MPS.Controllers
@@ -12,15 +13,18 @@ namespace MPS.Controllers
     [ApiController]
     public class CarController : ControllerBase
     {
-        [HttpGet]
-        public IEnumerable<Car> Get()
+        private readonly IDataRepository _dataRepository;
+        public CarController(IDataRepository dataRepository)
         {
-            using (var context = new mpsContext())
-            {
-                return context.Car.ToList();
-            }
+            _dataRepository = dataRepository;
         }
-        
 
+        // Get all cars
+        [HttpGet("get-cars")]
+        public IEnumerable<Car> getAllCars()
+        {
+            var carsData = _dataRepository.getAllCars();
+            return carsData;
+        }
     }
 }

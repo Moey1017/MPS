@@ -39,7 +39,7 @@ namespace MPS.Models
                 entity.HasKey(e => e.LoginId)
                     .HasName("PRIMARY");
 
-                entity.ToTable("admin");
+                entity.ToTable("admins");
 
                 entity.Property(e => e.LoginId)
                     .HasColumnName("LoginID")
@@ -57,7 +57,7 @@ namespace MPS.Models
                 entity.HasKey(e => e.Registration)
                     .HasName("PRIMARY");
 
-                entity.ToTable("car");
+                entity.ToTable("cars");
 
                 entity.Property(e => e.Registration)
                     .HasMaxLength(15)
@@ -81,7 +81,7 @@ namespace MPS.Models
 
             modelBuilder.Entity<Driver>(entity =>
             {
-                entity.ToTable("driver");
+                entity.ToTable("drivers");
 
                 entity.Property(e => e.DriverId)
                     .HasColumnName("DriverID")
@@ -164,8 +164,8 @@ namespace MPS.Models
                 entity.HasIndex(e => e.Registration)
                     .HasName("Registration");
 
-                entity.Property(e => e.StoreId)
-                    .HasColumnName("StoreID")
+                entity.Property(e => e.PalletId)
+                    .HasColumnName("PalletID")
                     .HasColumnType("smallint(3)");
 
                 entity.Property(e => e.Registration)

@@ -20,7 +20,7 @@ export default class RetrieveVehicle extends React.Component<any, any>
     }
 
     populateButtons() {
-        axios.get("api/store/store").then(result => {
+        axios.get("api/store/get-store-state").then(result => {
             const response = result.data;
             this.setState({ retrieveCars: response, loading: false })
         })
@@ -179,7 +179,7 @@ export default class RetrieveVehicle extends React.Component<any, any>
                         </Link>
                     </div>
                 </div>
-                
+
             </div>
         );
     }

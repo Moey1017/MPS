@@ -7,7 +7,7 @@
 --
 -- ----------------------------------------------------------------------------
 
-INSERT IGNORE INTO `mps`.`admin` (`LoginID`, `Password`)
+INSERT IGNORE INTO `mps`.`admins` (`LoginID`, `Password`)
 VALUES 
 ('mpsAdminUsername','$2y$12$v7E5wQzQyfsa0mr07eUFBOsEi5U7lmbpQ9cakKkUQnLEmMHbnec7y');
 
@@ -17,7 +17,7 @@ VALUES
 --
 -- ----------------------------------------------------------------------------
 
-INSERT IGNORE INTO `mps`.`store` (`StoreID`, `Registration`)
+INSERT IGNORE INTO `mps`.`store` (`PalletID`, `Registration`)
 VALUES 
   ('101', NULL),
   ('102', NULL),

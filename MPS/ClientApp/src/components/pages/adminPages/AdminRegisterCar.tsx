@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import * as DriverStore from '../../../reduxStore/driver';
 import * as CarStore from '../../../reduxStore/car';
-import { ApplicationState } from '../../../reduxStore/index';
 import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { ApplicationState } from '../../../reduxStore/index';
 
 
 // At runtime, Redux will merge together..., merge everything into this.props
@@ -28,26 +28,30 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
             model: '',
             colour: '',
             drivers: [],
-            isLoading: true
+            isLoading: false
             //driverNameList:[]
         }
     }
 
     componentDidMount() {
+        
         setTimeout(() => {
+            this.setState({ isLoading: true })
             this.ensureCarDataFetched();
             //this.getDriverNameList();
+            this.setState({isLoading:false})
         }, 200)
+        
     }
 
     private ensureCarDataFetched() {
-        if (this.props.drivers.length === 0 || this.props.drivers.length === undefined) { // check if drivers have been loaded into redux store
-            this.props.requestDriverList();
-            this.setState({
-                drivers: this.props.drivers,
-                isLoading: false
-            })
-        }
+        //if (this.props.drivers.length === 0 || this.props.drivers.length === undefined) { // check if drivers have been loaded into redux store
+        //    this.props.requestDriverList();
+        //    this.setState({
+        //        drivers: this.props.drivers,
+        //        isLoading: false
+        //    })
+        //}
     }
 
     // this is not working bcuz it doenst know what is this.props.drivers 
@@ -139,9 +143,9 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
 
 
 function mapStateToProps(state : any) {
-    //return (state: ApplicationState) => { state.drivers }; // this needs changes 
     return {
-        drivers: state.drivers,
+        
+        //drivers: state.drivers,
         cars: state.cars
     }
 }
@@ -154,7 +158,6 @@ function mapDispatchToProps(dispatch: any) {
 }
 
 export default connect(
-    //(state: ApplicationState) => state.drivers,
     mapStateToProps,
     mapDispatchToProps
 )(AdminRegisterCar);

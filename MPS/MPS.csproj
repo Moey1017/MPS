@@ -67,7 +67,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.30" />
+    <PackageReference Include="Dapper" Version="2.0.35" />
     <PackageReference Include="dbup" Version="4.3.0" />
     <PackageReference Include="dbup-mysql" Version="4.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.2" />
@@ -80,6 +80,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MySql.Data" Version="8.0.20" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.20" />
     <PackageReference Include="toastr" Version="2.1.1" />
   </ItemGroup>
