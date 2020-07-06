@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `mps`.`drivers` (
   `Email` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`DriverID`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 -- ----------------------------------------------------------------------------
@@ -83,3 +83,56 @@ CREATE TABLE IF NOT EXISTS `mps`.`store` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------------------------------------------------------
+-- Table mps.inbound_order
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mps`.`inbound_order` (
+	`batch_id` VARCHAR(255) NOT NULL,
+	`pallet_id` VARCHAR(255) NOT NULL,
+	`order_pallet_count` INT NOT NULL,
+	`expected_activation_time` TIMESTAMP NULL,
+	`sku_name` VARCHAR(255) NOT NULL,
+	`sku_code` VARCHAR(255) NOT NULL,
+	`status` VARCHAR(255) NOT NULL,
+	`max_pallet_height` INT NOT NULL,
+	`pallet_width` INT NOT NULL,
+	`wms_receipt_link_id` INT NULL,
+	`wms_request_status_read` INT NULL,
+	`wms_storage_status_read` INT NULL,
+	PRIMARY KEY (`batch_id`, `pallet_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+-- ----------------------------------------------------------------------------
+-- Table mps.outbound_order
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mps`.`outbound_order` (
+	`batch_id` VARCHAR(255) NOT NULL,
+	`pallet_id` VARCHAR(255) NOT NULL,
+	`order_pallet_count` INT NOT NULL,
+	`expected_activation_time` TIMESTAMP NULL,
+	`status` VARCHAR(255) NOT NULL,
+	`index` INT DEFAULT 0 NOT NULL,
+	`source` VARCHAR(50) NULL,
+	`wms_link_id` INT NULL,
+	`wms_request_status_read` INT NULL,
+	`wms_output_status_read` INT NULL,
+	`automated_activation_time` DATETIME NULL,
+	`target` BIGINT NULL,
+	PRIMARY KEY (`batch_id`, `pallet_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+-- ----------------------------------------------------------------------------
+-- Indexes for mps.inbound_order
+-- ----------------------------------------------------------------------------
+USE mps;
+
+CREATE INDEX ind_status_request_status_read
+	ON inbound_order (status, wms_request_status_read);
+
+	
+CREATE index ind_status_storage_status_read
+	ON inbound_order (status, wms_storage_status_read);

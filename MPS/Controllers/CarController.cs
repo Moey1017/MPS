@@ -26,5 +26,20 @@ namespace MPS.Controllers
             var carsData = _dataRepository.GetAllCars();
             return carsData;
         }
+
+        [HttpPost("insert-car")]
+        public IActionResult InsertCar([FromBody] Car car)
+        {
+            //serverside validation require here 
+            var result = _dataRepository.InsertCar(car);
+            return Ok(result);
+        }
+
+        [HttpDelete("delete-car{Reg}")]
+        public IActionResult DeleteDriver(string Reg)
+        {
+            var result = _dataRepository.DeleteCar(Reg);
+            return Ok(result);
+        }
     }
 }

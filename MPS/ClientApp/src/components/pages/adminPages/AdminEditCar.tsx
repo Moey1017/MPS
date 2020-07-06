@@ -45,7 +45,7 @@ class AdminEditCar extends React.Component<CarPropsAndDriverState, any>
 
     private getDriverNameList() {
         this.setState({
-            driverNameList: this.props.drivers.map(d => { return d.driverName })
+            driverNameList: this.props.drivers.map(d => { return d.name })
         })
     }
 

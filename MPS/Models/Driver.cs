@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace MPS.Models
 {
@@ -10,7 +11,8 @@ namespace MPS.Models
             DriverCar = new HashSet<DriverCar>();
         }
 
-        public int DriverId { get; set; }
+        [Required]
+        public int? DriverId { get; set; }
         public string Name { get; set; }
         public string TelNo { get; set; }
         public string Email { get; set; }

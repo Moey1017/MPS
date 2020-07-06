@@ -77,7 +77,7 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
 
         const carObj = {
             registration: this.state.registration,
-            driver: this.state.driver,
+            //driver: this.state.driver,
             make: this.state.make,
             model: this.state.model,
             colour: this.state.colour
@@ -102,7 +102,7 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
                         <Form onSubmit={this.handleSubmit}>
                             <FormGroup>
                                 <Label className="d-block">Select A Driver</Label>
-                                {this.createDropDown()}
+                                {/*this.createDropDown()*/}
                             </FormGroup>
 
                             <FormGroup>
@@ -117,12 +117,12 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
 
                             <FormGroup>
                                 <Label className="d-block">Car Model</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="make" value={this.state.model} onChange={this.handleChange}></Input>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.state.model} onChange={this.handleChange}></Input>
                             </FormGroup>
 
                             <FormGroup>
                                 <Label className="d-block">Car Colour</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="make" value={this.state.colour} onChange={this.handleChange}></Input>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.state.colour} onChange={this.handleChange}></Input>
                             </FormGroup>
 
                             <Link className="btn btn-danger cus-btn mr-5" to='/admin-options'>

@@ -16,8 +16,7 @@ class AdminRegisterDriver extends React.Component<DriverProps,any> // first Para
     constructor(props: any) {
         super(props);
         this.state = {
-            driverName: '',
-            driverId: 0, // 0 => null for testing while integrating with backend 
+            name: '',
             email:'',
             telNo:''
         };
@@ -34,8 +33,8 @@ class AdminRegisterDriver extends React.Component<DriverProps,any> // first Para
         e.preventDefault();
 
         const driverObj = {
-            driverId: this.state.driverId,
-            driverName: this.state.driverName,
+            driverId: 0,
+            name: this.state.name,
             email: this.state.email,
             telNo: this.state.telNo
         };
@@ -85,7 +84,7 @@ class AdminRegisterDriver extends React.Component<DriverProps,any> // first Para
                     <Form onSubmit={this.handleSubmit}>
                         <FormGroup>
                             <Label className="d-block">Name</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="driverName" value={this.state.driverName} onChange={this.handleChange}></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="name" value={this.state.name} onChange={this.handleChange}></Input>
                         </FormGroup>
                         
                         <FormGroup>

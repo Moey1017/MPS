@@ -18,10 +18,10 @@ class AdminEditDriver extends React.Component<DriverProps, any>
     constructor(props: any) {
         super(props);
         this.state = {
-            driverId: null,
-            driverName: '',
-            email: '',
-            tellNo: ''
+            driId: this.props.driver ? this.props.driver.driverId : -1,
+            driName: this.props.driver ? this.props.driver.name : '',
+            driEmail: this.props.driver ? this.props.driver.email : '',
+            driTelNo: this.props.driver ? this.props.driver.telNo : ''
         };
 
         //this.handleOpenModal = this.handleOpenModal.bind(this);
@@ -29,35 +29,47 @@ class AdminEditDriver extends React.Component<DriverProps, any>
     }
 
     componentDidMount() {      
-        setTimeout(() => {
-            this.props.fetchDriver(parseInt(this.props.match.params.id)); // fetch data 
-            this.setState({ // set states 
-                driverId: this.props.driver.driverId,
-                driverName: this.props.driver.driverName,
-                email: this.props.driver.email,
-                tellNo: this.props.driver.tellNo
-            })
-        }, 200);
+        this.props.fetchDriver(parseInt(this.props.match.params.id));
+        console.log(this.state);
+        console.log(this.props.driver);
     }
 
-    handleChange = (e: { target: { name: any; value: any; }; }) => {
-        this.setState({ [e.target.name]: e.target.value })
+    componentWillReceiveProps = (nextProps: any) => {
+        console.log("WIll Receive? ");
+        console.log(nextProps.driver[0]);
+        console.log(this.props.driver);
+        //this.setState({
+        //    driId: nextProps.driver.driverId,
+        //    driName: nextProps.driver.name,
+        //    driEmail: nextProps.driver.email,
+        //    driTelNo: nextProps.driver.telNo,
+        //})
         console.log(this.state);
     }
 
-    handleSubmit = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
+    handleChange = (e: any) => {
+        this.setState({ [e.target.name]: e.target.value });
+        console.log(this.state);
+        console.log(this.props);
+    }
 
+    //handleChange = (e: { target: { name: any; value: any; }; }) => {
+    //    this.setState({ [e.target.name]: e.target.value });
+    //    console.log(this.state);
+    //    console.log(this.props.driver);
+    //}
+
+    handleSubmit = (e: any) => {
+        e.preventDefault();
         const driverObj = {
             driverId: this.state.driverId,
-            driverName: this.state.driverName,
+            name: this.state.name,
             email: this.state.email,
-            tellNo: this.state.tellNo
+            telNo: this.state.telNo
         };
 
         // pass in driver object here 
         this.props.updateDriver(driverObj);
-        //TODO: Redirct is needed
     }
 
     //handleOpenModal() {
@@ -90,42 +102,42 @@ class AdminEditDriver extends React.Component<DriverProps, any>
     //    return toReturn
     //}
     render() {
-        return (
-            <div className="container mh-100 b-banner-image">
-                <h1 className="display-1 p-center-driver">Register Driver</h1>
+            return (
+                <div className="container mh-100 b-banner-image">
+                    <h1 className="display-1 p-center-driver">Register Driver</h1>
 
-                <div className="row fixed-bottom justify-content-center cus-margin-l">
+                    <div className="row fixed-bottom justify-content-center cus-margin-l">
 
-                    <Form onSubmit={this.handleSubmit}>
-                        <FormGroup>
-                            <Label className="d-block">Name</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="driverName" value={this.state.driverName} onChange={this.handleChange}></Input>
-                        </FormGroup>
+                        <Form onSubmit={this.handleSubmit}>
+                            <FormGroup>
+                                <Label className="d-block">Name</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="driName" value={this.state.driName || ''} onChange={this.handleChange}></Input>
+                            </FormGroup>
 
-                        <FormGroup>
-                            <Label className="d-block">Email</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter email" name="email" value={this.state.email} onChange={this.handleChange}></Input>
-                        </FormGroup>
+                            <FormGroup>
+                                <Label className="d-block">Email</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter email" name="driEmail" value={this.state.driEmail || ''} onChange={this.handleChange}></Input>
+                            </FormGroup>
 
-                        <FormGroup>
-                            <Label className="d-block">Mobile Number</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="tellNo" value={this.state.tellNo} onChange={this.handleChange}></Input>
-                        </FormGroup>
+                            <FormGroup>
+                                <Label className="d-block">Mobile Number</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="driTelNo" value={this.state.driTelNo || ''} onChange={this.handleChange}></Input>
+                            </FormGroup>
 
-                        <Link className="btn btn-danger cus-btn mr-5" to='/admin-options'>
-                            Back
-                        </Link>
+                            <Link className="btn btn-danger cus-btn mr-5" to='/admin-options'>
+                                Back
+                            </Link>
 
-                        {/*Link className="btn  btn-success cus-btn" onClick={this.handleOpenModal} to='#'>*/}
-                        <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
-                            Register
-                        </Button>
+                            {/*Link className="btn  btn-success cus-btn" onClick={this.handleOpenModal} to='#'>*/}
+                            <Button className="btn  btn-success cus-btn" type="submit">
+                                Register
+                            </Button>
 
-                    </Form>
-                    {/* {this.showModalBox()}  */}
+                        </Form>
+                        {/* {this.showModalBox()}  */}
+                    </div>
                 </div>
-            </div>
-        );
+            );
     }
 }
 

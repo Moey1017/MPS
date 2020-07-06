@@ -13,7 +13,7 @@ export interface DriverState {
 
 export interface Driver {
     readonly driverId: number;
-    readonly driverName: string;
+    readonly name: string;
     readonly telNo: string;
     readonly email: string;
     // carsList : Car[]; ?? 
@@ -78,31 +78,6 @@ interface FetchedDriverAction {
 // Aggregate all actions together and to ensure will only receive these actions 
 type DriverAction = RequestDriversListAction | ReceiveDriversListAction | InsertingDriverAction | InsertedDriverAction | DeleteDriverAction | UpdateDriverAction | FetchingDriverAction | FetchedDriverAction;
 
-
-//Temp Driver data for testing 
-var tempDriver1 = {
-    driverId: 1,
-    driverName: "11324N",
-    telNo: "2323423",
-    email:"r232r23"
-};
-var tempDriver2 = {
-    driverId: 2,
-    driverName: "21324N",
-    telNo: "2323423",
-    email: "r232r23"
-};
-var tempDriver3 = {
-    driverId: 3,
-    driverName: "31324N",
-    telNo: "2323423",
-    email: "r232r23"
-};
-
-var tempDriversList: Driver[] = [];
-tempDriversList.push(tempDriver1); tempDriversList.push(tempDriver2); tempDriversList.push(tempDriver3);
-
-
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
@@ -110,55 +85,73 @@ export const actionCreators = {
     requestDriverList: (): AppThunkAction<DriverAction> => (dispatch, getState) => {
         // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
-
-        //if (appState) { console.log(appState); } if (appState.drivers.) { console.log(appState); }
-        
         if (appState && appState.drivers) {
             dispatch({ type: REQUEST_DRIVER_LIST });
-            //fetch(`driver`) // connect to controller
-            //    .then(response => response.json() as Promise<Driver[]>)
-            //    .then(data => {
-            //        dispatch({ type: RECEIVE_DRIVER_LIST, drivers: data });
-            //    });     // above fetch from database and dispatch
-            dispatch({ type: RECEIVE_DRIVER_LIST, drivers: tempDriversList }) // for testing use 
+             axios.get('api/driver/get-drivers')
+                 .then(res => {
+                     if (res.data) {
+                         dispatch({ type: RECEIVE_DRIVER_LIST, drivers: res.data })
+                     } else {
+                         console.log("requestDriverList did not receive any data.");
+                     }
+                }).catch(error => {
+                    console.log("requestDriverList caught an error.");
+                    console.log(error);
+                    //TODO:Create Dispatch type if error 
+                })
         }
-
     },
     insertDriver: (driverFromClient: Driver): AppThunkAction<DriverAction> => (dispatch) => {
         //TODO : modify into dbs, auto increment driver Id 
+        dispatch({ type: INSERTING_DRIVER, driver: driverFromClient });
         axios.post('api/driver/insert-driver', driverFromClient)
             .then(res => {
+                console.log(res);
                 if (res.data) {
-                    if (res.data.errorMessage) {
-                        console.log(res.data.errorMessage)
-                    }
-                    else {
-                        //TODO: get the new driver from the database, dispatch with the driver from database
-                        dispatch({ type: INSERTING_DRIVER, driver: driverFromClient });
-                        dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)
+                    if (res.status === 200) {
+                        dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)???
                         console.log("Driver Added.")
                         history.push('/admin-view-drivers');//redirect back to view all drivers 
                     }
-                } else {
-                    console.log("something went wrong driver's not added")
+                    else {
+                        console.log("Something went wrong, status code:" + res.status);
+                    } 
                 }
+                else {
+                    console.log("Do not receive any response.");
+                }
+            }).catch(error => {
+                console.log("requestDriverList caught an error.");
+                console.log(error);
+                //TODO:Create Dispatch type if error 
             })
         //here
-
-        
-        //dispatch({ type: INSERTING_DRIVER, driver: driverFromClient });
-        //dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)
-        //history.push('/admin-view-drivers');//redirect back to view all drivers 
+        //TODO:Create Dispatch type if error 
     },
     deleteDriver: (driverIdToDelete: number): AppThunkAction<DriverAction> => (dispatch) => {
-        //TODO : modify into dbs
+        axios.delete('api/driver/delete-driver' + driverIdToDelete)
+            .then(res => { console.log(res); })
+            .catch(error => {
+                console.log("deleteDriver caught an error.");
+                console.log(error);
+            })
         dispatch({ type: DELETE_DRIVER, driverId: driverIdToDelete })
+
     },
     fetchDriver: (driverIdToGet: number): AppThunkAction<DriverAction> => (dispatch) => {
-        //TODO : get from dbs and find the driver by ID given 
         dispatch({ type: FETCHING_DRIVER, driverId: driverIdToGet })
-        //TODO: get driver from DBS and then dispatch the data 
-
+        axios.get('api/driver/get-driver-byID' + driverIdToGet)
+            .then(res => {
+                if (res.data) {
+                    dispatch({ type: FETCHED_DRIVER, driver: res.data });
+                } else {
+                    console.log("fetchDriver do not receive any data.");
+                }
+            }).catch(error => {
+                console.log("fetchDriver caught an error.");
+                console.log(error);
+                //TODO:Create Dispatch type if error 
+            })
         //const getDriver = async (
         //    driverIdToGet: number,
         //) => {
@@ -167,11 +160,11 @@ export const actionCreators = {
         //};
 
         // !!!WARNING FOR TEMP USE ONLY 
-        for (let i = 0; i < tempDriversList.length; i++){
-            if (tempDriversList[i].driverId === driverIdToGet) {
-                dispatch({ type: FETCHED_DRIVER, driver: tempDriversList[i] });
-            }
-        }
+        //for (let i = 0; i < tempDriversList.length; i++){
+        //    if (tempDriversList[i].driverId === driverIdToGet) {
+         //       dispatch({ type: FETCHED_DRIVER, driver: tempDriversList[i] });
+        //    }
+        //}
         
     },
     updateDriver: (newDriver: Driver): AppThunkAction<DriverAction> => (dispatch) => {
@@ -184,7 +177,7 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 const unloadedDriverState: DriverState = {
-    drivers: [], driver: { driverId: 0, driverName: '', telNo: '', email:'' }, isLoading: false
+    drivers: [], driver: { driverId: 0, name: '', telNo: '', email:'' }, isLoading: false
 }; 
 
 export const reducer: Reducer<DriverState> = (state: DriverState | undefined, incomingAction: Action): DriverState => {
@@ -197,7 +190,7 @@ export const reducer: Reducer<DriverState> = (state: DriverState | undefined, in
         case REQUEST_DRIVER_LIST:
             return {
                 ...state,
-                isLoading: true
+                 isLoading: true
             };
         case RECEIVE_DRIVER_LIST:
             return {
@@ -238,7 +231,7 @@ export const reducer: Reducer<DriverState> = (state: DriverState | undefined, in
             return {
                 ...state, 
                 driver: action.driver,
-                isLoading: false
+                isLoading: false,
             };
         default:
             return {

@@ -31,3 +31,7 @@ VALUES
   ('302', NULL),
   ('303', NULL),
   ('304', NULL);
+
+INSERT IGNORE INTO `mps`.`drivers`(`DriverID`, `Name`, `TelNo`, `Email`)
+VALUES
+	(NULL,'Moey','0833890984','moey@gmail.com');

@@ -50,10 +50,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js" />
+    <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js.map" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
     <None Remove="ClientApp\src\index.tsx~RF4a36eaa.TMP" />
     <None Remove="ClientApp\src\reduxStore\admin.ts" />
     <None Remove="ClientApp\src\reduxStore\car.ts" />
+    <None Remove="ClientApp\src\reduxStore\configureStore.js" />
+    <None Remove="ClientApp\src\reduxStore\configureStore.js.map" />
     <None Remove="ClientApp\src\reduxStore\driver.ts" />
     <None Remove="ClientApp\src\reduxStore\driver_car.ts" />
     <None Remove="ClientApp\src\reduxStore\store.ts" />
