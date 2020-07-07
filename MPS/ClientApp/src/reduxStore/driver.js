@@ -47,7 +47,7 @@ exports.actionCreators = {
                     dispatch({ type: RECEIVE_DRIVER_LIST, drivers: res.data });
                 }
                 else {
-                    console.log("requestDriverList do not receive any data.");
+                    console.log("requestDriverList did not receive any data.");
                 }
             }).catch(function (error) {
                 console.log("requestDriverList caught an error.");

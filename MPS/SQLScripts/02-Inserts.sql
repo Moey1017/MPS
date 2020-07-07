@@ -32,6 +32,16 @@ VALUES
   ('303', NULL),
   ('304', NULL);
 
+  --VALUE FOR TESTING USE 
 INSERT IGNORE INTO `mps`.`drivers`(`DriverID`, `Name`, `TelNo`, `Email`)
 VALUES
-	(NULL,'Moey','0833890984','moey@gmail.com');
+	(NULL,'Moey','0833890984','moey@gmail.com'),
+	(NULL,'Jasmine','0833812312','Jasmine@gmail.com'),
+	(NULL,'Andrew','08338123114','Andrew@gmail.com');
+
+
+INSERT IGNORE INTO `mps`.`cars`(`Registration`,`Make`,`Model`,`Colour`)
+VALUE
+	('WRWR312','Toyota','LandCruiser','Silver'),
+	('DUIW567','BMW','X5','DARK BLUE'),
+	('EEWR789','MERS','GLC2000','BLACK');

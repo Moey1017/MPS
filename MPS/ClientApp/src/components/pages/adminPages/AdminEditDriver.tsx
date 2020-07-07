@@ -18,6 +18,7 @@ class AdminEditDriver extends React.Component<DriverProps, any>
     constructor(props: any) {
         super(props);
         this.state = {
+            driver: this.props.driver,
             driId: this.props.driver ? this.props.driver.driverId : -1,
             driName: this.props.driver ? this.props.driver.name : '',
             driEmail: this.props.driver ? this.props.driver.email : '',
@@ -30,27 +31,25 @@ class AdminEditDriver extends React.Component<DriverProps, any>
 
     componentDidMount() {      
         this.props.fetchDriver(parseInt(this.props.match.params.id));
-        console.log(this.state);
-        console.log(this.props.driver);
     }
 
-    componentWillReceiveProps = (nextProps: any) => {
-        console.log("WIll Receive? ");
-        console.log(nextProps.driver[0]);
+
+    componentDidUpdate(prevProps:any) {
         console.log(this.props.driver);
-        //this.setState({
-        //    driId: nextProps.driver.driverId,
-        //    driName: nextProps.driver.name,
-        //    driEmail: nextProps.driver.email,
-        //    driTelNo: nextProps.driver.telNo,
-        //})
+        if (this.props.driver !== prevProps.driver) {
+            console.log(this.props.driver);
+            console.log(this.props.driver.driverId);
+            console.log(this.props.driver.name);
+            this.setState({
+                driver: this.props.driver,
+                driName: this.state.driver.name
+            })
+        }
         console.log(this.state);
     }
 
     handleChange = (e: any) => {
         this.setState({ [e.target.name]: e.target.value });
-        console.log(this.state);
-        console.log(this.props);
     }
 
     //handleChange = (e: { target: { name: any; value: any; }; }) => {
@@ -111,17 +110,17 @@ class AdminEditDriver extends React.Component<DriverProps, any>
                         <Form onSubmit={this.handleSubmit}>
                             <FormGroup>
                                 <Label className="d-block">Name</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="driName" value={this.state.driName || ''} onChange={this.handleChange}></Input>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="driName" value={this.state.driName} onChange={this.handleChange}></Input>
                             </FormGroup>
 
                             <FormGroup>
                                 <Label className="d-block">Email</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter email" name="driEmail" value={this.state.driEmail || ''} onChange={this.handleChange}></Input>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter email" name="driEmail" value={this.state.driEmail} onChange={this.handleChange}></Input>
                             </FormGroup>
 
                             <FormGroup>
                                 <Label className="d-block">Mobile Number</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="driTelNo" value={this.state.driTelNo || ''} onChange={this.handleChange}></Input>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="driTelNo" value={this.state.driTelNo} onChange={this.handleChange}></Input>
                             </FormGroup>
 
                             <Link className="btn btn-danger cus-btn mr-5" to='/admin-options'>

@@ -6,6 +6,7 @@ import Home from './components/pages/userPages/Home';
 import Home2 from './components/pages/userPages/Home2';
 import StoreVehicle from './components/pages/userPages/StoreVehicle';
 import RetrieveVehicle from './components/pages/userPages/RetrieveVehicle';
+import StoreConfirmation from './components/pages/userPages/StoreConfirmation';
 //Admin Pages
 import AdminLogin from './components/pages/adminPages/AdminLogin';
 import AdminOptions from './components/pages/adminPages/AdminOptions';
@@ -24,6 +25,7 @@ export default () => (
     <Layout>
         <Switch>
             <Route exact path='/' component={Home} />
+            <Route exact path='/store-vehicle' component={StoreConfirmation} />
             <Route exact path='/store-vehicle' component={StoreVehicle} />
             <Route exact path='/retrieve-vehicle' component={RetrieveVehicle} />
             <Route exact path='/admin-login' component={AdminLogin} />

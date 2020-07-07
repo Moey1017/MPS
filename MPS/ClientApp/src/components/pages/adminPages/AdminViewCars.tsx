@@ -16,10 +16,6 @@ class AdminViewCars extends React.PureComponent<CarProps>
         this.ensureCarDataFetched();
     }
 
-    public componentWillMount() {
-        this.ensureCarDataFetched();
-    }
-
     // getting all data here
     private ensureCarDataFetched() {
         this.props.requestCarList();

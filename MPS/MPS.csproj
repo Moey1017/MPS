@@ -53,6 +53,7 @@
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js.map" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
+    <None Remove="ClientApp\src\components\pages\userPages\StoreConfirmation.tsx" />
     <None Remove="ClientApp\src\index.tsx~RF4a36eaa.TMP" />
     <None Remove="ClientApp\src\reduxStore\admin.ts" />
     <None Remove="ClientApp\src\reduxStore\car.ts" />
@@ -97,6 +98,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\pages\userPages\StoreConfirmation.tsx" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\car.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\driver.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\admin.ts" />

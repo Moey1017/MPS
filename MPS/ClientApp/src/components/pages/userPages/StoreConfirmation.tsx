@@ -1,4 +1,4 @@
-import * as React from 'react';
+﻿import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import * as DriverStore from '../../../reduxStore/driver';
@@ -16,7 +16,7 @@ type CarPropsAndDriverState =
     & typeof CarStore.actionCreators // ... plus action creators we've requested
     & typeof DriverStore.actionCreators;
 
-class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
+class StoreConfirmation extends React.Component<CarPropsAndDriverState, any>
 {
     constructor(props: any) {
         super(props);
@@ -28,45 +28,31 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
             model: '',
             colour: '',
             drivers: [],
+            cars: this.props.cars,
+            car: {},
             isLoading: false
             //driverNameList:[]
         }
     }
 
     componentDidMount() {
-        
-        setTimeout(() => {
-            this.setState({ isLoading: true })
-            this.ensureCarDataFetched();
-            //this.getDriverNameList();
-            this.setState({isLoading:false})
-        }, 200)
-        
+        this.ensureCarDataFetched();
     }
+
+
+    componentDidUpdate() {
+        if (this.state.cars !== this.props.cars) {
+            this.setState({ cars: this.props.cars })
+        }
+        console.log(this.state);
+        console.log(this.state.cars);
+    }
+
 
     private ensureCarDataFetched() {
-        //if (this.props.drivers.length === 0 || this.props.drivers.length === undefined) { // check if drivers have been loaded into redux store
-        //    this.props.requestDriverList();
-        //    this.setState({
-        //        drivers: this.props.drivers,
-        //        isLoading: false
-        //    })
-        //}
+        this.props.requestCarList();
     }
 
-    // this is not working bcuz it doenst know what is this.props.drivers 
-    //private getDriverNameList() {
-    //    this.setState({
-    //        // driverNameList: this.props.drivers.map(d => { return d.driverName })
-    //        drivers: this.props.drivers
-    //    })
-    //}
-
-    private createDropDown() {
-        return (
-            <DropDownListComponent id="ddlelement" dataSource={this.state.drivers} placeholder="Select a driver" />
-        );
-    }
 
     handleChange = (e: { target: { name: any; value: any; }; }) => {
         this.setState({ [e.target.name]: e.target.value })
@@ -75,35 +61,25 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
     handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        const carObj = {
-            registration: this.state.registration,
-            //driver: this.state.driver,
-            make: this.state.make,
-            model: this.state.model,
-            colour: this.state.colour
-        };
-
-        // Calling action cretor to insert a driver object here  
-        this.props.insertCar(carObj);
+        //const carObj = {
+        //    registration: this.state.registration,
+        //    //driver: this.state.driver,
+        //    make: this.state.make,
+        //    model: this.state.model,
+        //    colour: this.state.colour
+        //};
     }
 
 
     render() {
-        if (this.state.isLoading) {
-            return (<span>Loading</span>);
-        }
-        else {
             return (
                 <div className="container mh-100 b-banner-image">
-                    <h1 className="display-1 p-center-car">Register Car</h1>
+                    <h1 className="display-1 p-center-car">Store Car</h1>
 
                     <div className="row fixed-bottom justify-content-center cus-margin-l">
 
                         <Form onSubmit={this.handleSubmit}>
-                            <FormGroup>
-                                <Label className="d-block">Select A Driver</Label>
-                                {/*this.createDropDown()*/}
-                            </FormGroup>
+
 
                             <FormGroup>
                                 <Label className="d-block">Car Registration</Label>
@@ -125,7 +101,7 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
                                 <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.state.colour} onChange={this.handleChange}></Input>
                             </FormGroup>
 
-                            <Link className="btn btn-danger cus-btn mr-5" to='/admin-options'>
+                            <Link className="btn btn-danger cus-btn mr-5" to='/'>
                                 Back
                         </Link>
 
@@ -138,20 +114,25 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
                 </div>
             );
         }
-    }
 }
 
 
+function mapStateToProps(state: ApplicationState) {
+    return {
+        drivers: state.drivers,
+        cars: state.cars
 
+    }
+}
 
 function mapDispatchToProps(dispatch: any) {
     return bindActionCreators(
-        { ...CarStore.actionCreators, ...DriverStore.actionCreators,  },
+        { ...DriverStore.actionCreators, ...CarStore.actionCreators },
         dispatch
     )
 }
 
 export default connect(
-    (state: ApplicationState) => ({ cars:state.cars }),
+    mapStateToProps,
     mapDispatchToProps
-)(AdminRegisterCar as any);
+)(StoreConfirmation as any);

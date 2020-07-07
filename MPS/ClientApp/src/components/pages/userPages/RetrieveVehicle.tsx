@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 
 
 export default class RetrieveVehicle extends React.Component<any, any>
@@ -190,7 +191,23 @@ export default class RetrieveVehicle extends React.Component<any, any>
         return (
             <div className="container mh-100 b-banner-image">
                 <div className="row">
-                    {content}
+                    {this.state.retrieveCars.map((car:any) =>
+                        <tr key={car.registration + car.driver}>
+                            <td>{car.registration}</td>
+                            <td>{car.driver}</td>
+                            <td>{car.make}</td>
+                            <td>{car.model}</td>
+                            <td>{car.colour}</td>
+                            <td>
+                                <Link className="btn btn-success btn-sm text-white" to={"/admin-edit-car/" + car.registration}>
+                                    Edit
+                                        </Link>
+                                <Button className="btn btn-danger btn-sm" onClick={() => this.props.deleteCar(car.registration)}>
+                                    Delete
+                                        </Button>
+                            </td>
+                        </tr>
+                    )}
                 </div>
             </div>
         );
