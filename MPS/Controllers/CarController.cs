@@ -28,7 +28,7 @@ namespace MPS.Controllers
         }
 
         [HttpGet("get-car-byReg{REG}")]
-        public ActionResult<Car> GetCarByReg(string REG)
+        public IEnumerable<Car> GetCarByReg(string REG)
         {
             var carData = _dataRepository.GetCarByReg(REG); // getting the param here 
             return carData;
