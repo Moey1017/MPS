@@ -35,6 +35,109 @@ namespace MPS.Data.Repository
 
 
 
+        //Store
+        public IEnumerable<Store> GetAllRegistration()
+        {
+            Console.WriteLine("Called GetAllRegistration");
+            var query = "SELECT palletID, car_reg FROM store ORDER BY palletID ASC;";
+            var result = this._conn.Query<Store>(query).ToList();
+            return result;
+        }
+
+
+
+        //Inbound Order 
+        public IEnumerable<InboundOrder> GetAllInboundOrders()
+        {
+            Console.WriteLine("Called GetAllInboundOrders");
+            var query = "SELECT batch_id, pallet_id, order_pallet_count, expected_activation_time, sku_name, sku_code, " +
+                "status, max_pallet_height, pallet_width, wms_receipt_link_id, wms_request_status_read, wms_storage_status_read" +
+                " FROM inbound_order;"; 
+            var result = this._conn.Query<InboundOrder>(query).ToList();
+            return result;
+        }
+
+        public bool InsertInboundOrder(InboundOrder inboundOrder)
+        {
+            Console.WriteLine("Called InsertInboundOrder");
+            bool toReturn = false;
+            var query = "INSERT INTO inbound_order (batch_id, pallet_id, order_pallet_count, expected_activation_time, " +
+                "sku_name, sku_code, status, max_pallet_height, pallet_width, wms_receipt_link_id, wms_request_status_read, wms_storage_status_read) " +
+                "VALUES (@batch_id, @pallet_id, @order_pallet_count, @expected_activation_time, @sku_name, @sku_code, " +
+                "@status, @max_pallet_height, @pallet_width, @wms_receipt_link_id, @wms_request_status_read, @wms_storage_status_read);";
+            var result = this._conn.Execute(query,
+                new
+                {
+                    inboundOrder.BatchId,
+                    inboundOrder.PalletId,
+                    inboundOrder.OrderPalletCount,
+                    inboundOrder.ExpectedActivationTime,
+                    inboundOrder.SkuName,
+                    inboundOrder.SkuCode,
+                    inboundOrder.Status,
+                    inboundOrder.MaxPalletHeight,
+                    inboundOrder.PalletWidth,
+                    inboundOrder.WmsReceiptLinkId,
+                    inboundOrder.WmsRequestStatusRead,
+                    inboundOrder.WmsStorageStatusRead
+                });
+            Console.WriteLine("Result: " + result);
+            Console.WriteLine(inboundOrder + " has been added.");
+            if (result == 1)
+            {
+                toReturn = true;
+            }
+            return toReturn;
+        }
+
+
+
+        //Outbound Order 
+        public IEnumerable<OutboundOrder> GetAllOutboundOrders()
+        {
+            Console.WriteLine("Called GetAllOutboundOrders");
+            var query = "SELECT batch_id, pallet_id, order_pallet_count, expected_activation_time, status, `index`, source, wms_link_id," +
+                " wms_request_status_read, wms_output_status_read, automated_activation_time, target " +
+                "FROM outbound_order;"; 
+            var result = this._conn.Query<OutboundOrder>(query).ToList();
+            return result;
+        }
+
+        public bool InsertOutboundOrder(OutboundOrder outboundOrder)
+        {
+            Console.WriteLine("Called InsertDriver");
+            bool toReturn = false;
+            var query = "INSERT INTO outbound_order (batch_id, pallet_id, order_pallet_count, expected_activation_time, status, `index`," +
+                " source, wms_link_id, wms_request_status_read, wms_output_status_read, automated_activation_time, target) " +
+                "VALUES (@batch_id, @pallet_id, @order_pallet_count, @expected_activation_time, @status, @index, @source, @wms_link_id, " +
+                "@wms_request_status_read, @wms_output_status_read, @automated_activation_time, @target);";
+            var result = this._conn.Execute(query,
+                new
+                {
+                    outboundOrder.BatchId,
+                    outboundOrder.PalletId,
+                    outboundOrder.OrderPalletCount,
+                    outboundOrder.ExpectedActivationTime, 
+                    outboundOrder.Status,
+                    outboundOrder.Index,
+                    outboundOrder.Source,
+                    outboundOrder.WmsLinkId,
+                    outboundOrder.WmsRequestStatusRead,
+                    outboundOrder.WmsOutputStatusRead,
+                    outboundOrder.AutomatedActivationTime,
+                    outboundOrder.Target
+                });
+            Console.WriteLine("Result: " + result);
+            Console.WriteLine(outboundOrder + " has been added.");
+            if (result == 1)
+            {
+                toReturn = true;
+            }
+            return toReturn;
+        }
+
+
+
         //Driver Repository
         public IEnumerable<Driver> GetAllDrivers()
         {
@@ -117,6 +220,15 @@ namespace MPS.Data.Repository
             return result;
         }
 
+        public IEnumerable<Car> GetCarByReg(string reg)
+        {
+            Console.WriteLine("Called GetCarByID");
+            var param = new { REG = reg }; // bind param 
+            var query = "SELECT registration, make, model, colour from cars WHERE registration=@REG;";
+            var result = this._conn.Query<Car>(query, param);
+            return result;
+        }
+
         public bool InsertCar(Car car)
         {
             Console.WriteLine("Called InsertCar");
@@ -158,14 +270,5 @@ namespace MPS.Data.Repository
         //Driver_Car
 
 
-
-        //Store
-        public IEnumerable<Store> GetAllRegistration()
-        {
-            Console.WriteLine("Called GetAllRegistration");
-            var query = "SELECT palletID, registration FROM store ORDER BY palletID ASC;";
-            var result = this._conn.Query<Store>(query).ToList();
-            return result;
-        }
     }
 }

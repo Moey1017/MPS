@@ -1,7 +1,7 @@
 ﻿import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
-import * as DriverStore from '../../../reduxStore/driver';
+import * as Store from '../../../reduxStore/store';
 import * as CarStore from '../../../reduxStore/car';
 import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 import { connect } from 'react-redux';
@@ -10,26 +10,25 @@ import { ApplicationState } from '../../../reduxStore/index';
 
 
 // At runtime, Redux will merge together..., merge everything into this.props
-type CarPropsAndDriverState =
+type CarAndStoreProps =
     CarStore.CarState // ... state we've requested from the Redux store
-    & DriverStore.DriverState
+    & Store.StoreState
     & typeof CarStore.actionCreators // ... plus action creators we've requested
-    & typeof DriverStore.actionCreators;
+    & typeof Store.actionCreators;
 
-class StoreConfirmation extends React.Component<CarPropsAndDriverState, any>
+class StoreConfirmation extends React.Component<CarAndStoreProps, any>
 {
     constructor(props: any) {
         super(props);
 
         this.state = {
-            registration: '',
-            driver: '',
-            make: '',
-            model: '',
-            colour: '',
-            drivers: [],
-            cars: this.props.cars,
-            car: {},
+            cars: [],
+            car: {
+                registration: '',
+                make: '',
+                model: '',
+                colour:''
+            },
             isLoading: false
             //driverNameList:[]
         }
@@ -38,78 +37,66 @@ class StoreConfirmation extends React.Component<CarPropsAndDriverState, any>
     componentDidMount() {
         this.ensureCarDataFetched();
     }
+    
 
-
-    componentDidUpdate() {
-        if (this.state.cars !== this.props.cars) {
-            this.setState({ cars: this.props.cars })
+    componentDidUpdate(prevProps: any) {
+        if (prevProps.cars !== this.props.cars) {
+            console.log(((this.props.cars['car'])[0]) ? (((this.props.cars['car'])[0]).registration)  : "Retrieving...");
+            if (this.props.cars['car'].length !== 0 && this.props.cars['car'].length !== undefined) {
+                //console.log(((this.props.cars['car'])[0]).registration);
+                //console.log(this.props.cars);
+                console.log("Retrieved successfully, setting states...");
+                this.setState({
+                    cars: this.props.cars,
+                    car: ((this.props.cars['car'])[0])
+                });
+            }
         }
-        console.log(this.state);
-        console.log(this.state.cars);
+        console.log(this.props);
+        console.log(this.props.cars['car'][0]);
+        console.log(this.state.car);
     }
 
 
     private ensureCarDataFetched() {
-        this.props.requestCarList();
-    }
-
-
-    handleChange = (e: { target: { name: any; value: any; }; }) => {
-        this.setState({ [e.target.name]: e.target.value })
+        this.props.fetchCar('DUIW567');
     }
 
     handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        //const carObj = {
-        //    registration: this.state.registration,
-        //    //driver: this.state.driver,
-        //    make: this.state.make,
-        //    model: this.state.model,
-        //    colour: this.state.colour
-        //};
+        const carObj = {
+            registration: this.props.cars['car'][0].registration,
+            //driver: this.state.driver,
+            make: this.props.cars['car'][0].make,
+            model: this.props.cars['car'][0].model,
+            colour: this.props.cars['car'][0].colour
+        };
+
+        const car = ((this.props.cars['car'])[0]);// either one
+        console.log(car);
     }
 
 
     render() {
+        let content;
+        if (this.props.cars['car'] !== undefined && this.props.cars['car'].length !== 0) {
+            //display details here 
+            //content = <div>{this.props.cars}</div>
+        } else {
+            content = <div>Loading...</div>;
+        }
+        
+
+
             return (
                 <div className="container mh-100 b-banner-image">
                     <h1 className="display-1 p-center-car">Store Car</h1>
 
                     <div className="row fixed-bottom justify-content-center cus-margin-l">
-
-                        <Form onSubmit={this.handleSubmit}>
-
-
-                            <FormGroup>
-                                <Label className="d-block">Car Registration</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.state.registration} onChange={this.handleChange}></Input>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label className="d-block">Car Make</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.state.make} onChange={this.handleChange}></Input>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label className="d-block">Car Model</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.state.model} onChange={this.handleChange}></Input>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label className="d-block">Car Colour</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.state.colour} onChange={this.handleChange}></Input>
-                            </FormGroup>
-
-                            <Link className="btn btn-danger cus-btn mr-5" to='/'>
-                                Back
-                        </Link>
-
-                            {/*Link className="btn  btn-success cus-btn" onClick={this.handleOpenModal} to='#'>*/}
-                            <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
-                                Register
-                        </Button>
-                        </Form>
+                        {content}
+                        <form><Button onClick={this.handleSubmit} type="submit">Submit</Button></form>
+                       
                     </div>
                 </div>
             );
@@ -119,15 +106,14 @@ class StoreConfirmation extends React.Component<CarPropsAndDriverState, any>
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        drivers: state.drivers,
-        cars: state.cars
-
+        cars: state.cars,
+        store:state.store
     }
 }
 
 function mapDispatchToProps(dispatch: any) {
     return bindActionCreators(
-        { ...DriverStore.actionCreators, ...CarStore.actionCreators },
+        { ...Store.actionCreators, ...CarStore.actionCreators },
         dispatch
     )
 }

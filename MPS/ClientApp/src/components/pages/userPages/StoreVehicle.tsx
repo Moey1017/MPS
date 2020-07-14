@@ -54,7 +54,7 @@ export default class StoreVehicle extends React.Component<any, any>
 
     showModalBox() {
         var toReturn = []
-        //Need to change the onClick for Link
+        //Need to change the onClick for Link,add a half black transparent overlay behind
         if (this.state.showModal) {
             toReturn.push(
                 <Reactstrap.Modal.Dialog key="1" className="cus-margin-modal-store">

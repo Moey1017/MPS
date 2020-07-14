@@ -6,9 +6,9 @@ import axios from 'axios';
 
 // In Admin system DB (Registered CarRegList, Registered Drivers, Admin State), Driver Table
 export interface DriverState {
-    readonly drivers: Driver[] ;
+    readonly drivers: Driver[];
     readonly driver: Driver; // Hold data when adding new driver and edit driver, is this needed? 
-    readonly isLoading: boolean; 
+    readonly isLoading: boolean;
 }
 
 export interface Driver {
@@ -87,13 +87,13 @@ export const actionCreators = {
         const appState = getState();
         if (appState && appState.drivers) {
             dispatch({ type: REQUEST_DRIVER_LIST });
-             axios.get('api/driver/get-drivers')
-                 .then(res => {
-                     if (res.data) {
-                         dispatch({ type: RECEIVE_DRIVER_LIST, drivers: res.data })
-                     } else {
-                         console.log("requestDriverList did not receive any data.");
-                     }
+            axios.get('api/driver/get-drivers')
+                .then(res => {
+                    if (res.data) {
+                        dispatch({ type: RECEIVE_DRIVER_LIST, drivers: res.data })
+                    } else {
+                        console.log("requestDriverList did not receive any data.");
+                    }
                 }).catch(error => {
                     console.log("requestDriverList caught an error.");
                     console.log(error);
@@ -107,18 +107,13 @@ export const actionCreators = {
         axios.post('api/driver/insert-driver', driverFromClient)
             .then(res => {
                 console.log(res);
-                if (res.data) {
-                    if (res.status === 200) {
-                        dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)???
-                        console.log("Driver Added.")
-                        history.push('/admin-view-drivers');//redirect back to view all drivers 
-                    }
-                    else {
-                        console.log("Something went wrong, status code:" + res.status);
-                    } 
+                if (res.status === 200) {
+                    dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)???
+                    console.log("Driver Added.")
+                    history.push('/admin-view-drivers');//redirect back to view all drivers 
                 }
                 else {
-                    console.log("Do not receive any response.");
+                    console.log("Something went wrong, status code:" + res.status);
                 }
             }).catch(error => {
                 console.log("requestDriverList caught an error.");
@@ -130,12 +125,22 @@ export const actionCreators = {
     },
     deleteDriver: (driverIdToDelete: number): AppThunkAction<DriverAction> => (dispatch) => {
         axios.delete('api/driver/delete-driver' + driverIdToDelete)
-            .then(res => { console.log(res); })
+            .then(res => {
+                if (res.data === true) {
+                    console.log(res);
+                    dispatch({ type: DELETE_DRIVER, driverId: driverIdToDelete });
+                    console.log('Driver Deleted.');
+                }
+                else {
+                    console.log('Driver Delete Failed.');
+                }
+                
+            })
             .catch(error => {
                 console.log("deleteDriver caught an error.");
                 console.log(error);
             })
-        dispatch({ type: DELETE_DRIVER, driverId: driverIdToDelete })
+        
 
     },
     fetchDriver: (driverIdToGet: number): AppThunkAction<DriverAction> => (dispatch) => {
@@ -152,20 +157,6 @@ export const actionCreators = {
                 console.log(error);
                 //TODO:Create Dispatch type if error 
             })
-        //const getDriver = async (
-        //    driverIdToGet: number,
-        //) => {
-        //    const results = tempDriversList.filter(d => d.driverId === driverIdToGet);
-        //    return results.length === 0 ? null : results[0];
-        //};
-
-        // !!!WARNING FOR TEMP USE ONLY 
-        //for (let i = 0; i < tempDriversList.length; i++){
-        //    if (tempDriversList[i].driverId === driverIdToGet) {
-         //       dispatch({ type: FETCHED_DRIVER, driver: tempDriversList[i] });
-        //    }
-        //}
-        
     },
     updateDriver: (newDriver: Driver): AppThunkAction<DriverAction> => (dispatch) => {
         //TODO : modify into dbs
@@ -177,8 +168,8 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 const unloadedDriverState: DriverState = {
-    drivers: [], driver: { driverId: 0, name: '', telNo: '', email:'' }, isLoading: false
-}; 
+    drivers: [], driver: { driverId: 0, name: '', telNo: '', email: '' }, isLoading: false
+};
 
 export const reducer: Reducer<DriverState> = (state: DriverState | undefined, incomingAction: Action): DriverState => {
     if (state === undefined) {
@@ -190,7 +181,7 @@ export const reducer: Reducer<DriverState> = (state: DriverState | undefined, in
         case REQUEST_DRIVER_LIST:
             return {
                 ...state,
-                 isLoading: true
+                isLoading: true
             };
         case RECEIVE_DRIVER_LIST:
             return {
@@ -222,14 +213,14 @@ export const reducer: Reducer<DriverState> = (state: DriverState | undefined, in
                     return d;
                 })
             };
-        case FETCHING_DRIVER: 
+        case FETCHING_DRIVER:
             return {
                 ...state,
-                isLoading: true, 
+                isLoading: true,
             };
         case FETCHED_DRIVER:
             return {
-                ...state, 
+                ...state,
                 driver: action.driver,
                 isLoading: false,
             };

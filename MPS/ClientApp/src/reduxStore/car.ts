@@ -6,7 +6,7 @@ import axios from 'axios';
 // In Admin system DB (Registered CarRegList, Registered Drivers, Admin State), Car table
 export interface CarState {
     cars: Car[];
-    car: Car;
+    car: Car | null;
     isLoading: boolean;
 }
 
@@ -54,7 +54,7 @@ interface InsertedCarAction {
 }
 
 interface DeleteCarAction {
-    type:  typeof DELETE_CAR;
+    type: typeof DELETE_CAR;
     carId: string;
 }
 
@@ -110,19 +110,15 @@ export const actionCreators = {
         axios.post('api/car/insert-car', carFromClient)
             .then(res => {
                 console.log(res);
-                if (res.data) {
-                    if (res.status === 200) {
-                        dispatch({ type: INSERTED_CAR, car: carFromClient }); // driver: data(driverFromDb From DBS)???
-                        console.log("Car Added.")
-                        history.push('/admin-view-cars');//redirect back to view all drivers 
-                    }
-                    else {
-                        console.log("Something went wrong, status code:" + res.status);
-                    }
+                if (res.status === 200) {
+                    dispatch({ type: INSERTED_CAR, car: carFromClient }); // driver: data(driverFromDb From DBS)???
+                    console.log("Car Added.")
+                    history.push('/admin-view-cars');//redirect back to view all drivers 
                 }
                 else {
-                    console.log("Do not receive any response.");
+                    console.log("Something went wrong, status code:" + res.status);
                 }
+
             }).catch(error => {
                 console.log("insertCar caught an error.");
                 console.log(error);
@@ -131,21 +127,30 @@ export const actionCreators = {
     },
     deleteCar: (carIdToDelete: string): AppThunkAction<CarAction> => (dispatch, getState) => {
         axios.delete('api/car/delete-car' + carIdToDelete)
-            .then(res => { console.log(res); })
+            .then(res => {
+                console.log(res);
+                if (res.data === true) {
+                    dispatch({ type: DELETE_CAR, carId: carIdToDelete });
+                    console.log('Car Deleted.');
+                }
+                else {
+                    console.log('Car Delete Failed.')
+                }
+            })
             .catch(error => {
                 console.log("deleteCar caught an error.");
                 console.log(error);
             })
-        dispatch({ type: DELETE_CAR, carId: carIdToDelete })
     },
     fetchCar: (carRegToGet: string): AppThunkAction<CarAction> => (dispatch) => {
         dispatch({ type: FETCHING_CAR, carReg: carRegToGet })
         axios.get('api/car/get-car-byReg' + carRegToGet)
             .then(res => {
                 if (res.data) {
+                    console.log(res);
                     dispatch({ type: FETCHED_CAR, car: res.data });
                 } else {
-                    console.log("fetchDriver do not receive any data.");
+                    console.log("fetchCar do not receive any data.");
                 }
             }).catch(error => {
                 console.log("fetchCar caught an error.");
@@ -167,12 +172,13 @@ export const actionCreators = {
         dispatch({ type: UPDATE_CAR, car: newCar })
         history.push('/admin-view-cars');//redirect back to view all drivers 
     }
+
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 const unloadedCarState: CarState = {
-    cars: [], car: { registration: '', make: '', model: '', colour:'' }, isLoading: false
+    cars: [], car: { registration: '', make: '', model: '', colour: '' }, isLoading: false
 }; // change: cars:[] -> cars: tempCarList, for testing 
 
 export const reducer: Reducer<CarState> = (state: CarState | undefined, incomingAction: Action): CarState => {

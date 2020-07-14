@@ -5,8 +5,8 @@ namespace MPS.Models
 {
     public partial class Store
     {
-        public short PalletId { get; set; }
-        public string Registration { get; set; }
+        public string PalletId { get; set; }
+        public string Car_reg { get; set; }
 
         public virtual Car RegistrationNavigation { get; set; }
     }

@@ -161,21 +161,21 @@ namespace MPS.Models
             {
                 entity.ToTable("store");
 
-                entity.HasIndex(e => e.Registration)
-                    .HasName("Registration");
+                entity.HasIndex(e => e.Car_reg)
+                    .HasName("Car_reg");
 
                 entity.Property(e => e.PalletId)
                     .HasColumnName("PalletID")
                     .HasColumnType("smallint(3)");
 
-                entity.Property(e => e.Registration)
+                entity.Property(e => e.Car_reg)
                     .HasMaxLength(15)
                     .IsUnicode(false)
                     .HasDefaultValueSql("'NULL'");
 
                 entity.HasOne(d => d.RegistrationNavigation)
                     .WithMany(p => p.Store)
-                    .HasForeignKey(d => d.Registration)
+                    .HasForeignKey(d => d.Car_reg)
                     .HasConstraintName("store_ibfk_1");
             });
 

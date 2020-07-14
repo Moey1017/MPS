@@ -27,6 +27,13 @@ namespace MPS.Controllers
             return carsData;
         }
 
+        [HttpGet("get-car-byReg{REG}")]
+        public ActionResult<Car> GetCarByReg(string REG)
+        {
+            var carData = _dataRepository.GetCarByReg(REG); // getting the param here 
+            return carData;
+        }
+
         [HttpPost("insert-car")]
         public IActionResult InsertCar([FromBody] Car car)
         {

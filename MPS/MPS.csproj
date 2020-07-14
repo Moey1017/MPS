@@ -53,6 +53,8 @@
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js.map" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
+    <None Remove="ClientApp\src\components\pages\userPages\RetrieveConfirmation.tsx" />
+    <None Remove="ClientApp\src\components\pages\userPages\RetrieveVehicle.tsx~RFf943969.TMP" />
     <None Remove="ClientApp\src\components\pages\userPages\StoreConfirmation.tsx" />
     <None Remove="ClientApp\src\index.tsx~RF4a36eaa.TMP" />
     <None Remove="ClientApp\src\reduxStore\admin.ts" />
@@ -61,6 +63,7 @@
     <None Remove="ClientApp\src\reduxStore\configureStore.js.map" />
     <None Remove="ClientApp\src\reduxStore\driver.ts" />
     <None Remove="ClientApp\src\reduxStore\driver_car.ts" />
+    <None Remove="ClientApp\src\reduxStore\inboundOrder.ts" />
     <None Remove="ClientApp\src\reduxStore\store.ts" />
     <None Remove="SQLScripts\01-Tables.sql" />
     <None Remove="SQLScripts\02-Inserts.sql" />
@@ -98,11 +101,13 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\pages\userPages\RetrieveConfirmation.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\pages\userPages\StoreConfirmation.tsx" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\car.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\driver.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\admin.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\driver_car.ts" />
+    <TypeScriptCompile Include="ClientApp\src\reduxStore\inboundOrder.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\store.ts" />
   </ItemGroup>
 

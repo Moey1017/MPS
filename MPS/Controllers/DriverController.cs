@@ -30,8 +30,8 @@ namespace MPS.Controllers
         [HttpGet("get-driver-byID{ID:int}")]
         public IEnumerable<Driver> GetDriverByID(int ID)
         {
-            var driversData = _dataRepository.GetDriverByID(ID); // getting the param here 
-            return driversData;
+            var driver = _dataRepository.GetDriverByID(ID); // getting the param here 
+            return driver;
         }
 
         [HttpPost("insert-driver")]

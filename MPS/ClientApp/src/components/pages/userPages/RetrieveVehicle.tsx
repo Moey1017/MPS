@@ -2,44 +2,41 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
+import * as Store from '../../../reduxStore/store';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { ApplicationState } from '../../../reduxStore/index';
 
+// At runtime, Redux will merge together..., merge everything into this.props
+type StoreProps =
+    & Store.StoreState // ... state we've requested from the Redux store
+    & typeof Store.actionCreators; // ... plus action creators we've requested
 
-export default class RetrieveVehicle extends React.Component<any, any>
+class RetrieveVehicle extends React.Component<StoreProps,any>
 {
-
     constructor(props: any) {
         super(props);
 
         this.state = {
-            retrieveCars: [],
-            loading: true
+            car_reg: '',
+            driver: '',
+            model: '',
+            make: '',
+            colour: ''
         }
     }
-
+    
     componentDidMount() {
-        this.populateButtons();
+        this.ensureDataFetched();
     }
 
-    populateButtons() {
-        axios.get("api/store/get-store-state").then(result => {
-            const response = result.data;
-            this.setState({ retrieveCars: response, loading: false })
-        })
+    ensureDataFetched() {
+        this.props.requestStoreState();
     }
 
-    data(retrieveCars: any) {
-        var result = retrieveCars.map((retrieveCar: any) => (
-            retrieveCar.registration
-        ))
-
-        return result
-    }
-
-    createButtons(retrieveCars: any) {
-
+    render() {
         return (
-
-            <div className="container mh-100 cus-outer-margin" >
+            <div className="container mh-100 b-banner-image">
                 <div className="row cus-margin-home">
                     <Link className="btn btn-danger cus-btn mt-5 float-right" to='/'>
                         Back
@@ -48,168 +45,38 @@ export default class RetrieveVehicle extends React.Component<any, any>
                 <div className="row retrieve-vehicle-title">
                     <h1 className="display-1 p-center">Retrieve Vehicle</h1>
                 </div>
-                <div className="row cus-row cus-row-top">
-
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[0] === null ?
-                            "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
-                            "btn btn-reg cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-                            {this.data(retrieveCars)[0] === null ? "EMPTY" : this.data(retrieveCars)[0]}
-                        </Link>
-                    </div>
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[1] === null ?
-                            "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
-                            "btn btn-reg cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[1] === null ? "EMPTY" : this.data(retrieveCars)[1]}
-                        </Link>
-                    </div>
-
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[2] === null ?
-                            "btn btn-dark cus-btn-retrieve cus-btn-retrieve-margin mb-2 mr-2" :
-                            "btn btn-reg-margin cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[2] === null ? "EMPTY" : this.data(retrieveCars)[2]}
-                        </Link>
-                    </div>
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[3] === null ?
-                            "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
-                            "btn btn-reg cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[3] === null ? "EMPTY" : this.data(retrieveCars)[3]}
-                        </Link>
-                    </div>
-                </div>
-
-                <div className="row cus-row">
-
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[4] === null ?
-                            "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
-                            "btn btn-reg cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[4] === null ? "EMPTY" : this.data(retrieveCars)[4]}
-                        </Link>
-                    </div>
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[5] === null ?
-                            "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
-                            "btn btn-reg cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[5] === null ? "EMPTY" : this.data(retrieveCars)[5]}
-                        </Link>
-                    </div>
-
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[6] === null ?
-                            "btn btn-dark cus-btn-retrieve cus-btn-retrieve-margin mb-2 mr-2" :
-                            "btn btn-reg-margin cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[6] === null ? "EMPTY" : this.data(retrieveCars)[6]}
-                        </Link>
-                    </div>
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[7] === null ?
-                            "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
-                            "btn btn-reg cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[7] === null ? "EMPTY" : this.data(retrieveCars)[7]}
-                        </Link>
-                    </div>
-                </div>
-                <div className="row cus-row">
-
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[8] === null ?
-                            "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
-                            "btn btn-reg cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[8] === null ? "EMPTY" : this.data(retrieveCars)[8]}
-                        </Link>
-                    </div>
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[9] === null ?
-                            "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
-                            "btn btn-reg cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[9] === null ? "EMPTY" : this.data(retrieveCars)[9]}
-                        </Link>
-                    </div>
-
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[10] === null ?
-                            "btn btn-dark cus-btn-retrieve cus-btn-retrieve-margin mb-2 mr-2" :
-                            "btn btn-reg-margin cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[10] === null ? "EMPTY" : this.data(retrieveCars)[10]}
-                        </Link>
-                    </div>
-                    <div className="column">
-
-                        <Link className={this.data(retrieveCars)[11] === null ?
-                            "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
-                            "btn btn-reg cus-btn-retrieve mb-2 mr-2"}
-                            to='/retrieve-vehicle'>
-
-                            {this.data(retrieveCars)[11] === null ? "EMPTY" : this.data(retrieveCars)[11]}
-                        </Link>
-                    </div>
-                </div>
-
-            </div>
-        );
-    }
-
-    render() {
-        let content = this.createButtons(this.state.retrieveCars)
-
-        return (
-            <div className="container mh-100 b-banner-image">
                 <div className="row">
-                    {this.state.retrieveCars.map((car:any) =>
-                        <tr key={car.registration + car.driver}>
-                            <td>{car.registration}</td>
-                            <td>{car.driver}</td>
-                            <td>{car.make}</td>
-                            <td>{car.model}</td>
-                            <td>{car.colour}</td>
-                            <td>
-                                <Link className="btn btn-success btn-sm text-white" to={"/admin-edit-car/" + car.registration}>
-                                    Edit
-                                        </Link>
-                                <Button className="btn btn-danger btn-sm" onClick={() => this.props.deleteCar(car.registration)}>
-                                    Delete
-                                        </Button>
-                            </td>
-                        </tr>
+                    
+                    {this.props.pallets.map((pallet: Store.Pallet) => 
+                        <div className="column" key={pallet.palletId}>
+                            <Link to={'/retrieve-confirmation/' + pallet.car_reg} onClick={() => { console.log(pallet.palletId); console.log(pallet.car_reg) }} className={(pallet.car_reg === null || pallet.car_reg === undefined) ?
+                                "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
+                                "btn btn-reg cus-btn-retrieve mb-2 mr-2"}>
+                                {(pallet.car_reg === null || pallet.car_reg === undefined) ? "EMPTY" : pallet.car_reg}
+                            </Link>
+                        </div>
                     )}
                 </div>
             </div>
         );
     }
 }
+
+// Cant use for some reason 
+//function mapStateToProps(state: ApplicationState) {
+//    return {
+//        store: state.store
+//    }
+//}
+
+function mapDispatchToProps(dispatch: any) {
+    return bindActionCreators(
+        { ...Store.actionCreators },
+        dispatch
+    )
+}
+
+export default connect(
+    (state: ApplicationState) => state.store,
+    mapDispatchToProps
+)(RetrieveVehicle as any);

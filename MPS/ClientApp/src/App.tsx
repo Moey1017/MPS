@@ -7,6 +7,7 @@ import Home2 from './components/pages/userPages/Home2';
 import StoreVehicle from './components/pages/userPages/StoreVehicle';
 import RetrieveVehicle from './components/pages/userPages/RetrieveVehicle';
 import StoreConfirmation from './components/pages/userPages/StoreConfirmation';
+import RetrieveConfirmation from './components/pages/userPages/RetrieveConfirmation';
 //Admin Pages
 import AdminLogin from './components/pages/adminPages/AdminLogin';
 import AdminOptions from './components/pages/adminPages/AdminOptions';
@@ -25,9 +26,10 @@ export default () => (
     <Layout>
         <Switch>
             <Route exact path='/' component={Home} />
-            <Route exact path='/store-vehicle' component={StoreConfirmation} />
-            <Route exact path='/store-vehicle' component={StoreVehicle} />
+            <Route exact path='/store-vehicles' component={StoreVehicle} />
             <Route exact path='/retrieve-vehicle' component={RetrieveVehicle} />
+            <Route exact path='/store-vehicle' component={StoreConfirmation} />
+            <Route exact path='/retrieve-confirmation/:car_reg' component={RetrieveConfirmation} />
             <Route exact path='/admin-login' component={AdminLogin} />
             <Route exact path='/admin-options' component={AdminOptions} />
             <Route exact path='/admin-register-driver' component={AdminRegisterDriver} />

@@ -13,6 +13,14 @@ namespace MPS.Data.Repository
         //Store Interface Repository 
         public IEnumerable<Store> GetAllRegistration();
 
+        //Inbound order Interface Repository 
+        public IEnumerable<InboundOrder> GetAllInboundOrders();
+        public bool InsertInboundOrder(InboundOrder inboundOrder);
+
+        //Outbound order Interface Repository 
+        public IEnumerable<OutboundOrder> GetAllOutboundOrders();
+        public bool InsertOutboundOrder(OutboundOrder outboundOrder);
+
         //Driver Interface Repository 
         public IEnumerable<Driver> GetAllDrivers();
         public IEnumerable<Driver> GetDriverByID(int id);
@@ -22,6 +30,7 @@ namespace MPS.Data.Repository
 
         //Car Interface Repository 
         public IEnumerable<Car> GetAllCars();
+        public IEnumerable<Car> GetCarByReg(string reg);
         public bool InsertCar(Car car);
         public bool DeleteCar(string reg);
     }

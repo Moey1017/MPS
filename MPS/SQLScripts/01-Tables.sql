@@ -71,12 +71,12 @@ DEFAULT CHARACTER SET = utf8mb4;
 -- Table mps.store
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mps`.`store` (
-  `PalletID` SMALLINT(3) NOT NULL,
-  `Registration` VARCHAR(15) NULL DEFAULT NULL,
+  `PalletID` VARCHAR(255) NOT NULL,
+  `Car_reg` VARCHAR(15) NULL DEFAULT NULL,
   PRIMARY KEY (`PalletID`),
-  INDEX `Registration` (`Registration` ASC) ,
+  INDEX `Car_reg` (`Car_reg` ASC) ,
   CONSTRAINT `store_ibfk_1`
-    FOREIGN KEY (`Registration`)
+    FOREIGN KEY (`Car_reg`)
     REFERENCES `mps`.`cars` (`Registration`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)

@@ -13,11 +13,12 @@ type DriverProps =
 class AdminViewDrivers extends React.PureComponent<DriverProps>
 {
     public componentDidMount() {
-        this.ensureCarDataFetched();
+        this.ensureDataFetched();
+        console.log(this.props);
     }
 
     // getting all data here
-    private ensureCarDataFetched() {
+    private ensureDataFetched() {
         this.props.requestDriverList();
     }
 
