@@ -46,27 +46,32 @@ namespace MPS.Controllers
             //{
             //return Conflict(driver);
             //}
-            if(_dataRepository.InsertDriver(driver))
-                return Created("insert-driver", driver);
-            return Conflict(driver); // Status code 409 Failed to inserted
+            var result = _dataRepository.InsertDriver(driver);
+            if (result)
+                return Created("insert-driver", result);
+            else
+                return Conflict(driver); // Status code 409 Failed to inserted
             
         }
 
         [HttpDelete("delete-driver{ID:int}")]
         public IActionResult DeleteDriver(int ID)
         {
-            if(_dataRepository.DeleteDriver(ID))
+            var result = _dataRepository.DeleteDriver(ID);
+            if (result)
                 return NoContent();
-            return NotFound();
+            else
+                return NotFound();
         }
 
-        [HttpPost("update-driver")]
+        [HttpPut("update-driver")]
         public IActionResult IActionResult([FromBody] Driver driver)
         {
-            Console.WriteLine(driver);
-            if(_dataRepository.UpdateDriver(driver))
+            var result = _dataRepository.UpdateDriver(driver);
+            if (result)
                 return Accepted("update-driver", driver);
-            return Conflict(driver);
+            else
+                return Conflict(driver);
         }
     }
 }

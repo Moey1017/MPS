@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `mps`.`cars` (
   `Registration` VARCHAR(15) NOT NULL,
   `Make` VARCHAR(100) NOT NULL,
   `Model` VARCHAR(100) NOT NULL,
-  `Colour` VARCHAR(10) NOT NULL,
+  `Colour` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`Registration`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

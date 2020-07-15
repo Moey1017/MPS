@@ -1,7 +1,6 @@
 ﻿import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
-import * as Reactstrap from 'react-bootstrap';
 import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 import * as DriverStore from '../../../reduxStore/driver';
 import { connect } from 'react-redux';
@@ -28,7 +27,7 @@ class AdminEditDriver extends React.Component<DriverProps, any>
 
     componentDidMount() {    
          setTimeout(() => {
-             this.props.fetchDriver(parseInt(this.props.match.params.id));
+             this.props.fetchDriver(parseInt(this.props.match.params.id)); 
              this.setState({
                  driId: this.props.driver.driverId,
                  driName: this.props.driver.name,

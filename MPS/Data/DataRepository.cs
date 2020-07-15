@@ -190,7 +190,8 @@ namespace MPS.Data.Repository
                 Console.WriteLine("Driver id:" + id + " has been Deleted.");
                 return true;
             }
-            return false;
+            else
+                return false;
         }
 
         public bool UpdateDriver(Driver driver)
@@ -198,12 +199,12 @@ namespace MPS.Data.Repository
             Console.WriteLine("Called UpdateDriver");
             var param = new
             {
-                DriverID = driver.DriverId,
-                Name = driver.Name,
-                TelNo = driver.TelNo,
-                Email = driver.Email
+                driver.DriverId,
+                driver.Name,
+                driver.TelNo,
+                driver.Email
             };
-            var query = "UPDATE drivers SET Name=@Name, TelNo=@TelNo, Email=@Email WHERE DriverID=@DriverID";
+            var query = "UPDATE drivers SET Name=@Name, TelNo=@TelNo, Email=@Email WHERE DriverID=@DriverId";
             var result = this._conn.Execute(query, param);
             if (result == 1)
                 return true;
@@ -265,7 +266,23 @@ namespace MPS.Data.Repository
             return false;
         }
 
-
+        public bool UpdateCar(Car car)
+        {
+            Console.WriteLine("Called UpdateCar");
+            var param = new
+            {
+                car.Registration,
+                car.Make,
+                car.Model,
+                car.Colour
+            };
+            var query = "UPDATE cars SET Make=@Make, Model=@Model, Colour=@Colour WHERE Registration=@Registration";
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
+                return true;
+            else
+                return false;
+        }
 
         //Driver_Car
 

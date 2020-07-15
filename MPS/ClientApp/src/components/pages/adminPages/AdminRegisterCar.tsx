@@ -28,7 +28,6 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
             model: '',
             colour: '',
             drivers: [],
-            isLoading: false
             //driverNameList:[]
         }
     }
@@ -36,15 +35,13 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
     componentDidMount() {
         
         setTimeout(() => {
-            this.setState({ isLoading: true })
-            this.ensureCarDataFetched();
+            this.ensureDataFetched();
             //this.getDriverNameList();
-            this.setState({isLoading:false})
         }, 200)
         
     }
 
-    private ensureCarDataFetched() {
+    private ensureDataFetched() {
         //if (this.props.drivers.length === 0 || this.props.drivers.length === undefined) { // check if drivers have been loaded into redux store
         //    this.props.requestDriverList();
         //    this.setState({
@@ -77,10 +74,10 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
 
         const carObj = {
             registration: this.state.registration,
-            //driver: this.state.driver,
             make: this.state.make,
             model: this.state.model,
             colour: this.state.colour
+            //driver: this.state.driver,
         };
 
         // Calling action cretor to insert a driver object here  
@@ -129,7 +126,6 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
                                 Back
                         </Link>
 
-                            {/*Link className="btn  btn-success cus-btn" onClick={this.handleOpenModal} to='#'>*/}
                             <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
                                 Register
                         </Button>
@@ -141,8 +137,12 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
     }
 }
 
-
-
+function mapStateToProps(state: ApplicationState) {
+    return {
+        carProps: state.cars,
+        driverProps: state.drivers
+    }
+}
 
 function mapDispatchToProps(dispatch: any) {
     return bindActionCreators(
@@ -152,6 +152,7 @@ function mapDispatchToProps(dispatch: any) {
 }
 
 export default connect(
-    (state: ApplicationState) => ({ cars:state.cars }),
+    //(state: ApplicationState) => ({ cars:state.cars }),
+    mapStateToProps,
     mapDispatchToProps
 )(AdminRegisterCar as any);

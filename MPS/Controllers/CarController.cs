@@ -38,16 +38,31 @@ namespace MPS.Controllers
         public IActionResult InsertCar([FromBody] Car car)
         {
             //serverside validation require here 
-            if (_dataRepository.InsertCar(car))
-                return Created("insert-car",car);
-            return Conflict(car);
+            var result = _dataRepository.InsertCar(car);
+            if (result)
+                return Created("insert-car", result);
+            else
+                return Conflict(car);
         }
 
         [HttpDelete("delete-car{Reg}")]
         public IActionResult DeleteDriver(string Reg)
         {
             var result = _dataRepository.DeleteCar(Reg);
-            return Ok(result);
+            if(result)
+                return NoContent();
+            else
+                return NotFound();
+        }
+
+        [HttpPut("update-car")]
+        public IActionResult IActionResult([FromBody] Car car)
+        {
+            var result = _dataRepository.UpdateCar(car);
+            if (result)
+                return Accepted("update-car", car);
+            else
+                return Conflict(car);
         }
     }
 }

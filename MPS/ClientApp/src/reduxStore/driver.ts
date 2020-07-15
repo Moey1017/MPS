@@ -102,11 +102,9 @@ export const actionCreators = {
         }
     },
     insertDriver: (driverFromClient: Driver): AppThunkAction<DriverAction> => (dispatch) => {
-        //TODO : modify into dbs, auto increment driver Id 
         dispatch({ type: INSERTING_DRIVER, driver: driverFromClient });
         axios.post('api/driver/insert-driver', driverFromClient)
             .then(res => {
-                console.log(res);
                 if (res.status === 201 && res.data == true) {
                     dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)???
                     console.log("Driver Added.")
@@ -126,8 +124,7 @@ export const actionCreators = {
     deleteDriver: (driverIdToDelete: number): AppThunkAction<DriverAction> => (dispatch) => {
         axios.delete('api/driver/delete-driver' + driverIdToDelete)
             .then(res => {
-                if (res.data === true) {
-                    console.log(res);
+                if (res.status === 204) {
                     dispatch({ type: DELETE_DRIVER, driverId: driverIdToDelete });
                     console.log('Driver Deleted.');
                 }
@@ -158,10 +155,8 @@ export const actionCreators = {
             })
     },
     updateDriver: (newDriver: Driver): AppThunkAction<DriverAction> => (dispatch) => {
-        console.log(newDriver);
         axios.put('api/driver/update-driver', newDriver)
             .then(res => {
-                console.log(res);
                 if (res.status === 202) {
                     dispatch({ type: UPDATE_DRIVER, driver: newDriver })
                     console.log("Driver updated.");

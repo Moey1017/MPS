@@ -33,5 +33,6 @@ namespace MPS.Data.Repository
         public Car GetCarByReg(string reg);
         public bool InsertCar(Car car);
         public bool DeleteCar(string reg);
+        public bool UpdateCar(Car car);
     }
 }

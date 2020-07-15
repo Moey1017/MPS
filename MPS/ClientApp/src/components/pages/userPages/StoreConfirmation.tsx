@@ -18,14 +18,13 @@ class StoreConfirmation extends React.Component<any>
 {
     componentDidMount() {
         this.props.fetchCar('DUIW567'); // REGISTRATION COME IN HERE
-
     }
 
     // on submmit, create outbound order
     handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        console.log(this.props.car);
+        console.log(this.props.carProps['car']);
         // pass in driver object here 
     }
 

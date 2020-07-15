@@ -110,15 +110,14 @@ export const actionCreators = {
         axios.post('api/car/insert-car', carFromClient)
             .then(res => {
                 console.log(res);
-                if (res.status === 200) {
+                if (res.status === 201 && res.data == true) {
                     dispatch({ type: INSERTED_CAR, car: carFromClient }); // driver: data(driverFromDb From DBS)???
                     console.log("Car Added.")
                     history.push('/admin-view-cars');//redirect back to view all drivers 
                 }
                 else {
-                    console.log("Something went wrong, status code:" + res.status);
+                    console.log("Something went wrong");
                 }
-
             }).catch(error => {
                 console.log("insertCar caught an error.");
                 console.log(error);
@@ -128,8 +127,7 @@ export const actionCreators = {
     deleteCar: (carIdToDelete: string): AppThunkAction<CarAction> => (dispatch, getState) => {
         axios.delete('api/car/delete-car' + carIdToDelete)
             .then(res => {
-                console.log(res);
-                if (res.data === true) {
+                if (res.status === 204) {
                     dispatch({ type: DELETE_CAR, carId: carIdToDelete });
                     console.log('Car Deleted.');
                 }
@@ -138,7 +136,7 @@ export const actionCreators = {
                 }
             })
             .catch(error => {
-                console.log("deleteCar caught an error.");
+                console.log("deleteCar caught an error./Failed to delete.");
                 console.log(error);
             })
     },
@@ -146,8 +144,7 @@ export const actionCreators = {
         dispatch({ type: FETCHING_CAR, carReg: carRegToGet })
         axios.get('api/car/get-car-byReg' + carRegToGet)
             .then(res => {
-                if (res.data) {
-                    console.log(res);
+                if (res.data !== null) {
                     dispatch({ type: FETCHED_CAR, car: res.data });
                 } else {
                     console.log("fetchCar do not receive any data.");
@@ -159,9 +156,20 @@ export const actionCreators = {
             })
     },
     updateCar: (newCar: Car): AppThunkAction<CarAction> => (dispatch) => {
-        //TODO : modify into dbs
-        dispatch({ type: UPDATE_CAR, car: newCar })
-        history.push('/admin-view-cars');//redirect back to view all drivers 
+        axios.put('api/car/update-car', newCar)
+            .then(res => {
+                if (res.status === 202) {
+                    dispatch({ type: UPDATE_CAR, car: newCar })
+                    console.log("Car updated.");
+                    history.push('/admin-view-cars');//redirect back to view all cars 
+                }
+                else
+                    console.log("Update Car failed.");
+            }).catch(error => {
+                console.log("updateCar caught an error.");
+                console.log(error);
+                //TODO:Create Dispatch type when get status code 404
+            })
     }
 
 };
