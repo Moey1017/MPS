@@ -1,122 +1,96 @@
 ﻿import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
-import * as Store from '../../../reduxStore/store';
-import * as CarStore from '../../../reduxStore/car';
 import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { ApplicationState } from '../../../reduxStore/index';
+import { RouteComponentProps } from 'react-router';
+import { bindActionCreators } from 'redux';
+import * as CarStore from '../../../reduxStore/car';
+import * as Store from '../../../reduxStore/store';
 
-
-// At runtime, Redux will merge together..., merge everything into this.props
-type CarAndStoreProps =
-    CarStore.CarState // ... state we've requested from the Redux store
+type carProps = CarStore.CarState
     & Store.StoreState
-    & typeof CarStore.actionCreators // ... plus action creators we've requested
+    & typeof CarStore.actionCreators
     & typeof Store.actionCreators;
+    //& RouteComponentProps<{ car_reg: string }>; maybe need?? where does the car reg come from 
 
-class StoreConfirmation extends React.Component<CarAndStoreProps, any>
+class StoreConfirmation extends React.Component<any>
 {
-    constructor(props: any) {
-        super(props);
-
-        this.state = {
-            cars: [],
-            car: {
-                registration: '',
-                make: '',
-                model: '',
-                colour:''
-            },
-            isLoading: false
-            //driverNameList:[]
-        }
-    }
-
     componentDidMount() {
-        this.ensureCarDataFetched();
-    }
-    
+        this.props.fetchCar('DUIW567'); // REGISTRATION COME IN HERE
 
-    componentDidUpdate(prevProps: any) {
-        if (prevProps.cars !== this.props.cars) {
-            console.log(((this.props.cars['car'])[0]) ? (((this.props.cars['car'])[0]).registration)  : "Retrieving...");
-            if (this.props.cars['car'].length !== 0 && this.props.cars['car'].length !== undefined) {
-                //console.log(((this.props.cars['car'])[0]).registration);
-                //console.log(this.props.cars);
-                console.log("Retrieved successfully, setting states...");
-                this.setState({
-                    cars: this.props.cars,
-                    car: ((this.props.cars['car'])[0])
-                });
-            }
-        }
-        console.log(this.props);
-        console.log(this.props.cars['car'][0]);
-        console.log(this.state.car);
     }
 
-
-    private ensureCarDataFetched() {
-        this.props.fetchCar('DUIW567');
-    }
-
+    // on submmit, create outbound order
     handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        const carObj = {
-            registration: this.props.cars['car'][0].registration,
-            //driver: this.state.driver,
-            make: this.props.cars['car'][0].make,
-            model: this.props.cars['car'][0].model,
-            colour: this.props.cars['car'][0].colour
-        };
-
-        const car = ((this.props.cars['car'])[0]);// either one
-        console.log(car);
+        console.log(this.props.car);
+        // pass in driver object here 
     }
 
 
+
+    // display current car 
+    // confirm and agree 
     render() {
-        let content;
-        if (this.props.cars['car'] !== undefined && this.props.cars['car'].length !== 0) {
-            //display details here 
-            //content = <div>{this.props.cars}</div>
-        } else {
-            content = <div>Loading...</div>;
-        }
-        
+        return (
+            <div className="container mh-100 b-banner-image">
+                <h1 className="display-1 p-center-car">Is this your car?</h1>
 
+                <div className="row fixed-bottom justify-content-center cus-margin-l">
+                    <Form onSubmit={this.handleSubmit}>
 
-            return (
-                <div className="container mh-100 b-banner-image">
-                    <h1 className="display-1 p-center-car">Store Car</h1>
+                        <FormGroup>
+                            <Label className="d-block">Car Registration</Label>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.carProps.car.registration} disabled></Input>
+                        </FormGroup>
 
-                    <div className="row fixed-bottom justify-content-center cus-margin-l">
-                        {content}
-                        <form><Button onClick={this.handleSubmit} type="submit">Submit</Button></form>
-                       
-                    </div>
+                        <FormGroup>
+                            <Label className="d-block">Car Make</Label>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.carProps.car.make} disabled></Input>
+                        </FormGroup>
+
+                        <FormGroup>
+                            <Label className="d-block">Car Model</Label>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.props.carProps.car.model} disabled></Input>
+                        </FormGroup>
+
+                        <FormGroup>
+                            <Label className="d-block">Car Colour</Label>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.props.carProps.car.colour} disabled></Input>
+                        </FormGroup>
+
+                        <Link className="btn btn-danger cus-btn mr-5" to='/'>
+                            Back
+                        </Link>
+
+                        <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
+                            Confirm Store
+                        </Button>
+                    </Form>
+                    
                 </div>
-            );
-        }
-}
+            </div>
+        );
+    }
 
+}
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        cars: state.cars,
-        store:state.store
+        carProps: state.cars,
+        storeProps: state.store
     }
 }
 
 function mapDispatchToProps(dispatch: any) {
     return bindActionCreators(
-        { ...Store.actionCreators, ...CarStore.actionCreators },
+        { ...CarStore.actionCreators },
         dispatch
     )
 }
+
 
 export default connect(
     mapStateToProps,

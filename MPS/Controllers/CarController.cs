@@ -28,18 +28,19 @@ namespace MPS.Controllers
         }
 
         [HttpGet("get-car-byReg{REG}")]
-        public IEnumerable<Car> GetCarByReg(string REG)
+        public IActionResult GetCarByReg(string REG)
         {
             var carData = _dataRepository.GetCarByReg(REG); // getting the param here 
-            return carData;
+            return Ok(carData);
         }
 
         [HttpPost("insert-car")]
         public IActionResult InsertCar([FromBody] Car car)
         {
             //serverside validation require here 
-            var result = _dataRepository.InsertCar(car);
-            return Ok(result);
+            if (_dataRepository.InsertCar(car))
+                return Created("insert-car",car);
+            return Conflict(car);
         }
 
         [HttpDelete("delete-car{Reg}")]

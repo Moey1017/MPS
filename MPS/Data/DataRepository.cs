@@ -148,13 +148,13 @@ namespace MPS.Data.Repository
         }
 
         //getting a driver 
-        public IEnumerable<Driver> GetDriverByID(int id)
+        public Driver GetDriverByID(int id)
         {
             Console.WriteLine("Called GetDriverByID");
             var param = new { ID = id }; // bind param 
             var query = "SELECT driverID, name, telNo, email FROM drivers WHERE driverID = @ID;";
             var result = this._conn.Query<Driver>(query, param).ToList();
-            return result;
+            return result.FirstOrDefault();
         }
 
         public bool InsertDriver(Driver driver)
@@ -195,7 +195,7 @@ namespace MPS.Data.Repository
 
         public bool UpdateDriver(Driver driver)
         {
-            Console.WriteLine("UpdateDriver");
+            Console.WriteLine("Called UpdateDriver");
             var param = new
             {
                 DriverID = driver.DriverId,
@@ -220,13 +220,13 @@ namespace MPS.Data.Repository
             return result;
         }
 
-        public IEnumerable<Car> GetCarByReg(string reg)
+        public Car GetCarByReg(string reg)
         {
             Console.WriteLine("Called GetCarByID");
             var param = new { REG = reg }; // bind param 
             var query = "SELECT registration, make, model, colour from cars WHERE registration=@REG;";
             var result = this._conn.Query<Car>(query, param);
-            return result;
+            return result.FirstOrDefault();
         }
 
         public bool InsertCar(Car car)

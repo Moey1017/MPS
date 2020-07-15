@@ -6,7 +6,7 @@ import axios from 'axios';
 // In Admin system DB (Registered CarRegList, Registered Drivers, Admin State), Car table
 export interface CarState {
     cars: Car[];
-    car: Car | null;
+    car: Car;
     isLoading: boolean;
 }
 
@@ -157,15 +157,6 @@ export const actionCreators = {
                 console.log(error);
                 //TODO:Create Dispatch type if error 
             })
-        //TODO: get driver from DBS and then dispatch the data 
-
-        //const getDriver = async (
-        //    driverIdToGet: number,
-        //) => {
-        //    const results = tempDriversList.filter(d => d.driverId === driverIdToGet);
-        //    return results.length === 0 ? null : results[0];
-        //};
-
     },
     updateCar: (newCar: Car): AppThunkAction<CarAction> => (dispatch) => {
         //TODO : modify into dbs

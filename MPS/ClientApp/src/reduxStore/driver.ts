@@ -107,16 +107,16 @@ export const actionCreators = {
         axios.post('api/driver/insert-driver', driverFromClient)
             .then(res => {
                 console.log(res);
-                if (res.status === 200) {
+                if (res.status === 201 && res.data == true) {
                     dispatch({ type: INSERTED_DRIVER, driver: driverFromClient }); // driver: data(driverFromDb From DBS)???
                     console.log("Driver Added.")
                     history.push('/admin-view-drivers');//redirect back to view all drivers 
                 }
                 else {
-                    console.log("Something went wrong, status code:" + res.status);
+                    console.log("Something went wrong");
                 }
             }).catch(error => {
-                console.log("requestDriverList caught an error.");
+                console.log("requestDriverList caught an error./Failed to insert");
                 console.log(error);
                 //TODO:Create Dispatch type if error 
             })
@@ -132,12 +132,11 @@ export const actionCreators = {
                     console.log('Driver Deleted.');
                 }
                 else {
-                    console.log('Driver Delete Failed.');
+                    console.log("Driver Delete Failed.");
                 }
-                
             })
             .catch(error => {
-                console.log("deleteDriver caught an error.");
+                console.log("deleteDriver caught an error/Failed to delete.");
                 console.log(error);
             })
         
@@ -147,21 +146,34 @@ export const actionCreators = {
         dispatch({ type: FETCHING_DRIVER, driverId: driverIdToGet })
         axios.get('api/driver/get-driver-byID' + driverIdToGet)
             .then(res => {
-                if (res.data) {
+                if (res.data !== null) {
                     dispatch({ type: FETCHED_DRIVER, driver: res.data });
                 } else {
-                    console.log("fetchDriver do not receive any data.");
+                    console.log("fetchDriver did not receive any data.");
                 }
             }).catch(error => {
                 console.log("fetchDriver caught an error.");
                 console.log(error);
-                //TODO:Create Dispatch type if error 
+                //TODO:Create Dispatch type when get status code 404
             })
     },
     updateDriver: (newDriver: Driver): AppThunkAction<DriverAction> => (dispatch) => {
-        //TODO : modify into dbs
-        dispatch({ type: UPDATE_DRIVER, driver: newDriver })
-        history.push('/admin-view-drivers');//redirect back to view all drivers 
+        console.log(newDriver);
+        axios.put('api/driver/update-driver', newDriver)
+            .then(res => {
+                console.log(res);
+                if (res.status === 202) {
+                    dispatch({ type: UPDATE_DRIVER, driver: newDriver })
+                    console.log("Driver updated.");
+                    history.push('/admin-view-drivers');//redirect back to view all drivers 
+                }
+                else
+                    console.log("Update Driver failed.");
+            }).catch(error => {
+                console.log("updateDriver caught an error.");
+                console.log(error);
+                //TODO:Create Dispatch type when get status code 404
+            })
     }
 };
 

@@ -14,7 +14,6 @@ class AdminViewDrivers extends React.PureComponent<DriverProps>
 {
     public componentDidMount() {
         this.ensureDataFetched();
-        console.log(this.props);
     }
 
     // getting all data here

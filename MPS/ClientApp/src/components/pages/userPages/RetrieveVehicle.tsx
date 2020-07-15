@@ -34,6 +34,8 @@ class RetrieveVehicle extends React.Component<StoreProps,any>
         this.props.requestStoreState();
     }
 
+
+
     render() {
         return (
             <div className="container mh-100 b-banner-image">
@@ -49,7 +51,9 @@ class RetrieveVehicle extends React.Component<StoreProps,any>
                     
                     {this.props.pallets.map((pallet: Store.Pallet) => 
                         <div className="column" key={pallet.palletId}>
-                            <Link to={'/retrieve-confirmation/' + pallet.car_reg} onClick={() => { console.log(pallet.palletId); console.log(pallet.car_reg) }} className={(pallet.car_reg === null || pallet.car_reg === undefined) ?
+                            <Link to={'/retrieve-confirmation/' + pallet.car_reg}
+                                onClick={() => { console.log(pallet.palletId); console.log(pallet.car_reg) }} 
+                                className={(pallet.car_reg === null || pallet.car_reg === undefined) ?
                                 "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
                                 "btn btn-reg cus-btn-retrieve mb-2 mr-2"}>
                                 {(pallet.car_reg === null || pallet.car_reg === undefined) ? "EMPTY" : pallet.car_reg}

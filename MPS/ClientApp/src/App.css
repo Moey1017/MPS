@@ -201,6 +201,10 @@
     margin-left: 11em;
 }
 
+.btn-dark{
+    pointer-events:none;
+}
+
 .btn-reg {
     padding-top: 1.6em;
     width: 10em;

@@ -72,11 +72,15 @@ export const actionCreators = {
                 })
         }
     },
+    // getting car reg in the param of storing car
     storeCar: (): AppThunkAction<StoreAction> => (dispatch) => {
-
+        const inboundOrder = {}; // create inbound order here 
+        // dispatch storing car => create inbound order => status:ACTIVE/ACCEPTED (Where do i validate leh??)
+        // dispatch stored car => udpate current state => status:COMPLETE/ERROR(if fail)
     },
     retrieveCar: (): AppThunkAction<StoreAction> => (dispatch) => {
-
+        // dispatch retriving car => create outbound order => status:ACTIVE/ACCEPTED 
+        // dispatch stored car => udpate current state 
     }
 }
 

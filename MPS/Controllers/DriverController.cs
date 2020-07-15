@@ -28,40 +28,45 @@ namespace MPS.Controllers
         }
 
         [HttpGet("get-driver-byID{ID:int}")]
-        public IEnumerable<Driver> GetDriverByID(int ID)
+        public IActionResult GetDriverByID(int ID)
         {
             var driver = _dataRepository.GetDriverByID(ID); // getting the param here 
-            return driver;
+            return Ok(driver);
         }
 
         [HttpPost("insert-driver")]
         public IActionResult InsertDriver([FromBody] Driver driver)
         {
             //serverside validation require here 
-            if (driver.Name.Length > 2 && driver.TelNo.Length > 8 && driver.Email.Length != 0)
-            {
-                 //_dataRepository.InsertDriver(driver);
-            }
-            else
-            {
-                
-            }
-            _dataRepository.InsertDriver(driver);
-            return Ok();
+            //if (driver.Name.Length > 2 && driver.TelNo.Length > 8 && driver.Email.Length != 0)
+            //{
+            //     //_dataRepository.InsertDriver(driver);
+            //}
+            //else
+            //{
+            //return Conflict(driver);
+            //}
+            if(_dataRepository.InsertDriver(driver))
+                return Created("insert-driver", driver);
+            return Conflict(driver); // Status code 409 Failed to inserted
+            
         }
 
         [HttpDelete("delete-driver{ID:int}")]
         public IActionResult DeleteDriver(int ID)
         {
-            var result = _dataRepository.DeleteDriver(ID);
-            return Ok(result);
+            if(_dataRepository.DeleteDriver(ID))
+                return NoContent();
+            return NotFound();
         }
 
         [HttpPost("update-driver")]
         public IActionResult IActionResult([FromBody] Driver driver)
         {
-            var result = _dataRepository.UpdateDriver(driver);
-            return Ok(result);
+            Console.WriteLine(driver);
+            if(_dataRepository.UpdateDriver(driver))
+                return Accepted("update-driver", driver);
+            return Conflict(driver);
         }
     }
 }
