@@ -34,8 +34,6 @@ class AdminEditCar extends React.Component<CarPropsAndDriverState, any>
     }
 
     componentDidMount() {
-        console.log(this.props);
-        console.log(this.props.carReg);// why is this empty 
         setTimeout(() => {
             this.ensureDataFetched();
         }, 200)
@@ -50,7 +48,6 @@ class AdminEditCar extends React.Component<CarPropsAndDriverState, any>
             model: this.props.carProps['car'].model,
             colour: this.props.carProps['car'].colour
         })
-        console.log(this.props.carProps['car']);
         //if (this.state.driverNameList.length === 0) { // check if drivers have been loaded into redux store
         //    this.props.requestDriverList();
         //}
@@ -116,22 +113,22 @@ class AdminEditCar extends React.Component<CarPropsAndDriverState, any>
 
                         <FormGroup>
                             <Label className="d-block">Car Registration</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.state.registration} onChange={this.handleChange} disabled></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.state.registration || ""} onChange={this.handleChange} disabled></Input>
                         </FormGroup>
 
                         <FormGroup>
                             <Label className="d-block">Car Make</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.state.make} onChange={this.handleChange}></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.state.make || ""} onChange={this.handleChange}></Input>
                         </FormGroup>
 
                         <FormGroup>
                             <Label className="d-block">Car Model</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.state.model} onChange={this.handleChange}></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.state.model || ""} onChange={this.handleChange}></Input>
                         </FormGroup>
 
                         <FormGroup>
                             <Label className="d-block">Car Colour</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.state.colour} onChange={this.handleChange}></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.state.colour || ""} onChange={this.handleChange}></Input>
                         </FormGroup>
 
                         <Link className="btn btn-danger cus-btn mr-5" to='/admin-view-cars'>

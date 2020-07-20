@@ -5,17 +5,17 @@ namespace MPS.Models
 {
     public partial class InboundOrder
     {
-        public string BatchId { get; set; }
-        public string PalletId { get; set; }
-        public int OrderPalletCount { get; set; }
-        public DateTimeOffset? ExpectedActivationTime { get; set; }
-        public string SkuName { get; set; }
-        public string SkuCode { get; set; }
+        public string Batch_id { get; set; }
+        public string Pallet_id { get; set; }
+        public int Order_pallet_count { get; set; }
+        public DateTimeOffset? Expected_activation_time { get; set; }
+        public string Sku_name { get; set; }
+        public string Sku_code { get; set; }
         public string Status { get; set; }
-        public int MaxPalletHeight { get; set; }
-        public int PalletWidth { get; set; }
-        public int? WmsReceiptLinkId { get; set; }
-        public int? WmsRequestStatusRead { get; set; }
-        public int? WmsStorageStatusRead { get; set; }
+        public int Max_pallet_height { get; set; }
+        public int Pallet_width { get; set; }
+        public int? Wms_receipt_link_id { get; set; }
+        public int? Wms_request_status_read { get; set; }
+        public int? Wms_storage_status_read { get; set; }
     }
 }

@@ -12,9 +12,9 @@ namespace MPS.Models
         }
 
         [Required]
-        public int? DriverId { get; set; }
+        public int? Driver_id { get; set; }
         public string Name { get; set; }
-        public string TelNo { get; set; }
+        public string Tel_no { get; set; }
         public string Email { get; set; }
 
         public virtual ICollection<DriverCar> DriverCar { get; set; }

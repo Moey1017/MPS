@@ -12,9 +12,9 @@ export interface DriverState {
 }
 
 export interface Driver {
-    readonly driverId: number;
+    readonly driver_id: number;
     readonly name: string;
-    readonly telNo: string;
+    readonly tel_no: string;
     readonly email: string;
     // carsList : Car[]; ?? 
 }
@@ -55,7 +55,7 @@ interface InsertedDriverAction {
 
 interface DeleteDriverAction {
     type: typeof DELETE_DRIVER;
-    driverId: number;
+    driver_id: number;
 }
 
 interface UpdateDriverAction {
@@ -65,7 +65,7 @@ interface UpdateDriverAction {
 
 interface FetchingDriverAction {
     type: typeof FETCHING_DRIVER;
-    driverId: number;
+    driver_id: number;
 }
 
 interface FetchedDriverAction {
@@ -111,7 +111,7 @@ export const actionCreators = {
                     history.push('/admin-view-drivers');//redirect back to view all drivers 
                 }
                 else {
-                    console.log("Something went wrong");
+                    console.log("Something went wrong in insertDriver");
                 }
             }).catch(error => {
                 console.log("requestDriverList caught an error./Failed to insert");
@@ -125,7 +125,7 @@ export const actionCreators = {
         axios.delete('api/driver/delete-driver' + driverIdToDelete)
             .then(res => {
                 if (res.status === 204) {
-                    dispatch({ type: DELETE_DRIVER, driverId: driverIdToDelete });
+                    dispatch({ type: DELETE_DRIVER, driver_id: driverIdToDelete });
                     console.log('Driver Deleted.');
                 }
                 else {
@@ -140,10 +140,10 @@ export const actionCreators = {
 
     },
     fetchDriver: (driverIdToGet: number): AppThunkAction<DriverAction> => (dispatch) => {
-        dispatch({ type: FETCHING_DRIVER, driverId: driverIdToGet })
+        dispatch({ type: FETCHING_DRIVER, driver_id: driverIdToGet })
         axios.get('api/driver/get-driver-byID' + driverIdToGet)
             .then(res => {
-                if (res.data !== null) {
+                if (res.data !== '') {
                     dispatch({ type: FETCHED_DRIVER, driver: res.data });
                 } else {
                     console.log("fetchDriver did not receive any data.");
@@ -175,7 +175,7 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 const unloadedDriverState: DriverState = {
-    drivers: [], driver: { driverId: 0, name: '', telNo: '', email: '' }, isLoading: false
+    drivers: [], driver: { driver_id: 0, name: '', tel_no: '', email: '' }, isLoading: false
 };
 
 export const reducer: Reducer<DriverState> = (state: DriverState | undefined, incomingAction: Action): DriverState => {
@@ -210,13 +210,13 @@ export const reducer: Reducer<DriverState> = (state: DriverState | undefined, in
         case DELETE_DRIVER:
             return {
                 ...state,
-                drivers: [...state.drivers.filter(driver => { return driver.driverId !== action.driverId })]
+                drivers: [...state.drivers.filter(driver => { return driver.driver_id !== action.driver_id })]
             };
         case UPDATE_DRIVER:
             return {
                 ...state,
                 ...state.drivers.map(d => {
-                    if (d.driverId === action.driver.driverId) return action.driver;
+                    if (d.driver_id === action.driver.driver_id) return action.driver;
                     return d;
                 })
             };

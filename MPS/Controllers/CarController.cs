@@ -56,7 +56,7 @@ namespace MPS.Controllers
         }
 
         [HttpPut("update-car")]
-        public IActionResult IActionResult([FromBody] Car car)
+        public IActionResult UpdateCar([FromBody] Car car)
         {
             var result = _dataRepository.UpdateCar(car);
             if (result)

@@ -24,5 +24,26 @@ namespace MPS.Controllers
             var registrationData = _dataRepository.GetAllRegistration();
             return registrationData;
         }
+
+        [HttpPut("store-car")]
+        public IActionResult StoreCar([FromBody] Store store)
+        {
+            //serverside validation require here 
+            var result = _dataRepository.StoreCar(store);
+            if (result)
+                return Accepted("store-car", store.Car_reg);
+            else
+                return Conflict(store.Car_reg);
+        }
+
+        [HttpPut("retrieve-car{carReg}")]
+        public IActionResult UpdateCar(string carReg)
+        {
+            var result = _dataRepository.RetrieveCar(carReg);
+            if (result)
+                return Accepted("retrieve-car", carReg);
+            else
+                return Conflict(carReg);
+        }
     }
 }

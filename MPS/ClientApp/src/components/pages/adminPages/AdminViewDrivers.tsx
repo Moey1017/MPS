@@ -39,16 +39,16 @@ class AdminViewDrivers extends React.PureComponent<DriverProps>
                                 <th></th>
                             </tr>
                             {this.props.drivers.map((driver: DriverStore.Driver) =>
-                                <tr key={driver.driverId}>
-                                    <td>{driver.driverId}</td>
+                                <tr key={driver.driver_id}>
+                                    <td>{driver.driver_id}</td>
                                     <td>{driver.name}</td>
                                     <td>{driver.email}</td>
-                                    <td>{driver.telNo}</td>   
+                                    <td>{driver.tel_no}</td>   
                                     <td>
-                                        <Link className="btn btn-success btn-sm text-white" to={"/admin-edit-driver/" + driver.driverId}>
+                                        <Link className="btn btn-success btn-sm text-white" to={"/admin-edit-driver/" + driver.driver_id}>
                                             Edit
                                         </Link>
-                                        <Button className="btn btn-danger btn-sm" onClick={() => this.props.deleteDriver(driver.driverId)}>
+                                        <Button className="btn btn-danger btn-sm" onClick={() => this.props.deleteDriver(driver.driver_id)}>
                                             Delete
                                         </Button>
                                     </td>

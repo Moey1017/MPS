@@ -32,7 +32,21 @@ namespace MPS.Controllers
         {
             //serverside validation require here 
             var result = _dataRepository.InsertInboundOrder(inboundOrder);
-            return Ok(result);
+            if(result)
+                return Created("insert-inboundOrder", result);
+            else
+                return Conflict(inboundOrder);
+        }
+
+        //Update inbound order status 
+        [HttpPut("update-inboundStatus")]
+        public IActionResult UpdateInboundOrder([FromBody] InboundOrder inboundOrder)
+        {
+            var result = _dataRepository.UpdateInboundOrder(inboundOrder);
+            if (result)
+                return Accepted("update-inboundStatus", inboundOrder);
+            else
+                return Conflict(inboundOrder);
         }
     }
 }

@@ -12,20 +12,19 @@ type carProps = CarStore.CarState
     & Store.StoreState
     & typeof CarStore.actionCreators
     & typeof Store.actionCreators
-    & RouteComponentProps<{ car_reg: string }>; // maybe
+    & RouteComponentProps<{ car_reg: string }> // maybe
+    & any;
 
 class RetrieveConfirmation extends React.Component<carProps>
 {
     componentDidMount() {
-        this.props.fetchCar(this.props.match.params.car_reg);// fetch car is working 
+        this.props.fetchCar(this.props.match.params.car_reg);
     }
 
     // on submmit, create outbound order
     handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-
-        console.log(this.props.car);
-        // pass in driver object here 
+        this.props.retrieveCar(this.props.carsProps.car.registration);
     }
 
     // display current car 
@@ -41,22 +40,22 @@ class RetrieveConfirmation extends React.Component<carProps>
 
                         <FormGroup>
                             <Label className="d-block">Car Registration</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.car.registration} disabled></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.carsProps.car.registration} disabled></Input>
                         </FormGroup>
 
                         <FormGroup>
                             <Label className="d-block">Car Make</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.car.make} disabled></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.carsProps.car.make} disabled></Input>
                         </FormGroup>
 
                         <FormGroup>
                             <Label className="d-block">Car Model</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.props.car.model} disabled></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.props.carsProps.car.model} disabled></Input>
                         </FormGroup>
 
                         <FormGroup>
                             <Label className="d-block">Car Colour</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.props.car.colour} disabled></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.props.carsProps.car.colour} disabled></Input>
                         </FormGroup>
 
                         <Link className="btn btn-danger cus-btn mr-5" to='/retrieve-vehicle'>
@@ -76,21 +75,21 @@ class RetrieveConfirmation extends React.Component<carProps>
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        cars: state.cars,
-        store: state.store
+        carsProps: state.cars,
+        storeProps: state.store
     }
 }
 
 function mapDispatchToProps(dispatch: any) {
     return bindActionCreators(
-        { ...CarStore.actionCreators },
+        { ...CarStore.actionCreators, ...Store.actionCreators },
         dispatch
     )
 }
 
 
 export default connect(
-    (state: ApplicationState) => state.cars,
+    mapStateToProps,
     mapDispatchToProps
 )(RetrieveConfirmation as any);
 

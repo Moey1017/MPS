@@ -18,10 +18,10 @@ class AdminEditDriver extends React.Component<DriverProps, any>
         super(props);
         // later when register and udpate page are combined together into one page
         this.state = {
-            driId: this.props.driver ? this.props.driver.driverId : -1,
+            driId: this.props.driver ? this.props.driver.driver_id : -1,
             driName: this.props.driver ? this.props.driver.name : '',
             driEmail: this.props.driver ? this.props.driver.email : '',
-            driTelNo: this.props.driver ? this.props.driver.telNo : ''
+            driTelNo: this.props.driver ? this.props.driver.tel_no : ''
         };
     }
 
@@ -29,10 +29,10 @@ class AdminEditDriver extends React.Component<DriverProps, any>
          setTimeout(() => {
              this.props.fetchDriver(parseInt(this.props.match.params.id)); 
              this.setState({
-                 driId: this.props.driver.driverId,
+                 driId: this.props.driver.driver_id,
                  driName: this.props.driver.name,
                  driEmail: this.props.driver.email,
-                 driTelNo: this.props.driver.telNo
+                 driTelNo: this.props.driver.tel_no
              })
          }, 500)
     }
@@ -41,10 +41,10 @@ class AdminEditDriver extends React.Component<DriverProps, any>
     componentDidUpdate(prevProps:any) {
         if (this.props.driver !== prevProps.driver) {
             this.setState({
-                driId: this.props.driver.driverId,
+                driId: this.props.driver.driver_id,
                 driName: this.props.driver.name,
                 driEmail: this.props.driver.email,
-                driTelNo: this.props.driver.telNo
+                driTelNo: this.props.driver.tel_no
             })
         }
     }
@@ -56,10 +56,10 @@ class AdminEditDriver extends React.Component<DriverProps, any>
     handleSubmit = (e: any) => {
         e.preventDefault();
         const driverObj = {
-            driverId: this.state.driId,
+            driver_id: this.state.driId,
             name: this.state.driName,
             email: this.state.driEmail,
-            telNo: this.state.driTelNo
+            tel_no: this.state.driTelNo
         };
 
         // pass in driver object here 

@@ -9,7 +9,6 @@ namespace MPS.Models
         public Car()
         {
             DriverCar = new HashSet<DriverCar>();
-            Store = new HashSet<Store>();
         }
 
         [Required]
@@ -19,6 +18,5 @@ namespace MPS.Models
         public string Colour { get; set; }
 
         public virtual ICollection<DriverCar> DriverCar { get; set; }
-        public virtual ICollection<Store> Store { get; set; }
     }
 }

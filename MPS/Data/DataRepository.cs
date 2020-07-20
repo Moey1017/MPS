@@ -23,7 +23,7 @@ namespace MPS.Data.Repository
 
         //All methods with queries 
         //Admin
-        public IEnumerable<Admin> GetAdmin(string loginID, string password)
+        public IEnumerable<Admin> GetAdmin(string login_id, string password)
         {
             throw new NotImplementedException();
         }
@@ -39,12 +39,41 @@ namespace MPS.Data.Repository
         public IEnumerable<Store> GetAllRegistration()
         {
             Console.WriteLine("Called GetAllRegistration");
-            var query = "SELECT palletID, car_reg FROM store ORDER BY palletID ASC;";
+            var query = "SELECT pallet_id, car_reg FROM store ORDER BY pallet_id ASC;";
             var result = this._conn.Query<Store>(query).ToList();
             return result;
         }
 
+        public bool StoreCar(Store store)
+        {
+            Console.WriteLine("Called StoreCar");
+            var query = "UPDATE store set car_reg=@car_reg "+
+                "WHERE pallet_id=(SELECT pallet_id FROM store WHERE car_reg IS NULL ORDER BY pallet_id ASC LIMIT 1);";
+            var param = new
+            {
+                car_reg = store.Car_reg
+            };
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
+                return true;
+            else
+                return false;
+        }
 
+        public bool RetrieveCar(string carReg)
+        {
+            Console.WriteLine("RetrieveCar");
+            var query = "UPDATE store set car_reg=NULL WHERE pallet_id=(SELECT pallet_id from store where car_reg=@car_reg);"; // needs to be changes 
+            var param = new
+            {
+                car_reg = carReg
+            };
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
+                return true;
+            else
+                return false;
+        }
 
         //Inbound Order 
         public IEnumerable<InboundOrder> GetAllInboundOrders()
@@ -63,24 +92,24 @@ namespace MPS.Data.Repository
             bool toReturn = false;
             var query = "INSERT INTO inbound_order (batch_id, pallet_id, order_pallet_count, expected_activation_time, " +
                 "sku_name, sku_code, status, max_pallet_height, pallet_width, wms_receipt_link_id, wms_request_status_read, wms_storage_status_read) " +
-                "VALUES (@batch_id, @pallet_id, @order_pallet_count, @expected_activation_time, @sku_name, @sku_code, " +
+                "VALUES (CONCAT(UNIX_TIMESTAMP(),@batch_id), @pallet_id, @order_pallet_count, @expected_activation_time, @sku_name, @sku_code, " +
                 "@status, @max_pallet_height, @pallet_width, @wms_receipt_link_id, @wms_request_status_read, @wms_storage_status_read);";
-            var result = this._conn.Execute(query,
-                new
-                {
-                    inboundOrder.BatchId,
-                    inboundOrder.PalletId,
-                    inboundOrder.OrderPalletCount,
-                    inboundOrder.ExpectedActivationTime,
-                    inboundOrder.SkuName,
-                    inboundOrder.SkuCode,
-                    inboundOrder.Status,
-                    inboundOrder.MaxPalletHeight,
-                    inboundOrder.PalletWidth,
-                    inboundOrder.WmsReceiptLinkId,
-                    inboundOrder.WmsRequestStatusRead,
-                    inboundOrder.WmsStorageStatusRead
-                });
+            var param = new
+            {
+                batch_id = inboundOrder.Batch_id,
+                pallet_id = inboundOrder.Pallet_id,
+                order_pallet_count = inboundOrder.Order_pallet_count,
+                expected_activation_time = inboundOrder.Expected_activation_time,
+                sku_name = inboundOrder.Sku_name,
+                sku_code = inboundOrder.Sku_code,
+                status = inboundOrder.Status,
+                max_pallet_height = inboundOrder.Max_pallet_height,
+                pallet_width = inboundOrder.Pallet_width,
+                wms_receipt_link_id = inboundOrder.Wms_receipt_link_id,
+                wms_request_status_read = inboundOrder.Wms_request_status_read,
+                wms_storage_status_read = inboundOrder.Wms_storage_status_read
+            };
+            var result = this._conn.Execute(query, param);
             Console.WriteLine("Result: " + result);
             Console.WriteLine(inboundOrder + " has been added.");
             if (result == 1)
@@ -88,6 +117,22 @@ namespace MPS.Data.Repository
                 toReturn = true;
             }
             return toReturn;
+        }
+
+        public bool UpdateInboundOrder(InboundOrder inboundOrder)
+        {
+            Console.WriteLine("Called UpdateInboundOrder");
+            var query = "UPDATE inbound_order SET status=@status "+
+                    "WHERE pallet_id=@pallet_id";
+            var param = new {
+                pallet_id = inboundOrder.Pallet_id,
+                status = inboundOrder.Status
+            };
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
+                return true;
+            else
+                return false;
         }
 
 
@@ -105,27 +150,27 @@ namespace MPS.Data.Repository
 
         public bool InsertOutboundOrder(OutboundOrder outboundOrder)
         {
-            Console.WriteLine("Called InsertDriver");
+            Console.WriteLine("Called InsertOutboundOrder");
             bool toReturn = false;
             var query = "INSERT INTO outbound_order (batch_id, pallet_id, order_pallet_count, expected_activation_time, status, `index`," +
                 " source, wms_link_id, wms_request_status_read, wms_output_status_read, automated_activation_time, target) " +
-                "VALUES (@batch_id, @pallet_id, @order_pallet_count, @expected_activation_time, @status, @index, @source, @wms_link_id, " +
-                "@wms_request_status_read, @wms_output_status_read, @automated_activation_time, @target);";
+                "VALUES (CONCAT(UNIX_TIMESTAMP(),@batch_id), @pallet_id, @order_pallet_count, @expected_activation_time, @status, @index, @source, @wms_link_id, " +
+                "@wms_request_status_read, @wms_output_status_read, NOW(), @target);";
             var result = this._conn.Execute(query,
                 new
                 {
-                    outboundOrder.BatchId,
-                    outboundOrder.PalletId,
-                    outboundOrder.OrderPalletCount,
-                    outboundOrder.ExpectedActivationTime, 
-                    outboundOrder.Status,
-                    outboundOrder.Index,
-                    outboundOrder.Source,
-                    outboundOrder.WmsLinkId,
-                    outboundOrder.WmsRequestStatusRead,
-                    outboundOrder.WmsOutputStatusRead,
-                    outboundOrder.AutomatedActivationTime,
-                    outboundOrder.Target
+                    batch_id = outboundOrder.Batch_id,
+                    pallet_id = outboundOrder.Pallet_id,
+                    order_pallet_count = outboundOrder.Order_pallet_count,
+                    expected_activation_time = outboundOrder.Expected_activation_time,
+                    status = outboundOrder.Status,
+                    index = outboundOrder.Index,
+                    source = outboundOrder.Source,
+                    wms_link_id = outboundOrder.Wms_link_id,
+                    wms_request_status_read = outboundOrder.Wms_request_status_read,
+                    wms_output_status_read = outboundOrder.Wms_output_status_read,
+                    //automated_activation_time = outboundOrder.Automated_activation_time,
+                    target = outboundOrder.Target
                 });
             Console.WriteLine("Result: " + result);
             Console.WriteLine(outboundOrder + " has been added.");
@@ -136,23 +181,54 @@ namespace MPS.Data.Repository
             return toReturn;
         }
 
+        public bool IfCarRegExistInStore(string carReg)
+        {
+            Console.WriteLine("Called IfCarRegExistInStore");
+            var query = "SELECT pallet_id from store WHERE car_reg=@car_reg;";
+            var param = new
+            {
+                car_reg = carReg 
+            };
+            var result = this._conn.Query<int>(query, param).FirstOrDefault();
+            Console.WriteLine(result);
+            if (result != -1)
+                return true;
+            else
+                return false;
+        }
 
+        public bool UpdateOutboundOrder(OutboundOrder outboundOrder)
+        {
+            Console.WriteLine("Called UpdateInboundOrder");
+            var query = "UPDATE outbound_order SET status=@status " +
+                    "WHERE pallet_id=@pallet_id";
+            var param = new
+            {
+                pallet_id = outboundOrder.Pallet_id,
+                status = outboundOrder.Status
+            };
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
+                return true;
+            else
+                return false;
+        }
 
         //Driver Repository
         public IEnumerable<Driver> GetAllDrivers()
         {
             Console.WriteLine("Called GetAllDrivers");
-            var query = "SELECT driverID, name, telNo, email FROM drivers;";
+            var query = "SELECT driver_id, name, tel_no, email FROM drivers;";
             var result = this._conn.Query<Driver>(query).ToList();
             return result;
         }
 
-        //getting a driver 
+        //Get a driver 
         public Driver GetDriverByID(int id)
         {
             Console.WriteLine("Called GetDriverByID");
             var param = new { ID = id }; // bind param 
-            var query = "SELECT driverID, name, telNo, email FROM drivers WHERE driverID = @ID;";
+            var query = "SELECT driver_id, name, tel_no, email FROM drivers WHERE driver_id = @ID;";
             var result = this._conn.Query<Driver>(query, param).ToList();
             return result.FirstOrDefault();
         }
@@ -160,15 +236,16 @@ namespace MPS.Data.Repository
         public bool InsertDriver(Driver driver)
         {
             Console.WriteLine("Called InsertDriver");
+            Console.WriteLine(driver.Name);
             bool toReturn = false;
-            var query = "INSERT INTO `drivers`(`DriverID`, `Name`, `TelNo`, `Email`) VALUES(@DriverID, @Name, @TelNo, @Email);";
+            var query = "INSERT INTO `drivers`(`driver_id`, `name`, `tel_no`, `email`) VALUES(@driver_id, @name, @tel_no, @email);";
             var result = this._conn.Execute(query,
                 new
                 {
-                    driver.DriverId,
-                    driver.Name,
-                    driver.TelNo,
-                    driver.Email
+                    driver_id = driver.Driver_id,
+                    name = driver.Name,
+                    tel_no = driver.Tel_no,
+                    email = driver.Email
                 });
             Console.WriteLine("Result: " + result);
             Console.WriteLine(driver + " has been added.");
@@ -183,7 +260,7 @@ namespace MPS.Data.Repository
         {
             Console.WriteLine("Called DeleteDriver");
             var param = new { ID = id }; // bind param 
-            var query = "DELETE FROM drivers WHERE driverID = @ID";
+            var query = "DELETE FROM drivers WHERE driver_id = @ID";
             var result = this._conn.Execute(query, param);
             if(result == 1)
             {
@@ -199,12 +276,12 @@ namespace MPS.Data.Repository
             Console.WriteLine("Called UpdateDriver");
             var param = new
             {
-                driver.DriverId,
-                driver.Name,
-                driver.TelNo,
-                driver.Email
+                driver_id = driver.Driver_id,
+                name = driver.Name,
+                tel_no = driver.Tel_no,
+                email = driver.Email
             };
-            var query = "UPDATE drivers SET Name=@Name, TelNo=@TelNo, Email=@Email WHERE DriverID=@DriverId";
+            var query = "UPDATE drivers SET name=@name, tel_no=@tel_no, email=@email WHERE driver_id=@driver_id";
             var result = this._conn.Execute(query, param);
             if (result == 1)
                 return true;
@@ -234,14 +311,14 @@ namespace MPS.Data.Repository
         {
             Console.WriteLine("Called InsertCar");
             bool toReturn = false;
-            var query = "INSERT INTO `cars`(`Registration`, `Make`, `Model`, `Colour`) VALUES(@Registration, @Make, @Model, @Colour);";
+            var query = "INSERT INTO cars(registration, make, model, colour) VALUES(@registration, @make, @model, @colour);";
             var result = this._conn.Execute(query,
                 new
                 {
-                    car.Registration,
-                    car.Make,
-                    car.Model,
-                    car.Colour
+                    registration = car.Registration,
+                    make = car.Make,
+                    model = car.Model,
+                    colour = car.Colour
                 });
             Console.WriteLine("Result: " + result);
             Console.WriteLine(car + " has been added.");
@@ -256,7 +333,7 @@ namespace MPS.Data.Repository
         {
             Console.WriteLine("Called DeleteCar");
             var param = new { REG = reg }; // bind param 
-            var query = "DELETE FROM cars WHERE Registration = @REG";
+            var query = "DELETE FROM cars WHERE registration = @REG";
             var result = this._conn.Execute(query, param);
             if (result == 1)
             {
@@ -271,12 +348,12 @@ namespace MPS.Data.Repository
             Console.WriteLine("Called UpdateCar");
             var param = new
             {
-                car.Registration,
-                car.Make,
-                car.Model,
-                car.Colour
+                registration = car.Registration,
+                make = car.Make,
+                model = car.Model,
+                colour = car.Colour
             };
-            var query = "UPDATE cars SET Make=@Make, Model=@Model, Colour=@Colour WHERE Registration=@Registration";
+            var query = "UPDATE cars SET make=@make, model=@model, colour=@colour WHERE registration=@registration";
             var result = this._conn.Execute(query, param);
             if (result == 1)
                 return true;

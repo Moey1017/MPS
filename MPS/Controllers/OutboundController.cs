@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 using MPS.Data.Repository;
 using MPS.Models;
 
@@ -31,7 +32,28 @@ namespace MPS.Controllers
         {
             //serverside validation require here 
             var result = _dataRepository.InsertOutboundOrder(outboundOrder);
-            return Ok(result);  
+            if(result)
+                return Created("insert-outboundOrder", result);
+            else
+                return Conflict(outboundOrder);
+        }
+
+        [HttpGet("ifCarRegExist{CarReg}")]
+        public IActionResult IfCarRegExistInStore(string CarReg)
+        {
+            var result = _dataRepository.IfCarRegExistInStore(CarReg);
+            return Ok(result);
+        }
+
+        //Update outbound order status 
+        [HttpPut("update-outboundStatus")]
+        public IActionResult UpdateInboundOrder([FromBody] OutboundOrder outboundOrder)
+        {
+            var result = _dataRepository.UpdateOutboundOrder(outboundOrder);
+            if (result)
+                return Accepted("update-outboundStatus", outboundOrder);
+            else
+                return Conflict(outboundOrder);
         }
     }
 }

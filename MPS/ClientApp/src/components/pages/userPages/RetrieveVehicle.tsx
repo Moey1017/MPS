@@ -50,9 +50,8 @@ class RetrieveVehicle extends React.Component<StoreProps,any>
                 <div className="row">
                     
                     {this.props.pallets.map((pallet: Store.Pallet) => 
-                        <div className="column" key={pallet.palletId}>
+                        <div className="column" key={pallet.pallet_id}>
                             <Link to={'/retrieve-confirmation/' + pallet.car_reg}
-                                onClick={() => { console.log(pallet.palletId); console.log(pallet.car_reg) }} 
                                 className={(pallet.car_reg === null || pallet.car_reg === undefined) ?
                                 "btn btn-dark cus-btn-retrieve mb-2 mr-2" :
                                 "btn btn-reg cus-btn-retrieve mb-2 mr-2"}>

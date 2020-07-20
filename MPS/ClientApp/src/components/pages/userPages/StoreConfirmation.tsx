@@ -8,26 +8,34 @@ import { bindActionCreators } from 'redux';
 import * as CarStore from '../../../reduxStore/car';
 import * as Store from '../../../reduxStore/store';
 
-type carProps = CarStore.CarState
+type storeProps = CarStore.CarState
     & Store.StoreState
     & typeof CarStore.actionCreators
     & typeof Store.actionCreators;
     //& RouteComponentProps<{ car_reg: string }>; maybe need?? where does the car reg come from 
 
-class StoreConfirmation extends React.Component<any>
+class StoreConfirmation extends React.Component<storeProps,any>
 {
-    componentDidMount() {
-        this.props.fetchCar('DUIW567'); // REGISTRATION COME IN HERE
+    constructor(props: any) {
+        super(props);
+
+        this.state = {
+            registration : "" 
+        }
+    }
+
+    handleChange = (e: any) => {
+        this.setState({ [e.target.name]: e.target.value })
     }
 
     // on submmit, create outbound order
     handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        console.log(this.props.carProps['car']);
-        // pass in driver object here 
+        this.props.storeCar(this.state.registration);
+        //this.props.storeCar(this.state.registration);
+        // pass in car to be stored here
     }
-
 
 
     // display current car 
@@ -35,16 +43,22 @@ class StoreConfirmation extends React.Component<any>
     render() {
         return (
             <div className="container mh-100 b-banner-image">
-                <h1 className="display-1 p-center-car">Is this your car?</h1>
+                <Link className="btn btn-danger cus-btn mt-5 float-right" to='/'>
+                    Back
+                </Link>
+
+                <h1 className="display-1 p-center-car">Enter Car Registration</h1>
+                <h1 className="display-1 p-center-car">Is this your Car?</h1>
 
                 <div className="row fixed-bottom justify-content-center cus-margin-l">
                     <Form onSubmit={this.handleSubmit}>
 
                         <FormGroup>
                             <Label className="d-block">Car Registration</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.carProps.car.registration} disabled></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.state.registration} onChange={this.handleChange}></Input>
                         </FormGroup>
 
+                        { /*
                         <FormGroup>
                             <Label className="d-block">Car Make</Label>
                             <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.carProps.car.make} disabled></Input>
@@ -63,9 +77,10 @@ class StoreConfirmation extends React.Component<any>
                         <Link className="btn btn-danger cus-btn mr-5" to='/'>
                             Back
                         </Link>
+                        */}
 
                         <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
-                            Confirm Store
+                            Confirm Store Car
                         </Button>
                     </Form>
                     
@@ -78,14 +93,13 @@ class StoreConfirmation extends React.Component<any>
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        carProps: state.cars,
         storeProps: state.store
     }
 }
 
 function mapDispatchToProps(dispatch: any) {
     return bindActionCreators(
-        { ...CarStore.actionCreators },
+        { ...Store.actionCreators },
         dispatch
     )
 }

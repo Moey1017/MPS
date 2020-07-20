@@ -33,10 +33,10 @@ class AdminRegisterDriver extends React.Component<DriverProps,any> // first Para
         e.preventDefault();
 
         const driverObj = {
-            driverId: 0,
+            driver_id: 0,
             name: this.state.name,
             email: this.state.email,
-            telNo: this.state.telNo
+            tel_no: this.state.telNo
         };
 
         // pass in driver object here 

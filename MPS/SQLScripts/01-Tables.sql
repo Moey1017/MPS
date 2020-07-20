@@ -17,9 +17,9 @@ CREATE SCHEMA IF NOT EXISTS `mps` ;
 -- Table mps.admin
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mps`.`admins` (
-  `LoginID` VARCHAR(20) NOT NULL,
-  `Password` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`LoginID`))
+  `login_id` VARCHAR(20) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`login_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
@@ -27,11 +27,11 @@ DEFAULT CHARACTER SET = utf8mb4;
 -- Table mps.car
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mps`.`cars` (
-  `Registration` VARCHAR(15) NOT NULL,
-  `Make` VARCHAR(100) NOT NULL,
-  `Model` VARCHAR(100) NOT NULL,
-  `Colour` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`Registration`))
+  `registration` VARCHAR(15) NOT NULL,
+  `make` VARCHAR(100) NOT NULL,
+  `model` VARCHAR(100) NOT NULL,
+  `colour` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`registration`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
@@ -39,11 +39,11 @@ DEFAULT CHARACTER SET = utf8mb4;
 -- Table mps.driver
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mps`.`drivers` (
-  `DriverID` INT(6) NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(25) NOT NULL,
-  `TelNo` VARCHAR(20) NOT NULL,
-  `Email` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`DriverID`))
+  `driver_id` INT(6) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(25) NOT NULL,
+  `tel_no` VARCHAR(20) NOT NULL,
+  `email` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`driver_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
@@ -52,16 +52,16 @@ DEFAULT CHARACTER SET = utf8mb4;
 -- Table mps.driver_car
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mps`.`driver_car` (
-  `DriverID` INT(6) NOT NULL,
-  `Registration` VARCHAR(15) NOT NULL,
-  PRIMARY KEY (`DriverID`, `Registration`),
-  INDEX `Registration` (`Registration` ASC) ,
+  `driver_id` INT(6) NOT NULL,
+  `registration` VARCHAR(15) NOT NULL,
+  PRIMARY KEY (`driver_id`, `registration`),
+  INDEX `registration` (`registration` ASC) ,
   CONSTRAINT `driver_car_ibfk_1`
-    FOREIGN KEY (`DriverID`)
-    REFERENCES `mps`.`drivers` (`DriverID`),
+    FOREIGN KEY (`driver_id`)
+    REFERENCES `mps`.`drivers` (`driver_id`),
   CONSTRAINT `driver_car_ibfk_2`
-    FOREIGN KEY (`Registration`)
-    REFERENCES `mps`.`cars` (`Registration`)
+    FOREIGN KEY (`registration`)
+    REFERENCES `mps`.`cars` (`registration`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -71,15 +71,10 @@ DEFAULT CHARACTER SET = utf8mb4;
 -- Table mps.store
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mps`.`store` (
-  `PalletID` VARCHAR(255) NOT NULL,
-  `Car_reg` VARCHAR(15) NULL DEFAULT NULL,
-  PRIMARY KEY (`PalletID`),
-  INDEX `Car_reg` (`Car_reg` ASC) ,
-  CONSTRAINT `store_ibfk_1`
-    FOREIGN KEY (`Car_reg`)
-    REFERENCES `mps`.`cars` (`Registration`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `pallet_id` VARCHAR(255) NOT NULL,
+  `car_reg` VARCHAR(15) NULL DEFAULT NULL,
+  PRIMARY KEY (`pallet_id`),
+  INDEX `car_reg` (`car_reg` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 SET FOREIGN_KEY_CHECKS = 1;

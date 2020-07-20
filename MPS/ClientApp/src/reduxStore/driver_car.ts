@@ -1,4 +1,4 @@
 ﻿export interface driver_car {
-    readonly driverId: number;
-    readonly carRegistration: string;
+    readonly driver_id: number;
+    readonly registration: string;
 }

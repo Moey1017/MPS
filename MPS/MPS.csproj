@@ -64,7 +64,9 @@
     <None Remove="ClientApp\src\reduxStore\driver.ts" />
     <None Remove="ClientApp\src\reduxStore\driver_car.ts" />
     <None Remove="ClientApp\src\reduxStore\inboundOrder.ts" />
+    <None Remove="ClientApp\src\reduxStore\outboundOrder.ts" />
     <None Remove="ClientApp\src\reduxStore\store.ts" />
+    <None Remove="ClientApp\src\reduxStore\store.ts~RF5a5b8bc.TMP" />
     <None Remove="SQLScripts\01-Tables.sql" />
     <None Remove="SQLScripts\02-Inserts.sql" />
     <None Remove="SQLScripts\03-Procedures.sql" />
@@ -76,8 +78,8 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.35" />
-    <PackageReference Include="dbup" Version="4.3.0" />
-    <PackageReference Include="dbup-mysql" Version="4.3.0" />
+    <PackageReference Include="dbup" Version="4.0.0" />
+    <PackageReference Include="dbup-mysql" Version="4.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
@@ -108,6 +110,7 @@
     <TypeScriptCompile Include="ClientApp\src\reduxStore\admin.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\driver_car.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\inboundOrder.ts" />
+    <TypeScriptCompile Include="ClientApp\src\reduxStore\outboundOrder.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\store.ts" />
   </ItemGroup>
 

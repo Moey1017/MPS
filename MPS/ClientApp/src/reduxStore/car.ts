@@ -144,7 +144,7 @@ export const actionCreators = {
         dispatch({ type: FETCHING_CAR, carReg: carRegToGet })
         axios.get('api/car/get-car-byReg' + carRegToGet)
             .then(res => {
-                if (res.data !== null) {
+                if (res.data !== '') {
                     dispatch({ type: FETCHED_CAR, car: res.data });
                 } else {
                     console.log("fetchCar do not receive any data.");
