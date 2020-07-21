@@ -14,6 +14,7 @@ namespace MPS.Data.Repository
         public IEnumerable<Store> GetAllRegistration();
         public bool StoreCar(Store store);
         public bool RetrieveCar(string carReg);
+        public bool IfStoreHasSpace();
 
         //Inbound order Interface Repository 
         public IEnumerable<InboundOrder> GetAllInboundOrders();

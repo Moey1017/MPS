@@ -47,15 +47,25 @@ namespace MPS.Data.Repository
         public bool StoreCar(Store store)
         {
             Console.WriteLine("Called StoreCar");
-            var query = "UPDATE store set car_reg=@car_reg "+
-                "WHERE pallet_id=(SELECT pallet_id FROM store WHERE car_reg IS NULL ORDER BY pallet_id ASC LIMIT 1);";
             var param = new
             {
                 car_reg = store.Car_reg
             };
-            var result = this._conn.Execute(query, param);
-            if (result == 1)
-                return true;
+            //Check if car already exist in the current store 
+            var query1 = "SELECT pallet_id FROM store WHERE car_reg=@car_reg";
+            var result1 = this._conn.Query(query1, param).FirstOrDefault();
+            if (result1 == null)
+            {
+                //Store car into the store
+                var query2 = "UPDATE store set car_reg=@car_reg " +
+                "WHERE pallet_id=(SELECT pallet_id FROM store WHERE car_reg IS NULL ORDER BY pallet_id ASC LIMIT 1);";
+
+                var result2 = this._conn.Execute(query2, param);
+                if (result2 == 1)
+                    return true;
+                else
+                    return false;
+            }
             else
                 return false;
         }
@@ -63,7 +73,7 @@ namespace MPS.Data.Repository
         public bool RetrieveCar(string carReg)
         {
             Console.WriteLine("RetrieveCar");
-            var query = "UPDATE store set car_reg=NULL WHERE pallet_id=(SELECT pallet_id from store where car_reg=@car_reg);"; // needs to be changes 
+            var query = "UPDATE store set car_reg=NULL WHERE pallet_id=(SELECT pallet_id from store where car_reg=@car_reg);";
             var param = new
             {
                 car_reg = carReg
@@ -74,6 +84,18 @@ namespace MPS.Data.Repository
             else
                 return false;
         }
+
+        //Check if store has space
+        public bool IfStoreHasSpace()
+        {
+            var query = "SELECT pallet_id FROM store WHERE car_reg IS NULL ORDER BY pallet_id ASC;";
+            var result = this._conn.Query(query);
+            if (result.Count() >= 1)
+                return true;
+            else
+                return false;
+        }
+
 
         //Inbound Order 
         public IEnumerable<InboundOrder> GetAllInboundOrders()
@@ -92,7 +114,7 @@ namespace MPS.Data.Repository
             bool toReturn = false;
             var query = "INSERT INTO inbound_order (batch_id, pallet_id, order_pallet_count, expected_activation_time, " +
                 "sku_name, sku_code, status, max_pallet_height, pallet_width, wms_receipt_link_id, wms_request_status_read, wms_storage_status_read) " +
-                "VALUES (CONCAT(UNIX_TIMESTAMP(),@batch_id), @pallet_id, @order_pallet_count, @expected_activation_time, @sku_name, @sku_code, " +
+                "VALUES (@batch_id, @pallet_id, @order_pallet_count, @expected_activation_time, @sku_name, @sku_code, " +
                 "@status, @max_pallet_height, @pallet_width, @wms_receipt_link_id, @wms_request_status_read, @wms_storage_status_read);";
             var param = new
             {
@@ -123,12 +145,16 @@ namespace MPS.Data.Repository
         {
             Console.WriteLine("Called UpdateInboundOrder");
             var query = "UPDATE inbound_order SET status=@status "+
-                    "WHERE pallet_id=@pallet_id";
+                    "WHERE pallet_id=@pallet_id "
+                    + "AND "
+                    + "batch_id=@batch_id";
             var param = new {
+                batch_id = inboundOrder.Batch_id,
                 pallet_id = inboundOrder.Pallet_id,
                 status = inboundOrder.Status
             };
             var result = this._conn.Execute(query, param);
+            Console.WriteLine(result);
             if (result == 1)
                 return true;
             else
@@ -154,7 +180,7 @@ namespace MPS.Data.Repository
             bool toReturn = false;
             var query = "INSERT INTO outbound_order (batch_id, pallet_id, order_pallet_count, expected_activation_time, status, `index`," +
                 " source, wms_link_id, wms_request_status_read, wms_output_status_read, automated_activation_time, target) " +
-                "VALUES (CONCAT(UNIX_TIMESTAMP(),@batch_id), @pallet_id, @order_pallet_count, @expected_activation_time, @status, @index, @source, @wms_link_id, " +
+                "VALUES (@batch_id, @pallet_id, @order_pallet_count, @expected_activation_time, @status, @index, @source, @wms_link_id, " +
                 "@wms_request_status_read, @wms_output_status_read, NOW(), @target);";
             var result = this._conn.Execute(query,
                 new
@@ -201,9 +227,12 @@ namespace MPS.Data.Repository
         {
             Console.WriteLine("Called UpdateInboundOrder");
             var query = "UPDATE outbound_order SET status=@status " +
-                    "WHERE pallet_id=@pallet_id";
+                    "WHERE pallet_id=@pallet_id"
+                    + " AND "
+                    + "batch_id=@batch_id";
             var param = new
             {
+                batch_id = outboundOrder.Batch_id,
                 pallet_id = outboundOrder.Pallet_id,
                 status = outboundOrder.Status
             };

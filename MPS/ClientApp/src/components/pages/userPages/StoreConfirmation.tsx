@@ -11,7 +11,8 @@ import * as Store from '../../../reduxStore/store';
 type storeProps = CarStore.CarState
     & Store.StoreState
     & typeof CarStore.actionCreators
-    & typeof Store.actionCreators;
+    & typeof Store.actionCreators
+    & any;
     //& RouteComponentProps<{ car_reg: string }>; maybe need?? where does the car reg come from 
 
 class StoreConfirmation extends React.Component<storeProps,any>
@@ -23,6 +24,11 @@ class StoreConfirmation extends React.Component<storeProps,any>
             registration : "" 
         }
     }
+
+    componentWillMount() {
+        this.props.checkIfStoreHasSpace();
+    }
+
 
     handleChange = (e: any) => {
         this.setState({ [e.target.name]: e.target.value })
@@ -41,6 +47,19 @@ class StoreConfirmation extends React.Component<storeProps,any>
     // display current car 
     // confirm and agree 
     render() {
+        let storeButton;
+        if (this.props.storeProps.hasSpace) {
+            storeButton = <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
+                Confirm Store Car
+                        </Button>;
+        }
+        else {
+            storeButton = <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit} disabled>
+                Confirm Store Car
+                        </Button>;
+        }
+
+
         return (
             <div className="container mh-100 b-banner-image">
                 <Link className="btn btn-danger cus-btn mt-5 float-right" to='/'>
@@ -79,9 +98,7 @@ class StoreConfirmation extends React.Component<storeProps,any>
                         </Link>
                         */}
 
-                        <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
-                            Confirm Store Car
-                        </Button>
+                        {storeButton}
                     </Form>
                     
                 </div>

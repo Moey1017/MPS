@@ -31,7 +31,7 @@ namespace MPS.Controllers
             //serverside validation require here 
             var result = _dataRepository.StoreCar(store);
             if (result)
-                return Accepted("store-car", store.Car_reg);
+                return Accepted("store-car", store.Car_reg); // return pallet id here
             else
                 return Conflict(store.Car_reg);
         }
@@ -44,6 +44,13 @@ namespace MPS.Controllers
                 return Accepted("retrieve-car", carReg);
             else
                 return Conflict(carReg);
+        }
+
+        [HttpGet("ifHasSpace")]
+        public IActionResult IfStoreHasSpace()
+        {
+            var result = _dataRepository.IfStoreHasSpace();
+            return Ok(result);
         }
     }
 }

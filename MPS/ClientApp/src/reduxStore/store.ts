@@ -9,19 +9,13 @@ import { OutboundOrder } from '../reduxStore/outboundOrder';
 export interface StoreState {
     readonly pallets: Pallet[];
     readonly isLoading: boolean;
+    readonly hasSpace: boolean;
 }
 
 export interface Pallet {
     readonly pallet_id: string;
-    readonly car_reg: string | null; // change from Car Model to CarReg
+    readonly car_reg: string | null; 
 }
-
-////System loading State, not in DB
-//export interface currentState {
-//    readonly fetching: boolean;
-//    // system status?? Enum? 
-//}
-
 
 // Action name 
 const REQUEST_STORE_STATE = 'REQUEST_STORE_STATE';
@@ -30,6 +24,7 @@ const STORING_CAR = 'STORING_CAR';
 const STORED_CAR = 'STORED_CAR';
 const RETRIEVING_CAR = 'RETRIEVING_CAR';
 const RETRIEVED_CAR = 'RETRIEVED_CAR';
+const UPDATE_SPACE_STATUS = 'UPDATE_SPACE_STATUS';
 
 //Types
 interface RequestStoreStateAction {
@@ -47,7 +42,7 @@ interface StoringCarAction {
 
 interface StoredCarAction {
     type: typeof STORED_CAR;
-    pallets: Pallet;
+    pallet: Pallet;
 }
 
 interface RetrievingCarAction {
@@ -56,13 +51,19 @@ interface RetrievingCarAction {
 
 interface RetrievedCarAction {
     type: typeof RETRIEVED_CAR;
-    pallets: Pallet;
+    pallet: Pallet;
+}
+
+interface UpdateSpaceStatusAction {
+    type: typeof UPDATE_SPACE_STATUS;
+    hasSpace: boolean;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 // Aggregate all actions together and to ensure will only receive these actions 
-type StoreAction = RequestStoreStateAction | ReceiveStoreStateAction | StoringCarAction | StoredCarAction;
+type StoreAction = RequestStoreStateAction | ReceiveStoreStateAction | StoringCarAction
+    | StoredCarAction | RetrievingCarAction | RetrievedCarAction | UpdateSpaceStatusAction;
 
 export const actionCreators = {
     requestStoreState: (): AppThunkAction<StoreAction> => (dispatch, getState) => {
@@ -78,7 +79,6 @@ export const actionCreators = {
                     }
                 }).catch(error => {
                     console.log("requestStoreState caught an error.");
-                    console.log(error);
                     //TODO:Create Dispatch type if error 
                 })
         }
@@ -90,9 +90,11 @@ export const actionCreators = {
     storeCar: (carRegToStore: string): AppThunkAction<StoreAction> => (dispatch) => {
         dispatch({ type: STORING_CAR });
         // Create inbound Order 
+
+        let b_id = Date.now() + carRegToStore;
         const inboundOrder: InboundOrder =
         {
-            batch_id: carRegToStore, // Created with Unix and carReg Number in backend
+            batch_id: b_id, // Created with Unix and carReg Number in backend
             pallet_id: carRegToStore,
             order_pallet_count: 1,
             expected_activation_time: null,
@@ -115,13 +117,10 @@ export const actionCreators = {
                     axios.get('api/car/get-car-byReg' + carRegToStore)
                         .then(res => {
                             if (res.data !== '') {
-                                //TODO:exist then AXIOS CALL update status to Accepted
                                 console.log("Car Reg valid");
 
-                                //WARNING!!!SKIP FROM ACCEPTED TO COMPLETE AT THE MOMENT 
-
-                                // SOMEHOW DETECT WHEN DONE,update status to Completed (Maybe Seperate them in different function)
-                                inboundOrder.status = 'COMPLETED';
+                                // SOMEHOW DETECT WHEN DONE, Check Status if Complete or Error
+                                inboundOrder.status = 'COMPLETE';
                                 axios.put('api/inbound/update-inboundStatus', inboundOrder)
                                     .then(res => {
                                         if (res.data !== '') {
@@ -136,17 +135,17 @@ export const actionCreators = {
                                             axios.put('api/store/store-car', pallet)
                                                 .then(res => {
                                                     if (res.status === 202) {
-                                                        //TODO:Dispatch Stored car 
+                                                        //Dispatch Stored car , need to some how get the actual pallet id
+                                                        //dispatch({ type: STORED_CAR, pallet: pallet }) // but pallet here is incorrect
+
                                                         console.log("Car has been successfully stored.")
                                                         history.push('/');// Redirect to home
                                                     }
                                                     else {
                                                         console.log("Something went wrong while storing the car into car store");
-                                                        console.log(res.data);
                                                     }
                                                 }).catch(error => {
-                                                    console.log("storeCar caught an error while storing.");
-                                                    console.log(error);
+                                                    console.log("storeCar caught an error while storing./Car reg is found in store.");
                                                     //TODO: DISPATCH STORE FAILED 
 
                                                     inboundOrder.status = 'ERROR';
@@ -164,17 +163,15 @@ export const actionCreators = {
                                         }
                                     }).catch(error => {
                                         console.log("storeCar caught an error while updating status to COMPLETE.");
-                                        console.log(error);
                                     })
 
 
                             } else {
                                 // not exist then AXIOS CALL update status to ERROR?
-                                console.log("storeCar do not receive any data from fetch car./Car reg do not exist in databse.");
+                                alert("Car reg doesnt existed, please re-enter.");
                             }
                         }).catch(error => {
                             console.log("fetchCar in storeCar caught an error.");
-                            console.log(error);
                             //TODO:Create Dispatch type if error 
                         })
                 }
@@ -183,15 +180,15 @@ export const actionCreators = {
                 }
             }).catch(error => {
                 console.log("storeCar caught an error./Failed to insert inbound order.");
-                console.log(error);
             })
     },
     // dispatch retriving car => create outbound order => status:ACTIVE/ACCEPTED 
     // dispatch stored car => udpate current state 
     retrieveCar: (carRegToRetrieve: string): AppThunkAction<StoreAction> => (dispatch) => {
         //Create outbound Order 
+        let b_id = Date.now() + carRegToRetrieve;
         const outBoundOrder: OutboundOrder = {
-            batch_id: carRegToRetrieve,
+            batch_id: b_id,
             pallet_id: carRegToRetrieve,
             order_pallet_count: 1,
             expected_activation_time: null,
@@ -210,17 +207,13 @@ export const actionCreators = {
                     console.log("Inserted outbound order.");
 
                     //Check if Car valid in store
-                    console.log(carRegToRetrieve);
                     axios.get('api/outbound/ifCarRegExist' + carRegToRetrieve)
                         .then(res => {
-                            console.log(res);
                             if (res.data === true) {
-                                console.log("Car reg is valid.")
+                                console.log("Car reg is found in the store.")
 
-                                //WARNING!!!SKIP FROM ACCEPTED TO COMPLETE AT THE MOMENT 
-
-                                // SOMEHOW DETECT WHEN DONE,update status to Completed (Maybe Seperate them in different function)
-                                outBoundOrder.status = 'COMPLETED';
+                                // SOMEHOW DETECT WHEN DONE,Check Status if Complete or Error
+                                outBoundOrder.status = 'COMPLETE';
                                 axios.put('api/outbound/update-outboundStatus', outBoundOrder)
                                     .then(res => {
                                         if (res.data !== '') {
@@ -242,26 +235,31 @@ export const actionCreators = {
                                             // dispatch Retrieved Car
                                         }
                                         else {
-                                            console.log("Car reg doesnt existed.");
+                                            console.log("Something went wrong while updating outbound order.");
                                         }
                                     }).catch(error => {
                                         console.log("retrieveCar does not receive any data/Car reg doesnt existed.");
-                                        console.log(error);
                                     })
                             }
                         }).catch(error => {
-                            console.log("Something went wrong while update status in outbound order.")
-                            console.log(error);
+                            console.log("Something went wrong while update status in outbound order.");
                         })
                 }
             }).catch(error => {
                 console.log("retrieveCar caught an error./Failed to insert outbound order.")
             })
+    },
+    //Check if there's space in the store
+    checkIfStoreHasSpace: (): AppThunkAction<StoreAction> => (dispatch) => {
+        axios.get('api/store/ifHasSpace')
+            .then(res => {
+                dispatch({ type: UPDATE_SPACE_STATUS, hasSpace: res.data })
+            }).catch(error => {console.log("something went wrong while checking space in store.")})
     }
 }
 
 const unloadedStoreState: StoreState = {
-    pallets: [], isLoading: false
+    pallets: [], isLoading: false, hasSpace: false
 };
 
 export const reducer: Reducer<StoreState> = (state: StoreState | undefined, incomingAction: StoreAction): StoreState => {
@@ -290,8 +288,30 @@ export const reducer: Reducer<StoreState> = (state: StoreState | undefined, inco
         case STORED_CAR:
             return {
                 ...state,
-                //update pallet with the car Id 
+                ...state.pallets.map(p => {
+                    if (p.pallet_id === action.pallet.pallet_id) return action.pallet;
+                    return p;
+                }),
                 isLoading: false
+            }
+        case RETRIEVING_CAR:
+            return {
+                ...state,
+                isLoading:true
+            }
+        case RETRIEVED_CAR:
+            return {
+                ...state,
+                ...state.pallets.map(p => {
+                    if (p.pallet_id === action.pallet.pallet_id) return action.pallet;
+                    return p;
+                }),
+                isLoading: false
+            }
+        case UPDATE_SPACE_STATUS:
+            return {
+                ...state,
+                hasSpace: action.hasSpace
             }
         default:
             return {
