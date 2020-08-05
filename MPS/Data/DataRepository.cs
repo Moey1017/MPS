@@ -44,7 +44,7 @@ namespace MPS.Data.Repository
             return result;
         }
 
-        public bool StoreCar(Store store)
+        public Store StoreCar(Store store)
         {
             Console.WriteLine("Called StoreCar");
             var param = new
@@ -52,8 +52,8 @@ namespace MPS.Data.Repository
                 car_reg = store.Car_reg
             };
             //Check if car already exist in the current store 
-            var query1 = "SELECT pallet_id FROM store WHERE car_reg=@car_reg";
-            var result1 = this._conn.Query(query1, param).FirstOrDefault();
+            var palletIdWithReg = "SELECT pallet_id, car_reg FROM store WHERE car_reg=@car_reg";
+            var result1 = this._conn.Query(palletIdWithReg, param).FirstOrDefault();
             if (result1 == null)
             {
                 //Store car into the store
@@ -62,27 +62,35 @@ namespace MPS.Data.Repository
 
                 var result2 = this._conn.Execute(query2, param);
                 if (result2 == 1)
-                    return true;
+                {
+                    var returnPalletId = this._conn.Query<Store>(palletIdWithReg, param).FirstOrDefault();
+                    return returnPalletId;
+                }
                 else
-                    return false;
+                {
+                    return null;
+                }
             }
             else
-                return false;
+                return null;
         }
 
-        public bool RetrieveCar(string carReg)
+        public Store RetrieveCar(string carReg)
         {
             Console.WriteLine("RetrieveCar");
-            var query = "UPDATE store set car_reg=NULL WHERE pallet_id=(SELECT pallet_id from store where car_reg=@car_reg);";
             var param = new
             {
                 car_reg = carReg
             };
-            var result = this._conn.Execute(query, param);
+            var palletIdWithReg = "SELECT pallet_id, car_reg from store where car_reg=@car_reg";
+            var returnPalletId = this._conn.Query<Store>(palletIdWithReg, param).FirstOrDefault();
+
+            var query1 = "UPDATE store set car_reg=NULL WHERE pallet_id=(SELECT pallet_id from store where car_reg=@car_reg);";
+            var result = this._conn.Execute(query1, param);
             if (result == 1)
-                return true;
+                return returnPalletId;
             else
-                return false;
+                return null;
         }
 
         //Check if store has space
@@ -106,6 +114,15 @@ namespace MPS.Data.Repository
                 " FROM inbound_order;"; 
             var result = this._conn.Query<InboundOrder>(query).ToList();
             return result;
+        }
+
+        public InboundOrder GetInboundOrder(string batch_id, string pallet_id)
+        {
+            Console.WriteLine("Called GetInboundOrder");
+            var param = new { batch_id = batch_id, pallet_id = pallet_id }; // bind param 
+            var query = "SELECT * FROM inbound_order WHERE pallet_id=@pallet_id AND batch_id=@batch_id;";
+            var result = this._conn.Query<InboundOrder>(query, param);
+            return result.FirstOrDefault();
         }
 
         public bool InsertInboundOrder(InboundOrder inboundOrder)
@@ -132,8 +149,6 @@ namespace MPS.Data.Repository
                 wms_storage_status_read = inboundOrder.Wms_storage_status_read
             };
             var result = this._conn.Execute(query, param);
-            Console.WriteLine("Result: " + result);
-            Console.WriteLine(inboundOrder + " has been added.");
             if (result == 1)
             {
                 toReturn = true;
@@ -174,6 +189,15 @@ namespace MPS.Data.Repository
             return result;
         }
 
+        public OutboundOrder GetOutboundOrder(string batch_id, string pallet_id)
+        {
+            Console.WriteLine("Called GetOutboundOrder");
+            var param = new { batch_id = batch_id, pallet_id = pallet_id }; // bind param 
+            var query = "SELECT * FROM outbound_order WHERE pallet_id=@pallet_id AND batch_id=@batch_id;";
+            var result = this._conn.Query<OutboundOrder>(query, param);
+            return result.FirstOrDefault();
+        }
+
         public bool InsertOutboundOrder(OutboundOrder outboundOrder)
         {
             Console.WriteLine("Called InsertOutboundOrder");
@@ -198,8 +222,6 @@ namespace MPS.Data.Repository
                     //automated_activation_time = outboundOrder.Automated_activation_time,
                     target = outboundOrder.Target
                 });
-            Console.WriteLine("Result: " + result);
-            Console.WriteLine(outboundOrder + " has been added.");
             if (result == 1)
             {
                 toReturn = true;
@@ -216,7 +238,6 @@ namespace MPS.Data.Repository
                 car_reg = carReg 
             };
             var result = this._conn.Query<int>(query, param).FirstOrDefault();
-            Console.WriteLine(result);
             if (result != -1)
                 return true;
             else
@@ -276,8 +297,6 @@ namespace MPS.Data.Repository
                     tel_no = driver.Tel_no,
                     email = driver.Email
                 });
-            Console.WriteLine("Result: " + result);
-            Console.WriteLine(driver + " has been added.");
             if (result == 1)
             {
                 toReturn = true;
@@ -349,8 +368,6 @@ namespace MPS.Data.Repository
                     model = car.Model,
                     colour = car.Colour
                 });
-            Console.WriteLine("Result: " + result);
-            Console.WriteLine(car + " has been added.");
             if (result == 1)
             {
                 toReturn = true;

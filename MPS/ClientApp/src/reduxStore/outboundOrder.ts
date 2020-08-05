@@ -1,6 +1,6 @@
 ﻿// Variable Type
 export interface OutboundOrder {
-    batch_id: string | null;
+    batch_id: string;
     pallet_id: string;
     order_pallet_count: number;
     expected_activation_time: Date | null; // as in service will run as NOW();

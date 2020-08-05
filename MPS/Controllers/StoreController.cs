@@ -30,8 +30,8 @@ namespace MPS.Controllers
         {
             //serverside validation require here 
             var result = _dataRepository.StoreCar(store);
-            if (result)
-                return Accepted("store-car", store.Car_reg); // return pallet id here
+            if (result != null)
+                return Accepted("store-car", result); // return pallet id here
             else
                 return Conflict(store.Car_reg);
         }
@@ -40,8 +40,8 @@ namespace MPS.Controllers
         public IActionResult UpdateCar(string carReg)
         {
             var result = _dataRepository.RetrieveCar(carReg);
-            if (result)
-                return Accepted("retrieve-car", carReg);
+            if (result != null)
+                return Accepted("retrieve-car", result);
             else
                 return Conflict(carReg);
         }

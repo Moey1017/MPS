@@ -50,6 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\components\others\Screens.tsx" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js.map" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
@@ -102,6 +103,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\others\Screens.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\pages\userPages\RetrieveConfirmation.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\pages\userPages\StoreConfirmation.tsx" />

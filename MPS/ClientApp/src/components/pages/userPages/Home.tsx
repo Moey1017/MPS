@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import * as Store from '../../../reduxStore/store';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../../reduxStore/index';
+import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 
 type storeProps = Store.StoreState
     & typeof Store.actionCreators;
@@ -22,7 +23,7 @@ class Home extends React.Component<storeProps, any>
         if (this.props.hasSpace) {
             storeButton = <Link className="btn btn-danger cus-btn mr-5" to='/store-vehicle'>
                 Store Vehicle
-                        </Link>;
+                        </Link>
         }
         else {
             storeButton = <Link className="btn btn-danger cus-btn mr-5"
@@ -34,14 +35,13 @@ class Home extends React.Component<storeProps, any>
         return (
             <div className="container mh-100 b-image">
 
-
                 <div className="row fixed-bottom justify-content-center cus-margin-l">
 
                     {storeButton}
 
                     <Link className="btn btn-success cus-btn" to='/retrieve-vehicle'>
                         Retrieve Vehicle
-                        </Link>;
+                        </Link>
                     
 
                 </div>

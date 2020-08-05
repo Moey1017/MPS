@@ -27,6 +27,13 @@ namespace MPS.Controllers
             return outboundOrders;
         }
 
+        [HttpGet("get-outboundOrder/{batch_id}/{pallet_id}")]
+        public IActionResult GetOutboundOrder(string batch_id, string pallet_id)
+        {
+            var result = _dataRepository.GetOutboundOrder(batch_id, pallet_id); // getting the param here 
+            return Ok(result);
+        }
+
         [HttpPost("insert-outboundOrder")]
         public IActionResult InsertInboundOrder([FromBody] OutboundOrder outboundOrder)
         {

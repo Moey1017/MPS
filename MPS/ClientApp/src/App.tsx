@@ -26,8 +26,8 @@ export default () => (
     <Layout>
         <Switch>
             <Route exact path='/' component={Home} />
-            <Route exact path='/store-vehicles' component={StoreVehicle} />
-            <Route exact path='/store-vehicle' component={StoreConfirmation} />
+            <Route exact path='/store-vehicle' component={StoreVehicle} />
+            <Route exact path='/store-confirmation/:reg' component={StoreConfirmation} />
             <Route exact path='/retrieve-vehicle' component={RetrieveVehicle} />
             <Route exact path='/retrieve-confirmation/:car_reg' component={RetrieveConfirmation} />
             <Route exact path='/admin-login' component={AdminLogin} />

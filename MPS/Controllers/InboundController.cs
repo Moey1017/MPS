@@ -27,6 +27,13 @@ namespace MPS.Controllers
             return inboundOrders;
         }
 
+        [HttpGet("get-inboundOrder/{batch_id}/{pallet_id}")]
+        public IActionResult GetInboundOrder(string batch_id, string pallet_id)
+        {
+            var result = _dataRepository.GetInboundOrder(batch_id, pallet_id); // getting the param here 
+            return Ok(result);
+        }
+
         [HttpPost("insert-inboundOrder")]
         public IActionResult InsertInboundOrder([FromBody] InboundOrder inboundOrder)
         {
@@ -48,5 +55,10 @@ namespace MPS.Controllers
             else
                 return Conflict(inboundOrder);
         }
+
+        //private void dbChangeNotification(object sender, SqlNotificationEventArgs e)
+        //{
+        //    _context.Clients.All.SendAsync("refreshEmployees");
+        //}
     }
 }

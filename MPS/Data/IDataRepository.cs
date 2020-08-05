@@ -12,17 +12,19 @@ namespace MPS.Data.Repository
 
         //Store Interface Repository 
         public IEnumerable<Store> GetAllRegistration();
-        public bool StoreCar(Store store);
-        public bool RetrieveCar(string carReg);
+        public Store StoreCar(Store store);
+        public Store RetrieveCar(string carReg);
         public bool IfStoreHasSpace();
 
         //Inbound order Interface Repository 
         public IEnumerable<InboundOrder> GetAllInboundOrders();
+        public InboundOrder GetInboundOrder(string batch_id, string pallet_id);
         public bool InsertInboundOrder(InboundOrder inboundOrder);
         public bool UpdateInboundOrder(InboundOrder inboundOrder);
 
         //Outbound order Interface Repository 
         public IEnumerable<OutboundOrder> GetAllOutboundOrders();
+        public OutboundOrder GetOutboundOrder(string batch_id, string pallet_id);
         public bool InsertOutboundOrder(OutboundOrder outboundOrder);
         public bool IfCarRegExistInStore(string carReg);
         public bool UpdateOutboundOrder(OutboundOrder outboundOrder);
