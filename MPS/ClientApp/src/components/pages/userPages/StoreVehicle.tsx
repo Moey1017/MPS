@@ -63,12 +63,12 @@ class StoreConfirmation extends React.Component<storeProps, any>
         let storeButton;
         if (this.props.storeProps.hasSpace) {
             storeButton = <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
-                Confirm Store Car
+                Scan Car Reg
                         </Button>;
         }
         else {
             storeButton = <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit} disabled>
-                Confirm Store Car
+                Scan Car Reg
                         </Button>;
         }
 
@@ -86,8 +86,8 @@ class StoreConfirmation extends React.Component<storeProps, any>
                     Back
                 </Link>
 
-                <h1 className="display-1 p-center-car">Enter Car Registration</h1>
                 <h1 className="display-1 p-center-car">Is this your Car?</h1>
+                <h1 className="display-1 p-center-car">Scan Car Registration</h1>
 
                 <div className="row fixed-bottom justify-content-center cus-margin-l">
                     <Form onSubmit={this.handleSubmit}>

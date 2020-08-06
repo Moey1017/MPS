@@ -44,7 +44,7 @@ class RetrieveConfirmation extends React.Component<carProps, any>
             screen = <LoadingScreen />
 
         if (this.props.outbound_order !== null) {
-            if (this.props.outbound_order.status === 'COMPLETED') {
+            if (this.props.outbound_order.status === 'COMPLETE') {
                 // Ok screen, when ok is presssed, retrieve sucess and return to main page 
                 screen = <div id="popup1" className="overlay">
                             <div className="popup">

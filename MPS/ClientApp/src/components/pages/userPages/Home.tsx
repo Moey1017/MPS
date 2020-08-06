@@ -42,7 +42,7 @@ class Home extends React.Component<storeProps, any>
                     <Link className="btn btn-success cus-btn" to='/retrieve-vehicle'>
                         Retrieve Vehicle
                         </Link>
-                    
+
 
                 </div>
                 <div className="row fixed-bottom justify-content-center cus-margin-m">

@@ -44,8 +44,8 @@ VALUES
 
 INSERT IGNORE INTO `mps`.`store` (`pallet_id`, `car_reg`)
 VALUES 
-  ('101', 'WRWR312'),
-  ('102', 'DUIW567'),
+  ('101', NULL),
+  ('102', NULL),
   ('103', NULL),
   ('104', NULL),
   ('201', NULL),
@@ -55,17 +55,5 @@ VALUES
   ('301', NULL),
   ('302', NULL),
   ('303', NULL),
-  ('304', 'EEWR789');
- 
--- ----------------------------------------------------------------------------
---
--- Default insert for Inbound Order 
---
--- ----------------------------------------------------------------------------
-INSERT INTO inbound_order (batch_id, pallet_id, order_pallet_count, expected_activation_time,
-sku_name, sku_code, status, max_pallet_height, pallet_width, wms_receipt_link_id, 
-wms_request_status_read, wms_storage_status_read) 
-VALUES 
-(CONCAT(UNIX_TIMESTAMP(),'101'), 'WRWR312', 1, null, 'CAR', 'CAR', 'COMPLETE', 1000, 10000, null, null, null),
-(CONCAT(UNIX_TIMESTAMP(),'102'), 'DUIW567', 1, null, 'CAR', 'CAR', 'COMPLETE', 1000, 10000, null, null, null),
-(CONCAT(UNIX_TIMESTAMP(),'304'), 'EEWR789', 1, null, 'CAR', 'CAR', 'COMPLETE', 1000, 10000, null, null, null);
+  ('304', NULL);
+

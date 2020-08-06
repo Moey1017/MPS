@@ -46,8 +46,8 @@ namespace MPS_Main
             var connectionString = Configuration.GetConnectionString("MpsDbConnection");
 
 
-            //// Configuring DbUp to do migrations - Pg365 
-            EnsureDatabase.For.MySqlDatabase(connectionString);
+            // Configuring DbUp to do migrations - Pg365 
+            //EnsureDatabase.For.MySqlDatabase(connectionString);
 
             var upgrader = DeployChanges.To
                 .MySqlDatabase(connectionString, null)

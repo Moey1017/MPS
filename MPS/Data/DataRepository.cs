@@ -58,7 +58,7 @@ namespace MPS.Data.Repository
             {
                 //Store car into the store
                 var query2 = "UPDATE store set car_reg=@car_reg " +
-                "WHERE pallet_id=(SELECT pallet_id FROM store WHERE car_reg IS NULL ORDER BY pallet_id ASC LIMIT 1);";
+                "WHERE pallet_id=(SELECT * FROM(SELECT pallet_id FROM store WHERE car_reg IS NULL ORDER BY pallet_id ASC LIMIT 1)tempT);";
 
                 var result2 = this._conn.Execute(query2, param);
                 if (result2 == 1)

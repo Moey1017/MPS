@@ -1,47 +1,62 @@
 ﻿import * as React from 'react';
 import { Link } from 'react-router-dom';
+import * as Store from '../../../reduxStore/store';
 import { connect } from 'react-redux';
-import * as CarStore from '../../../reduxStore/car';
 import { ApplicationState } from '../../../reduxStore/index';
+import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 
+type storeProps = Store.StoreState
+    & typeof Store.actionCreators;
 
-// At runtime, Redux will merge together...
-type CarProps =
-    CarStore.CarState // ... state we've requested from the Redux store
-    & typeof CarStore.actionCreators; // ... plus action creators we've requested
-
-class Home2 extends React.PureComponent<CarProps>
+class Home2 extends React.Component<storeProps, any>
 {
     constructor(props: any) {
         super(props);
-
-        this.state = {
-
-        }
     }
 
-    //public componentDidMount() {
-        
-    //}
+    componentWillMount() {
+        this.props.checkIfStoreHasSpace();
+    }
+
     render() {
+        let storeButton;
+        if (this.props.hasSpace) {
+            storeButton = <Link className="btn btn-danger cus-btn mr-5" to='/store-vehicle'>
+                Store Vehicle
+                        </Link>
+        }
+        else {
+            storeButton = <Link className="btn btn-danger 5 "
+                onClick={() => { alert("Car Space is full"); }} to='/'>
+                Store Vehicle
+                        </Link>
+
+        }
         return (
-            <div className="table_container home p-0 m-0">
-                
-                {this.props.cars.map((car: CarStore.Car) =>
-                    <tr key={car.registration}>
-                        <td>{car.registration}</td>
-                        <td>{car.driver}</td>
-                        <td>{car.make}</td>
-                        <td>{car.colour}</td>
-                        <td>{car.model}</td>
-                    </tr>
-                )}
+            <div className="container mh-100 b-image">
+
+                <div className="row fixed-bottom justify-content-center cus-margin-l">
+
+                    {storeButton}
+
+                    <Link className="btn btn-success cus-btn" to='/retrieve-vehicle'>
+                        Retrieve Vehicle
+                        </Link>
+
+
+                </div>
+                <div className="row fixed-bottom justify-content-center cus-margin-m">
+
+                    <Link className="btn btn-secondary mt-2 btn-s " to='/admin-login'>
+                        Add/Edit Details
+                        </Link>
+                </div>
             </div>
         );
     }
 }
 
 export default connect(
-    (state: ApplicationState) => state.cars,
-    CarStore.actionCreators
+    (state: ApplicationState) => state.store,
+    Store.actionCreators
 )(Home2 as any);

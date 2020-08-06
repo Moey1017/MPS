@@ -5,7 +5,7 @@ import axios from 'axios';
 import { InboundOrder } from '../reduxStore/inboundOrder';
 import { OutboundOrder } from '../reduxStore/outboundOrder';
 
-// Another DB, to connect with the existing DB system 
+// Frontend DB, to connect with the existing DB system 
 export interface StoreState {
     readonly pallets: Pallet[];
     readonly isLoading: boolean;
@@ -33,6 +33,8 @@ const GETTING_ORDER_STATUS = 'GETTING_ORDER_STATUS';
 const GOT_ORDER_STATUS = 'GOT_ORDER_STATUS';
 const UPDATE_INBOUND_ORDER = 'UPDATE_INBOUND_ORDER';
 const UPDATE_OUTBOUND_ORDER = 'UPDATE_OUTBOUND_ORDER';
+const RECEIVED_ERROR_STATUS = 'RECEIVED_ERROR_STATUS';
+// Order status name
 
 //Types
 interface RequestStoreStateAction {
@@ -95,6 +97,10 @@ interface UpdateOutboundOrderAction {
     outboundOrder: OutboundOrder;
 }
 
+interface ReceiveErrorStatusAction {
+    type: typeof RECEIVED_ERROR_STATUS
+}
+
 
 //General Functions
 //Get Order status, run function and dispatch
@@ -113,24 +119,22 @@ function getStatus(bound: string, status: string, b_id: string, p_id: string, f:
                 dispatch({ type: GOT_ORDER_STATUS });
                 if (res.data.target) // check if outbound or inbound
                 {
-                    dispatch({ type: UPDATE_OUTBOUND_ORDER, outboundOrder: res.data });
-                    if (res.data.status === 'COMPLETED') {
-                        //here ?? Dispatch Loading?
-                    }
+                    dispatch({ type: UPDATE_OUTBOUND_ORDER, outboundOrder: res.data }); // Outbound
                 }
                 else {
-                    dispatch({ type: UPDATE_INBOUND_ORDER, inboundOrder: res.data })
+                    dispatch({ type: UPDATE_INBOUND_ORDER, inboundOrder: res.data }); // Inbound
                 }
-                    
-                //redirect
-                if (f !== null) { f(url, param);}
+                //run Function/redirect
+                if (f !== null) { f(url, param); }
             }
             else if (res.data.status === "ERROR") {
-                console.log("ERROR!");
+                //Dispatch Error here to stop loading
+                dispatch({ type: RECEIVED_ERROR_STATUS });
+                redirectTo('/', "");
+                alert("SYSTEM ERROR");
             }
             else {
-                console.log("Fetching...");
-                setTimeout(() => { getStatus(bound, status, b_id, p_id, f, url, param, dispatch); }, 1000)
+                setTimeout(() => { getStatus(bound, status, b_id, p_id, f, url, param, dispatch); }, 2000);
             }
         }).catch(error => { console.log(error) })
 }
@@ -147,7 +151,7 @@ function redirectTo(url: string, para: string | null) {
 type StoreAction = RequestStoreStateAction | ReceiveStoreStateAction | StoringCarAction
     | StoredCarAction | RetrievingCarAction | RetrievedCarAction | UpdateSpaceStatusAction
     | CreteInboundOrder | CreteOutboundOrder | GettingOrderStatusAction | GotOrderStatusAction
-    | UpdateInboundOrderAction | UpdateOutboundOrderAction;
+    | UpdateInboundOrderAction | UpdateOutboundOrderAction | ReceiveErrorStatusAction;
 
 export const actionCreators = {
     requestStoreState: (): AppThunkAction<StoreAction> => (dispatch, getState) => {
@@ -167,16 +171,10 @@ export const actionCreators = {
                 })
         }
     },
-    // getting car reg in the param of storing car
-    // dispatch storing car => axios call create inbound order => status:ACTIVE
-    // axios call ifRegExist -> true -> dispatch stored car => udpate current state => -> axios call update status:COMPLETE
-    //                         false -> dispatch carNotFound -> axios call update status: ERROR/DECLINED?
-    createInbound: (carRegToStore: string): AppThunkAction<StoreAction> => (dispatch) => {
-        let carValid = false;
+    createInbound: (carRegToStore: string): AppThunkAction<StoreAction> => (dispatch) => { // check if valid first, if valid create inbound order with status ACTIVE
+        dispatch({ type: STORING_CAR });                                                    // else create inbound order with status ERROR 
 
-        dispatch({ type: STORING_CAR });
         // Create inbound Order 
-
         let b_id = Date.now() + carRegToStore;
         const inboundOrder: InboundOrder =
         {
@@ -193,54 +191,44 @@ export const actionCreators = {
             wms_request_status_read: null,
             wms_storage_status_read: null
         };
-        // Insert inbound order, need to use await but doesnt work 
-        axios.post('api/inbound/insert-inboundOrder', inboundOrder)
-            .then(res => {
-                if (res.status === 201 && res.data == true) {
-                    console.log("Inserted inbound order.");
 
-                    dispatch({ type: CREATE_INBOUND_ORDER, inboundOrder: inboundOrder });
-                }
-            }).catch(error => { console.log(error); })
-
-        //Get inbound status
-        getStatus("inbound", "ACCEPTED", inboundOrder.batch_id, inboundOrder.pallet_id, redirectTo, '/store-confirmation/', carRegToStore, dispatch);
-
-        //Check if Car reg is existed in database by getting it, then change the status to Accepted
+        //Validate Car reg 
         axios.get('api/car/get-car-byReg' + carRegToStore)
             .then(res => {
                 if (res.data !== '') {
+                    //// Car valid
                     console.log("Car Reg valid");
-                    carValid = true;
-                    //// SOMEHOW DETECT WHEN DONE, Check Status if Complete or Error
-                    if (carValid) { inboundOrder.status = 'ACCEPTED';}
-                    
-                    axios.put('api/inbound/update-inboundStatus', inboundOrder)
+                    // Insert inbound order
+                    axios.post('api/inbound/insert-inboundOrder', inboundOrder)
                         .then(res => {
-                            if (res.data !== '') {
-                                console.log("update order successfully.")
-                            } else {
-                                console.log("Something went wrong while updating order to Accepted.");
+                            if (res.status === 201 && res.data == true) {
+                                console.log("Inserted inbound order.");
+
+                                dispatch({ type: CREATE_INBOUND_ORDER, inboundOrder: inboundOrder });
                             }
-                        }).catch(error => {
-                            console.log("storeCar caught an error while updating status to COMPLETE.");
-                        })
+                        }).catch(error => { console.log(error); })
+
+                    //Get inbound status
+                    getStatus("inbound", "ACCEPTED", inboundOrder.batch_id, inboundOrder.pallet_id, redirectTo, '/store-confirmation/', carRegToStore, dispatch);
                 } else {
-                    // not exist then AXIOS CALL update status to ERROR?
+                    // car not valid 
                     alert("Car reg doesnt existed, please re-enter.");
-                    //inboundOrder.status = 'ERROR';
-                            //                    console.log(inboundOrder);
-                            //                    axios.put('api/inbound/update-inboundStatus', inboundOrder)
-                            //                        .then(res => {
-                            //                            if (res.data !== '') {
-                            //                                console.log("updated order to ERROR.");
-                            //                            }
-                            //                        }).catch(error => { console.log("Something went wrong while update status to ERROR."); })
-                            //                })
+                    inboundOrder.status = 'ERROR';
+                    // Insert inbound order with status ERROR 
+                    axios.post('api/inbound/insert-inboundOrder', inboundOrder)
+                        .then(res => {
+                            if (res.status === 201 && res.data == true) {
+                                console.log("Inserted inbound order.");
+
+                                dispatch({ type: CREATE_INBOUND_ORDER, inboundOrder: inboundOrder });
+                            }
+                            else {
+                                console.log("Something went wrong while inserting inbound order");
+                            }
+                        }).catch(error => { console.log(error); })
                 }
             }).catch(error => {
                 console.log("fetchCar in storeCar caught an error.");
-                //TODO:Create Dispatch type if error 
             })
     },
     storeCar: (carRegToStore: string, batch_id: string, pallet_id: string): AppThunkAction<StoreAction> => (dispatch) => {
@@ -264,15 +252,10 @@ export const actionCreators = {
                     }
                 }).catch(error => {
                     console.log("storeCar caught an error while storing./Car reg is found in store.");
-                    //TODO: DISPATCH STORE FAILED
                 })
         }
-
         //Get inbound Status
-        getStatus("inbound", "COMPLETED", batch_id, pallet_id, storeAndRedirect, null, null, dispatch);
-
-        //Create store Object, update state 
-
+        getStatus("inbound", "COMPLETE", batch_id, pallet_id, storeAndRedirect, null, null, dispatch);
     },
     createOutbound: (carRegToRetrieve: string): AppThunkAction<StoreAction> => (dispatch) => {
         dispatch({ type: RETRIEVING_CAR });
@@ -290,62 +273,34 @@ export const actionCreators = {
             wms_request_status_read: null,
             wms_output_status_read: null,
             automated_activation_time: null,
-            target: 1000001
+            target: 100001
         }
 
-        axios.post('api/outbound/insert-outboundOrder', outboundOrder)
+        //Check if Car valid in store
+        axios.get('api/outbound/ifCarRegExist' + carRegToRetrieve)
             .then(res => {
-                if (res.status === 201 && res.data == true) {
-                    console.log("Inserted outbound order.");
-                    dispatch({ type: CREATE_OUTBOUND_ORDER, outboundOrder: outboundOrder })
+                if (res.data === true) {
+                    console.log("Car reg is found in the store.")
 
-                    //Check if Car valid in store
-                    axios.get('api/outbound/ifCarRegExist' + carRegToRetrieve)
+                    axios.post('api/outbound/insert-outboundOrder', outboundOrder)
                         .then(res => {
-                            if (res.data === true) {
-                                console.log("Car reg is found in the store.")
-
-                                // UPDATE STATUS => ACCEPTED
-
-                                // SOMEHOW DETECT WHEN DONE,Check Status if Complete or Error
-                                //outBoundOrder.status = 'COMPLETED';
-                                //axios.put('api/outbound/update-outboundStatus', outBoundOrder)
-                                //    .then(res => {
-                                //        if (res.data !== '') {
-                                //            console.log("update outbound order successfully.");
-
-                                //            // axios call retrieve car from store
-                                //            axios.put('api/store/retrieve-car' + carRegToRetrieve)
-                                //                .then(res => {
-                                //                    if (res.status === 202) {
-                                //                        console.log("Car has been retrieved.");
-                                //                        history.push('/');// Redirect to home
-                                //                    }
-                                //                    else {
-                                //                        console.log("Car was not successfully retrieved.")
-                                //                    }
-                                //                }).catch(error => {
-                                //                    console.log("something went wrong in retrieveCar.");
-                                //                })
-                                //            // dispatch Retrieved Car
-                                //        }
-                                //        else {
-                                //            console.log("Something went wrong while updating outbound order.");
-                                //        }
-                                //    }).catch(error => {
-                                //        console.log("retrieveCar does not receive any data/Car reg doesnt existed.");
-                                //    })
-
+                            if (res.status === 201 && res.data == true) {
+                                console.log("Inserted outbound order.");
+                                dispatch({ type: CREATE_OUTBOUND_ORDER, outboundOrder: outboundOrder })
 
                                 //Get inbound status
-                                getStatus("outbound", "COMPLETED", outboundOrder.batch_id, outboundOrder.pallet_id, null, null, null, dispatch);
+                                getStatus("outbound", "COMPLETE", outboundOrder.batch_id, outboundOrder.pallet_id, null, null, null, dispatch);
                             }
                         }).catch(error => {
-                            console.log("Something went wrong while update status in outbound order.");
+                            console.log("retrieveCar caught an error./Failed to insert outbound order.")
                         })
                 }
+                else {
+                    alert("Car Reg is not found in the store");
+                    redirectTo('/retrieve-vehicle', "");
+                }
             }).catch(error => {
-                console.log("retrieveCar caught an error./Failed to insert outbound order.")
+                console.log("Something went wrong while update status in outbound order.");
             })
     },
     //Use to confirm exit also, when user press OK
@@ -362,74 +317,7 @@ export const actionCreators = {
                     console.log("Car was not successfully retrieved.")
                 }
             }).catch(error => {
-                console.log("something went wrong in retrieveCar.");
-            })
-    },
-    // dispatch retriving car => create outbound order => status:ACTIVE/ACCEPTED 
-    // dispatch stored car => udpate current state 
-    retrieveCar2: (carRegToRetrieve: string): AppThunkAction<StoreAction> => (dispatch) => {
-        //Create outbound Order 
-        let b_id = Date.now() + carRegToRetrieve;
-        const outBoundOrder: OutboundOrder = {
-            batch_id: b_id,
-            pallet_id: carRegToRetrieve,
-            order_pallet_count: 1,
-            expected_activation_time: null,
-            status: "ACTIVE",
-            index: 0,
-            source: null,
-            wms_link_id: null,
-            wms_request_status_read: null,
-            wms_output_status_read: null,
-            automated_activation_time: null,
-            target: 1000001
-        }
-        axios.post('api/outbound/insert-outboundOrder', outBoundOrder)
-            .then(res => {
-                if (res.status === 201 && res.data == true) {
-                    console.log("Inserted outbound order.");
-
-                    //Check if Car valid in store
-                    axios.get('api/outbound/ifCarRegExist' + carRegToRetrieve)
-                        .then(res => {
-                            if (res.data === true) {
-                                console.log("Car reg is found in the store.")
-
-                                // SOMEHOW DETECT WHEN DONE,Check Status if Complete or Error
-                                //outBoundOrder.status = 'COMPLETED';
-                                //axios.put('api/outbound/update-outboundStatus', outBoundOrder)
-                                //    .then(res => {
-                                //        if (res.data !== '') {
-                                //            console.log("update outbound order successfully.");
-
-                                //            // axios call retrieve car from store
-                                //            axios.put('api/store/retrieve-car' + carRegToRetrieve)
-                                //                .then(res => {
-                                //                    if (res.status === 202) {
-                                //                        console.log("Car has been retrieved.");
-                                //                        history.push('/');// Redirect to home
-                                //                    }
-                                //                    else {
-                                //                        console.log("Car was not successfully retrieved.")
-                                //                    }
-                                //                }).catch(error => {
-                                //                    console.log("something went wrong in retrieveCar.");
-                                //                })
-                                //            // dispatch Retrieved Car
-                                //        }
-                                //        else {
-                                //            console.log("Something went wrong while updating outbound order.");
-                                //        }
-                                //    }).catch(error => {
-                                //        console.log("retrieveCar does not receive any data/Car reg doesnt existed.");
-                                //    })
-                            }
-                        }).catch(error => {
-                            console.log("Something went wrong while update status in outbound order.");
-                        })
-                }
-            }).catch(error => {
-                console.log("retrieveCar caught an error./Failed to insert outbound order.")
+                console.log("something went wrong while retriving Car from the store.");
             })
     },
     //Check if there's space in the store
@@ -498,7 +386,7 @@ export const reducer: Reducer<StoreState> = (state: StoreState | undefined, inco
                     if (p.pallet_id === action.pallet.pallet_id) { return { pallet_id: action.pallet.pallet_id, car_reg: null } };
                     return p;
                 }),
-                outbound_order:null,
+                outbound_order: null,
                 isLoading: false
             }
         case UPDATE_SPACE_STATUS:
@@ -525,6 +413,11 @@ export const reducer: Reducer<StoreState> = (state: StoreState | undefined, inco
             return {
                 ...state,
                 outbound_order: action.outboundOrder
+            }
+        case RECEIVED_ERROR_STATUS:
+            return {
+                ...state,
+                isLoading: false
             }
         default:
             return {
