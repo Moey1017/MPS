@@ -3,7 +3,7 @@ import { Route, Switch} from 'react-router';
 import Layout from './components/Layout';
 //Users Pages
 import Home from './components/pages/userPages/Home';
-import Home2 from './components/pages/userPages/Home2';
+import Home2 from './components/pages/userPages/Home3';
 import StoreVehicle from './components/pages/userPages/StoreVehicle';
 import RetrieveVehicle from './components/pages/userPages/RetrieveVehicle';
 import StoreConfirmation from './components/pages/userPages/StoreConfirmation';

@@ -85,7 +85,8 @@ namespace MPS.Data.Repository
             var palletIdWithReg = "SELECT pallet_id, car_reg from store where car_reg=@car_reg";
             var returnPalletId = this._conn.Query<Store>(palletIdWithReg, param).FirstOrDefault();
 
-            var query1 = "UPDATE store set car_reg=NULL WHERE pallet_id=(SELECT pallet_id from store where car_reg=@car_reg);";
+            var query1 = "UPDATE store set car_reg=NULL " +
+                "WHERE pallet_id=(SELECT * FROM(SELECT pallet_id from store where car_reg=@car_reg)tempT);";
             var result = this._conn.Execute(query1, param);
             if (result == 1)
                 return returnPalletId;

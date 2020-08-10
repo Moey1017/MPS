@@ -101,9 +101,9 @@ class StoreConfirmation extends React.Component<storeProps, any>
                 {loadingScreen}
 
                 <div className="row cus-margin-home">
-                    <Link className="btn btn-danger cus-btn mt-5 float-right" to='/'>
-                        Back
-                    </Link>
+                    <Button className="btn btn-danger cus-btn mt-5 float-right" onClick={() => { this.props.userCancelAndReturn("inbound", this.props.inbound_order); }}>
+                        Cancel
+                    </Button>
                     <h1 className="display-1 cus-title-store">Store Vehicle</h1>
                 </div>
                 <div className="overflow-auto terms-container">

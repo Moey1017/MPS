@@ -8,35 +8,89 @@
     banner / back image
 */
 
-/*  myown 
-    Home
+/*  
+    myown 
 */
 html, body
 {
     overflow: hidden;
+    margin:0;
+    padding:0;
+    height:100%;
 }
 
-.container {
-    max-width: 100%;
-    padding: 0;
-    margin: 0;
-}
-
-.mpsHeader {
-    height: 5%;
-    background-color: blue;
-    color: white;
-    display: flex;
-}
-
-.bg {
+/*  
+    Home page
+*/
+.home {
     background-image: url(./assets/MPS_background.jpg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 48em;
-    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right:0;
+    left:0;
 }
+
+.mpsHeader {
+    background-color: blue;
+    color: lightgrey;
+    display: flex;
+    justify-content: space-between;
+    padding: 1%;
+    align-items: center;
+    font-weight:bold;
+}
+
+.header_title
+{
+    font-size:x-large;
+}
+
+.header_img img
+{
+    width:5em;
+}
+
+.home_content {
+    position: absolute;
+    bottom: 5%;
+    left: 0;
+    right: 0;
+}
+
+.home_btn {
+    width: 12em;
+    padding: 1em;
+    font-size: x-large;
+    margin:0.5em;
+}
+
+@media (max-width: 1024px) {
+    
+}
+
+@media (max-width: 768px) {
+   
+}
+
+@media (max-width: 630px)
+{
+    .home_btn_div
+    {
+        flex-direction:column;
+    }
+}
+
+@media (max-width: 450px) {
+    
+}
+
 /*
     Loading Screen
 */

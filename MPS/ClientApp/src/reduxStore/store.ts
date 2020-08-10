@@ -19,7 +19,13 @@ export interface Pallet {
     readonly car_reg: string | null;
 }
 
-// Action name 
+// Order status names
+const ACTIVE = "ACTIVE";
+const ACCEPTED = "ACCEPTED";
+const ERROR = "ERROR";
+const COMPLETE = "COMPLETE";
+const CANCELLED = "CANCELLED";
+// Action names
 const REQUEST_STORE_STATE = 'REQUEST_STORE_STATE';
 const RECEIVE_STORE_STATE = 'RECEIVE_STORE_STATE';
 const CREATE_INBOUND_ORDER = 'CREATE_INBOUND_ORDER';
@@ -34,7 +40,7 @@ const GOT_ORDER_STATUS = 'GOT_ORDER_STATUS';
 const UPDATE_INBOUND_ORDER = 'UPDATE_INBOUND_ORDER';
 const UPDATE_OUTBOUND_ORDER = 'UPDATE_OUTBOUND_ORDER';
 const RECEIVED_ERROR_STATUS = 'RECEIVED_ERROR_STATUS';
-// Order status name
+const USER_CANCEL = 'USER_CANCEL';
 
 //Types
 interface RequestStoreStateAction {
@@ -101,14 +107,17 @@ interface ReceiveErrorStatusAction {
     type: typeof RECEIVED_ERROR_STATUS
 }
 
+interface UserCancelAction {
+    type: typeof USER_CANCEL
+}
 
 //General Functions
 //Get Order status, run function and dispatch
-function getStatus(bound: string, status: string, b_id: string, p_id: string, f: any | null, url: string | null, param: string | null, dispatch: any) {
+function getStatus(orderType: string, status: string, b_id: string, p_id: string, f: any | null, url: string | null, param: string | null, dispatch: any) {
     //Dispatch set loading to true 
     dispatch({ type: GETTING_ORDER_STATUS });
     //Getting from db
-    axios.get('api/' + bound + '/get-' + bound + 'Order/' + b_id
+    axios.get('api/' + orderType + '/get-' + orderType + 'Order/' + b_id
         + '/' + p_id)
         .then(res => {
             console.log(res.data.status);
@@ -127,14 +136,19 @@ function getStatus(bound: string, status: string, b_id: string, p_id: string, f:
                 //run Function/redirect
                 if (f !== null) { f(url, param); }
             }
-            else if (res.data.status === "ERROR") {
+            else if (res.data.status === ERROR) {
                 //Dispatch Error here to stop loading
                 dispatch({ type: RECEIVED_ERROR_STATUS });
                 redirectTo('/', "");
                 alert("SYSTEM ERROR");
             }
+            else if (res.data.status === CANCELLED) {
+                dispatch({ type: USER_CANCEL });
+                redirectTo('/', "");
+                alert("SYSTEM CANCELLED");
+            }
             else {
-                setTimeout(() => { getStatus(bound, status, b_id, p_id, f, url, param, dispatch); }, 2000);
+                setTimeout(() => { getStatus(orderType, status, b_id, p_id, f, url, param, dispatch); }, 2000);
             }
         }).catch(error => { console.log(error) })
 }
@@ -151,7 +165,8 @@ function redirectTo(url: string, para: string | null) {
 type StoreAction = RequestStoreStateAction | ReceiveStoreStateAction | StoringCarAction
     | StoredCarAction | RetrievingCarAction | RetrievedCarAction | UpdateSpaceStatusAction
     | CreteInboundOrder | CreteOutboundOrder | GettingOrderStatusAction | GotOrderStatusAction
-    | UpdateInboundOrderAction | UpdateOutboundOrderAction | ReceiveErrorStatusAction;
+    | UpdateInboundOrderAction | UpdateOutboundOrderAction | ReceiveErrorStatusAction
+    | UserCancelAction;
 
 export const actionCreators = {
     requestStoreState: (): AppThunkAction<StoreAction> => (dispatch, getState) => {
@@ -175,16 +190,16 @@ export const actionCreators = {
         dispatch({ type: STORING_CAR });                                                    // else create inbound order with status ERROR 
 
         // Create inbound Order 
-        let b_id = Date.now() + carRegToStore;
+        let b_id = new Date().valueOf().toString();
         const inboundOrder: InboundOrder =
         {
             batch_id: b_id, // Created with Unix and carReg Number
             pallet_id: carRegToStore,
             order_pallet_count: 1,
             expected_activation_time: null,
-            sku_name: 'Car',
-            sku_code: 'Car',
-            status: 'ACTIVE', //ENUM ?? 
+            sku_name: 'CAR',
+            sku_code: 'CAR',
+            status: ACTIVE, //ENUM ?? 
             max_pallet_height: 1000,
             pallet_width: 10000,
             wms_receipt_link_id: null,
@@ -209,23 +224,24 @@ export const actionCreators = {
                         }).catch(error => { console.log(error); })
 
                     //Get inbound status
-                    getStatus("inbound", "ACCEPTED", inboundOrder.batch_id, inboundOrder.pallet_id, redirectTo, '/store-confirmation/', carRegToStore, dispatch);
+                    getStatus("inbound", ACCEPTED, inboundOrder.batch_id, inboundOrder.pallet_id, 
+                        redirectTo, '/store-confirmation/', carRegToStore, dispatch);
                 } else {
                     // car not valid 
                     alert("Car reg doesnt existed, please re-enter.");
-                    inboundOrder.status = 'ERROR';
-                    // Insert inbound order with status ERROR 
-                    axios.post('api/inbound/insert-inboundOrder', inboundOrder)
-                        .then(res => {
-                            if (res.status === 201 && res.data == true) {
-                                console.log("Inserted inbound order.");
+                    //inboundOrder.status = ERROR;
+                    //// Insert inbound order with status ERROR 
+                    //axios.post('api/inbound/insert-inboundOrder', inboundOrder)
+                    //    .then(res => {
+                    //        if (res.status === 201 && res.data == true) {
+                    //            console.log("Inserted inbound order.");
 
-                                dispatch({ type: CREATE_INBOUND_ORDER, inboundOrder: inboundOrder });
-                            }
-                            else {
-                                console.log("Something went wrong while inserting inbound order");
-                            }
-                        }).catch(error => { console.log(error); })
+                    //            dispatch({ type: CREATE_INBOUND_ORDER, inboundOrder: inboundOrder });
+                    //        }
+                    //        else {
+                    //            console.log("Something went wrong while inserting inbound order");
+                    //        }
+                    //    }).catch(error => { console.log(error); })
                 }
             }).catch(error => {
                 console.log("fetchCar in storeCar caught an error.");
@@ -237,6 +253,7 @@ export const actionCreators = {
                 pallet_id: "0",
                 car_reg: carRegToStore
             }
+
             //Put car into store 
             axios.put('api/store/store-car', pallet)
                 .then(res => {
@@ -255,18 +272,18 @@ export const actionCreators = {
                 })
         }
         //Get inbound Status
-        getStatus("inbound", "COMPLETE", batch_id, pallet_id, storeAndRedirect, null, null, dispatch);
+        getStatus("inbound", COMPLETE, batch_id, pallet_id, storeAndRedirect, null, null, dispatch);
     },
     createOutbound: (carRegToRetrieve: string): AppThunkAction<StoreAction> => (dispatch) => {
         dispatch({ type: RETRIEVING_CAR });
 
-        let b_id = Date.now() + carRegToRetrieve;
+        let b_id = new Date().valueOf().toString();
         const outboundOrder: OutboundOrder = {
             batch_id: b_id,
             pallet_id: carRegToRetrieve,
             order_pallet_count: 1,
             expected_activation_time: null,
-            status: "ACTIVE",
+            status: ACTIVE,
             index: 0,
             source: null,
             wms_link_id: null,
@@ -289,7 +306,8 @@ export const actionCreators = {
                                 dispatch({ type: CREATE_OUTBOUND_ORDER, outboundOrder: outboundOrder })
 
                                 //Get inbound status
-                                getStatus("outbound", "COMPLETE", outboundOrder.batch_id, outboundOrder.pallet_id, null, null, null, dispatch);
+                                getStatus("outbound", COMPLETE, outboundOrder.batch_id, outboundOrder.pallet_id,
+                                    null, null, null, dispatch);
                             }
                         }).catch(error => {
                             console.log("retrieveCar caught an error./Failed to insert outbound order.")
@@ -326,6 +344,24 @@ export const actionCreators = {
             .then(res => {
                 dispatch({ type: UPDATE_SPACE_STATUS, hasSpace: res.data })
             }).catch(error => { console.log("something went wrong while checking space in store.") })
+    },
+    //When user Cancel
+    userCancelAndReturn: (orderType: string, order: any): AppThunkAction<StoreAction> => (dispatch) => {
+        if (order !== null) {
+            order.status = CANCELLED;
+            axios.put('api/' + orderType + '/update-' + orderType + 'Status', order)
+                .then(res => {
+                    console.log(res);
+                    if (res.status === 202) {
+                        console.log("Order has been cancelled.");
+                    }
+                }).catch(error => {
+                    console.log("Something went wrong while updating order status to cancel");
+                })
+        // Maybe update the order status to Cancelled? 
+        }
+        dispatch({ type: USER_CANCEL });
+        redirectTo('/', "");
     }
 }
 
@@ -417,7 +453,16 @@ export const reducer: Reducer<StoreState> = (state: StoreState | undefined, inco
         case RECEIVED_ERROR_STATUS:
             return {
                 ...state,
-                isLoading: false
+                isLoading: false,
+                inbound_order: null,
+                outbound_order:null
+            }
+        case USER_CANCEL:
+            return {
+                ...state,
+                isLoading: false,
+                inbound_order: null,
+                outbound_order: null
             }
         default:
             return {

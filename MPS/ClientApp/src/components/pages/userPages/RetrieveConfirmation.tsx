@@ -48,7 +48,7 @@ class RetrieveConfirmation extends React.Component<carProps, any>
                 // Ok screen, when ok is presssed, retrieve sucess and return to main page 
                 screen = <div id="popup1" className="overlay">
                             <div className="popup">
-                                <h2>Car has been retrieved</h2>
+                                <h2>Press Ok when the Car has been completed retrieved.</h2>
                                 <div className="content">
                                     <Button onClick={this.handleOk}>OK</Button>
                                 </div>

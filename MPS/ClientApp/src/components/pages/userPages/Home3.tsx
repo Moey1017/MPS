@@ -1,4 +1,4 @@
-﻿import * as React from 'react';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
 import * as Store from '../../../reduxStore/store';
 import { connect } from 'react-redux';
@@ -8,7 +8,7 @@ import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 type storeProps = Store.StoreState
     & typeof Store.actionCreators;
 
-class Home2 extends React.Component<storeProps, any>
+class Home extends React.Component<storeProps, any>
 {
     constructor(props: any) {
         super(props);
@@ -26,7 +26,7 @@ class Home2 extends React.Component<storeProps, any>
                         </Link>
         }
         else {
-            storeButton = <Link className="btn btn-danger 5 "
+            storeButton = <Link className="btn btn-danger cus-btn mr-5"
                 onClick={() => { alert("Car Space is full"); }} to='/'>
                 Store Vehicle
                         </Link>
@@ -59,4 +59,4 @@ class Home2 extends React.Component<storeProps, any>
 export default connect(
     (state: ApplicationState) => state.store,
     Store.actionCreators
-)(Home2 as any);
+)(Home as any);
