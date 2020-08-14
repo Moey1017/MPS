@@ -4,6 +4,7 @@ import * as Store from '../../../reduxStore/store';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../../reduxStore/index';
 import * as Rs from 'reactstrap';
+import { MpsHeader } from '../../others/MpsHeader';
 
 type storeProps = Store.StoreState
     & typeof Store.actionCreators;
@@ -21,12 +22,12 @@ class Home2 extends React.Component<storeProps, any>
     render() {
         let storeButton;
         if (this.props.hasSpace) {
-            storeButton = <Link className="btn btn-danger home_btn" to='/store-vehicle'>
+            storeButton = <Link className="btn btn-danger cus_btn" to='/store-vehicle'>
                 Store Vehicle
                         </Link>
         }
         else {
-            storeButton = <Link className="btn btn-danger home_btn"
+            storeButton = <Link className="btn btn-danger cus_btn"
                 onClick={() => { alert("Car Space is full"); }} to='/'>
                 Store Vehicle
                         </Link>
@@ -34,10 +35,7 @@ class Home2 extends React.Component<storeProps, any>
         }
         return (
             <div className="home">
-                <div className="mpsHeader">
-                    <div className="header_title">MOFFET PARKING SOLUTIONS</div>
-                    <div className="header_img"><img src="https://moffett-parkingsolutions.com/wp-content/uploads/2020/05/moffett-parking-solutions.png" alt="mps_header_logo" /></div>
-                </div>
+                <MpsHeader />
 
                 <div className="home_content">
 
@@ -47,7 +45,7 @@ class Home2 extends React.Component<storeProps, any>
                             <div className="d-flex m-auto home_btn_div">
                                 {storeButton}
 
-                                <Link className="btn btn-success home_btn" to='/retrieve-vehicle'>
+                                <Link className="btn btn-success cus_btn" to='/retrieve-vehicle'>
                                     Retrieve Vehicle
                         </Link>
                             </div>
@@ -59,7 +57,12 @@ class Home2 extends React.Component<storeProps, any>
                             <Link className="btn btn-secondary m-auto" to='/admin-login'>
                                 Admin Log In
                         </Link>
+
                         </div>
+
+                        <Link className="btn btn-secondary m-auto position-absolute" to='/test'>
+                            Testing Form
+                        </Link>
                     </div>
                 </div>
             </div>

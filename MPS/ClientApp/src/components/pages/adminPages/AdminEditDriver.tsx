@@ -5,6 +5,7 @@ import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 import * as DriverStore from '../../../reduxStore/driver';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../../reduxStore/index';
+import { MpsHeader } from '../../others/MpsHeader';
 
 // At runtime, Redux will merge together..., merge everything into this.props
 type DriverProps =
@@ -25,20 +26,20 @@ class AdminEditDriver extends React.Component<DriverProps, any>
         };
     }
 
-    componentDidMount() {    
-         setTimeout(() => {
-             this.props.fetchDriver(parseInt(this.props.match.params.id)); 
-             this.setState({
-                 driId: this.props.driver.driver_id,
-                 driName: this.props.driver.name,
-                 driEmail: this.props.driver.email,
-                 driTelNo: this.props.driver.tel_no
-             })
-         }, 500)
+    componentDidMount() {
+        setTimeout(() => {
+            this.props.fetchDriver(parseInt(this.props.match.params.id));
+            this.setState({
+                driId: this.props.driver.driver_id,
+                driName: this.props.driver.name,
+                driEmail: this.props.driver.email,
+                driTelNo: this.props.driver.tel_no
+            })
+        }, 500)
     }
 
     // States update late, need this to update component 
-    componentDidUpdate(prevProps:any) {
+    componentDidUpdate(prevProps: any) {
         if (this.props.driver !== prevProps.driver) {
             this.setState({
                 driId: this.props.driver.driver_id,
@@ -67,11 +68,16 @@ class AdminEditDriver extends React.Component<DriverProps, any>
     }
 
     render() {
-            return (
-                <div className="container mh-100 b-banner-image">
-                    <h1 className="display-1 p-center-driver">Edit Driver</h1>
+        return (
+            <div className="mpsContainer">
+                <MpsHeader />
+                <div className="central_container ">
 
-                    <div className="row fixed-bottom justify-content-center cus-margin-l">
+                    <div className="text-center">
+                        <h1 className="display-1">Update Driver</h1>
+                    </div>
+
+                    <div className="row justify-content-center">
 
                         <Form onSubmit={this.handleSubmit}>
                             <FormGroup>
@@ -89,19 +95,20 @@ class AdminEditDriver extends React.Component<DriverProps, any>
                                 <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="driTelNo" value={this.state.driTelNo} onChange={this.handleChange}></Input>
                             </FormGroup>
 
-                            <Link className="btn btn-danger cus-btn mr-5" to='/admin-view-drivers'>
+                            <Link className="btn btn-danger cus_btn mr-5" to='/admin-view-drivers'>
                                 Back
                             </Link>
 
                             {/*Link className="btn  btn-success cus-btn" onClick={this.handleOpenModal} to='#'>*/}
-                            <Button className="btn  btn-success cus-btn" type="submit">
+                            <Button className="btn btn-success cus_btn" type="submit">
                                 Update
                             </Button>
 
                         </Form>
                     </div>
                 </div>
-            );
+            </div>
+        );
     }
 }
 

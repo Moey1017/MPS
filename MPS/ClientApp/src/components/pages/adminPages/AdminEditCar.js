@@ -31,6 +31,7 @@ var CarStore = require("../../../reduxStore/car");
 var reactstrap_1 = require("reactstrap");
 var react_redux_1 = require("react-redux");
 var redux_1 = require("redux");
+var MpsHeader_1 = require("../../others/MpsHeader");
 var AdminEditCar = /** @class */ (function (_super) {
     __extends(AdminEditCar, _super);
     function AdminEditCar(props) {
@@ -103,26 +104,29 @@ var AdminEditCar = /** @class */ (function (_super) {
         }
     };
     AdminEditCar.prototype.render = function () {
-        return (React.createElement("div", { className: "container mh-100 b-banner-image" },
-            React.createElement("h1", { className: "display-1 p-center-car" }, "Update Car"),
-            React.createElement("div", { className: "row fixed-bottom justify-content-center cus-margin-l" },
-                React.createElement(reactstrap_1.Form, { onSubmit: this.handleSubmit },
-                    React.createElement(reactstrap_1.FormGroup, null,
-                        React.createElement(reactstrap_1.Label, { className: "d-block" }, "Select A Driver")),
-                    React.createElement(reactstrap_1.FormGroup, null,
-                        React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Registration"),
-                        React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car registration", name: "registration", value: this.state.registration || "", onChange: this.handleChange, disabled: true })),
-                    React.createElement(reactstrap_1.FormGroup, null,
-                        React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Make"),
-                        React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter make", name: "make", value: this.state.make || "", onChange: this.handleChange })),
-                    React.createElement(reactstrap_1.FormGroup, null,
-                        React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Model"),
-                        React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car model", name: "model", value: this.state.model || "", onChange: this.handleChange })),
-                    React.createElement(reactstrap_1.FormGroup, null,
-                        React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Colour"),
-                        React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car colour", name: "colour", value: this.state.colour || "", onChange: this.handleChange })),
-                    React.createElement(react_router_dom_1.Link, { className: "btn btn-danger cus-btn mr-5", to: '/admin-view-cars' }, "Back"),
-                    React.createElement(reactstrap_1.Button, { className: "btn  btn-success cus-btn", type: "submit", onClick: this.handleSubmit }, "Update")))));
+        return (React.createElement("div", { className: "mpsContainer" },
+            React.createElement(MpsHeader_1.MpsHeader, null),
+            React.createElement("div", { className: "central_container " },
+                React.createElement("div", { className: "text-center" },
+                    React.createElement("h1", { className: "display-1" }, "Update Car")),
+                React.createElement("div", { className: "row justify-content-center" },
+                    React.createElement(reactstrap_1.Form, { onSubmit: this.handleSubmit },
+                        React.createElement(reactstrap_1.FormGroup, null,
+                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Select A Driver")),
+                        React.createElement(reactstrap_1.FormGroup, null,
+                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Registration"),
+                            React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car registration", name: "registration", value: this.state.registration || "", onChange: this.handleChange, disabled: true })),
+                        React.createElement(reactstrap_1.FormGroup, null,
+                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Make"),
+                            React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter make", name: "make", value: this.state.make || "", onChange: this.handleChange })),
+                        React.createElement(reactstrap_1.FormGroup, null,
+                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Model"),
+                            React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car model", name: "model", value: this.state.model || "", onChange: this.handleChange })),
+                        React.createElement(reactstrap_1.FormGroup, null,
+                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Colour"),
+                            React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car colour", name: "colour", value: this.state.colour || "", onChange: this.handleChange })),
+                        React.createElement(react_router_dom_1.Link, { className: "btn btn-danger cus_btn mr-5", to: '/admin-view-cars' }, "Back"),
+                        React.createElement(reactstrap_1.Button, { className: "btn btn-success cus_btn", type: "submit", onClick: this.handleSubmit }, "Update"))))));
     };
     return AdminEditCar;
 }(React.Component));

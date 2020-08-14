@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as CarStore from '../../../reduxStore/car';
 import { ApplicationState } from '../../../reduxStore/index';
-import { Button } from 'reactstrap';
+import { Button, Table } from 'reactstrap';
+import { MpsHeader } from '../../others/MpsHeader';
 
 // At runtime, Redux will merge together..., merge everything into this.props
 type CarProps =
@@ -23,41 +24,50 @@ class AdminViewCars extends React.PureComponent<CarProps>
 
     render() {
         return (
-            <div className="container mh-100 p-3 b-banner-image">
-                <Link className="btn btn-danger cus-btn cus-margin-options" to='/admin-options'>
+            <div className="mpsContainer">
+                <MpsHeader />
+                <Link className="btn btn-danger cus_btn" to='/admin-options'>
                     Back
                 </Link>
-                {this.props.isLoading && <span>Loading...</span>}
-                <div className="col-12 border p-3 .w-100" >
-                    <table id="DT_load" className="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Registration</th>
-                                <th>Driver</th>
-                                <th>Make</th>
-                                <th>Model</th>
-                                <th>Colour</th>
-                                <th></th>
-                            </tr>
-                            {this.props.cars.map((car: CarStore.Car) =>
-                                <tr key={car.registration + car.driver}>
-                                    <td>{car.registration}</td>
-                                    <td>{car.driver}</td>
-                                    <td>{car.make}</td>
-                                    <td>{car.model}</td>
-                                    <td>{car.colour}</td>
-                                    <td>
-                                        <Link className="btn btn-success btn-sm text-white" to={"/admin-edit-car/" + car.registration}>
-                                            Edit
-                                        </Link>
-                                        <Button className="btn btn-danger btn-sm" onClick={() => this.props.deleteCar(car.registration)}>
-                                            Delete
-                                        </Button>
-                                    </td>
+
+                <div className="central_container table_container">
+
+                    <div className="text-center">
+                        <h1 className="m-0">Cars</h1>
+                    </div>
+
+                    <div className="row justify-content-center p-3 w-100">
+                        {this.props.isLoading && <span>Loading...</span>}
+                        <Table id="DT_load" className="table table-striped table-bordered cus_tb">
+                            <thead>
+                                <tr>
+                                    <th>Registration</th>
+                                    <th>Driver</th>
+                                    <th>Make</th>
+                                    <th>Model</th>
+                                    <th>Colour</th>
+                                    <th></th>
                                 </tr>
-                            )}
-                        </thead>
-                    </table>
+                                {this.props.cars.map((car: CarStore.Car) =>
+                                    <tr key={car.registration}>
+                                        <td>{car.registration}</td>
+                                        <td>{car.driver ? car.driver : "N/A"}</td>
+                                        <td>{car.make}</td>
+                                        <td>{car.model}</td>
+                                        <td>{car.colour}</td>
+                                        <td className="table_panel">
+                                            <Link className="btn btn-success btn-sm text-white" to={"/admin-edit-car/" + car.registration}>
+                                                Edit
+                                        </Link>
+                                            <Button className="btn btn-danger btn-sm" onClick={() => this.props.deleteCar(car.registration)}>
+                                                Delete
+                                        </Button>
+                                        </td>
+                                    </tr>
+                                )}
+                            </thead>
+                        </Table>
+                    </div>
                 </div>
             </div>
         );

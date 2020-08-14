@@ -7,6 +7,7 @@ import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ApplicationState } from '../../../reduxStore/index';
+import { MpsHeader } from '../../others/MpsHeader';
 
 
 // At runtime, Redux will merge together..., merge everything into this.props
@@ -33,12 +34,12 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
     }
 
     componentDidMount() {
-        
+
         setTimeout(() => {
             this.ensureDataFetched();
             //this.getDriverNameList();
         }, 200)
-        
+
     }
 
     private ensureDataFetched() {
@@ -91,45 +92,52 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
         }
         else {
             return (
-                <div className="container mh-100 b-banner-image">
-                    <h1 className="display-1 p-center-car">Register Car</h1>
+                <div className="mpsContainer">
+                    <MpsHeader />
 
-                    <div className="row fixed-bottom justify-content-center cus-margin-l">
+                    <div className="central_container">
 
-                        <Form onSubmit={this.handleSubmit}>
-                            <FormGroup>
-                                <Label className="d-block">Select A Driver</Label>
-                                {/*this.createDropDown()*/}
-                            </FormGroup>
+                        <div className="text-center">
+                            <h1 className="display-1">Register Car</h1>
+                        </div>
 
-                            <FormGroup>
-                                <Label className="d-block">Car Registration</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.state.registration} onChange={this.handleChange}></Input>
-                            </FormGroup>
+                        <div className="row justify-content-center">
 
-                            <FormGroup>
-                                <Label className="d-block">Car Make</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.state.make} onChange={this.handleChange}></Input>
-                            </FormGroup>
+                            <Form onSubmit={this.handleSubmit}>
+                                <FormGroup>
+                                    <Label className="d-block">Select A Driver</Label>
+                                    {/*this.createDropDown()*/}
+                                </FormGroup>
 
-                            <FormGroup>
-                                <Label className="d-block">Car Model</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.state.model} onChange={this.handleChange}></Input>
-                            </FormGroup>
+                                <FormGroup>
+                                    <Label className="d-block">Car Registration</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.state.registration} onChange={this.handleChange}></Input>
+                                </FormGroup>
 
-                            <FormGroup>
-                                <Label className="d-block">Car Colour</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.state.colour} onChange={this.handleChange}></Input>
-                            </FormGroup>
+                                <FormGroup>
+                                    <Label className="d-block">Car Make</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.state.make} onChange={this.handleChange}></Input>
+                                </FormGroup>
 
-                            <Link className="btn btn-danger cus-btn mr-5" to='/admin-options'>
-                                Back
+                                <FormGroup>
+                                    <Label className="d-block">Car Model</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.state.model} onChange={this.handleChange}></Input>
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label className="d-block">Car Colour</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.state.colour} onChange={this.handleChange}></Input>
+                                </FormGroup>
+
+                                <Link className="btn btn-danger cus_btn mr-5" to='/admin-options'>
+                                    Back
                         </Link>
 
-                            <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
-                                Register
+                                <Button className="btn  btn-success cus_btn" type="submit" onClick={this.handleSubmit}>
+                                    Register
                         </Button>
-                        </Form>
+                            </Form>
+                        </div>
                     </div>
                 </div>
             );
@@ -146,7 +154,7 @@ function mapStateToProps(state: ApplicationState) {
 
 function mapDispatchToProps(dispatch: any) {
     return bindActionCreators(
-        { ...CarStore.actionCreators, ...DriverStore.actionCreators,  },
+        { ...CarStore.actionCreators, ...DriverStore.actionCreators, },
         dispatch
     )
 }

@@ -9,7 +9,7 @@
 */
 
 /*  
-    myown 
+    General
 */
 html, body
 {
@@ -17,6 +17,102 @@ html, body
     margin:0;
     padding:0;
     height:100%;
+}
+
+.mpsContainer {
+    background-image: url(./assets/background.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    color: white;
+}
+
+.cus_btn {
+    width: 12em;
+    padding: 1em;
+    font-size: x-large;
+    margin: 0.5em;
+}
+
+.cus_btn-ls {
+    width: 10em;
+    height: 3em;
+    font-size: xx-large;
+}
+
+.bottom_section {
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 5%
+}
+
+.row
+{
+    margin:0 !important;
+}
+
+.central_container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top:-4.5%;
+}
+
+/*Custom Table*/
+.cus_tb {
+    background-color: #343a40;
+    width: 70%;
+    color:white;
+}
+
+    .cus_tb tr:nth-child(odd) {
+        background-color: #212529;
+    }
+
+.cus_tb th,.cus_tb tr,.cus_tb td{
+    border-color: #454d55;
+}
+
+.table_panel{
+    width:7.9em;
+}
+/*  
+    Mps Header
+*/
+.mpsHeader {
+    background-color: blue;
+    color: lightgrey;
+    display: flex;
+    justify-content: space-between;
+    padding: 1%;
+    align-items: center;
+    font-weight: bold;
+}
+
+.header_title {
+    font-size: x-large;
+}
+
+.header_img img {
+    width: 5em;
+}
+
+/*
+    Testing page
+*/
+.testing_section2 {
+    border: 1px solid white;
 }
 
 /*  
@@ -37,46 +133,11 @@ html, body
     left:0;
 }
 
-.mpsHeader {
-    background-color: blue;
-    color: lightgrey;
-    display: flex;
-    justify-content: space-between;
-    padding: 1%;
-    align-items: center;
-    font-weight:bold;
-}
-
-.header_title
-{
-    font-size:x-large;
-}
-
-.header_img img
-{
-    width:5em;
-}
-
 .home_content {
     position: absolute;
     bottom: 5%;
     left: 0;
     right: 0;
-}
-
-.home_btn {
-    width: 12em;
-    padding: 1em;
-    font-size: x-large;
-    margin:0.5em;
-}
-
-@media (max-width: 1024px) {
-    
-}
-
-@media (max-width: 768px) {
-   
 }
 
 @media (max-width: 630px)
@@ -87,9 +148,6 @@ html, body
     }
 }
 
-@media (max-width: 450px) {
-    
-}
 
 /*
     Loading Screen
@@ -296,21 +354,99 @@ html, body
     }
 }
 
+/*
+    Store confirmation 
+*/
+.store_confirmation_content {
+    padding-right: 15%;
+    padding-left: 15%;
+}
+
+.terms-container {
+    height: 20em;
+    background-color: white;
+    color:black;
+}
+
+.store_confirmation_btm{
+    padding-top:1%;
+    width:100%;
+}
+
+.tick_box_section {
+    display: flex;
+    align-items: center;
+}
+
+.box {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.store_modal {
+    align-items: center;
+    color: black;
+}
+
+/*
+    Retrieve-car
+*/
+.pallet_container {
+    padding-right: 5%;
+    padding-left: 5%;
+    height: 26em;
+}
+
+/*
+    Media contaienr 
+*/
+@media (max-width:1023px) {
+    .store_confirmation_btm {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (min-height:969px) {
+    .terms-container {
+        height: 30em;
+    }
+
+    .pallet_container {
+        height: 42em;
+    }
+}
+
+@media(min-height: 1366px) {
+    .terms-container {
+        height: 50em;
+    }
+
+    .pallet_container {
+        height: 62em;
+    }
+}
+
+/*
+    Admin-option
+*/
+.admin_option
+{
+    margin-top:-10%;
+}
+
+/*
+    Drivers table 
+*/
+.table_container {
+    margin-top: -10%;
+}
 
 
 /*
     OLD Starts
     custom margins
 */
-.table_container {
-    background-image: url(./assets/backgroundImageWhite);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 40em;
-    width: 100%;
-}
-
 .button_div {
     display: flex;
     position: absolute;
@@ -557,11 +693,10 @@ html, body
     Store
 */
 
-.terms-container {
+.terms-container2 {
     width: 45em;
     height: 25em;
     margin-left: 25em;
-    margin-top: 5em;
     background-color: rgb(240,240,240);
 }
 

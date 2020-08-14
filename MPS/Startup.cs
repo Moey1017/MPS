@@ -17,6 +17,7 @@ using MPS.Models;
 using Microsoft.EntityFrameworkCore;
 using MPS.Data.Repository;
 using MPS.Hubs;
+using Microsoft.AspNetCore.SignalR;
 //using MPS.Data.Services;
 
 namespace MPS_Main
@@ -101,7 +102,7 @@ namespace MPS_Main
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapHub<StoreHub>("/storeHub");
+                //endpoints.MapHub<ControlSystemHub>("/control-system");
             });
 
 

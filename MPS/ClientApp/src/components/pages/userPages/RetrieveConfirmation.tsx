@@ -8,7 +8,8 @@ import { bindActionCreators } from 'redux';
 import * as CarStore from '../../../reduxStore/car';
 import * as Store from '../../../reduxStore/store';
 import { LoadingScreen } from '../../others/Screens';
-import { ok } from 'assert';
+import { MpsHeader } from '../../others/MpsHeader';
+import { ok } from 'assert';// what is this? why is this here?
 
 type carProps = CarStore.CarState
     & Store.StoreState
@@ -47,55 +48,64 @@ class RetrieveConfirmation extends React.Component<carProps, any>
             if (this.props.outbound_order.status === 'COMPLETE') {
                 // Ok screen, when ok is presssed, retrieve sucess and return to main page 
                 screen = <div id="popup1" className="overlay">
-                            <div className="popup">
-                                <h2>Press Ok when the Car has been completed retrieved.</h2>
-                                <div className="content">
-                                    <Button onClick={this.handleOk}>OK</Button>
-                                </div>
-                            </div>
+                    <div className="popup">
+                        <h2>Press Ok when the Car has been completed retrieved.</h2>
+                        <div className="content">
+                            <Button onClick={this.handleOk}>OK</Button>
                         </div>
+                    </div>
+                </div>
             }
         }
-            
-        return (
-            <div className="container mh-100 b-banner-image">
 
+        return (
+            <div className="mpsContainer">
+                <MpsHeader />
                 {screen}
 
-                <h1 className="display-1 p-center-car">Retrieve Car</h1>
+                <div className="central_container retrieve_confirmation">
 
-                <div className="row fixed-bottom justify-content-center cus-margin-l">
+                    <div>
 
-                    <Form onSubmit={this.handleSubmit}>
+                    <div className="text-center">
+                        <h1 className="display-1">Retrieve Vehicle</h1>
+                    </div>
 
-                        <FormGroup>
-                            <Label className="d-block">Car Registration</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.car.registration} disabled></Input>
-                        </FormGroup>
+                    <div className="row justify-content-center">
 
-                        <FormGroup>
-                            <Label className="d-block">Car Make</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.car.make} disabled></Input>
-                        </FormGroup>
+                        <Form>
+                            <FormGroup>
+                                <Label className="d-block">Car Registration</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.car.registration} disabled></Input>
+                            </FormGroup>
 
-                        <FormGroup>
-                            <Label className="d-block">Car Model</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.props.car.model} disabled></Input>
-                        </FormGroup>
+                            <FormGroup>
+                                <Label className="d-block">Car Make</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.car.make} disabled></Input>
+                            </FormGroup>
 
-                        <FormGroup>
-                            <Label className="d-block">Car Colour</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.props .car.colour} disabled></Input>
-                        </FormGroup>
+                            <FormGroup>
+                                <Label className="d-block">Car Model</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.props.car.model} disabled></Input>
+                            </FormGroup>
 
-                        <Link className="btn btn-danger cus-btn mr-5" to='/retrieve-vehicle'>
-                            Back
+                            <FormGroup>
+                                <Label className="d-block">Car Colour</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.props.car.colour} disabled></Input>
+                            </FormGroup>
+
+                            <div className="button_section">
+                                <Link className="btn btn-danger cus_btn" to='/retrieve-vehicle'>
+                                    Back
                         </Link>
 
-                        <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
-                            Confirm Retrieve
+                                <Button className="btn btn-success cus_btn" type="submit" onClick={this.handleSubmit}>
+                                    Confirm Retrieve
                         </Button>
-                    </Form>
+                            </div>
+                        </Form>
+                    </div>
+                    </div>
                 </div>
             </div>
         );

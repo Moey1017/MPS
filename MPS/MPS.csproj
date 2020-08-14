@@ -50,6 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\components\others\MpsHeader.tsx" />
     <None Remove="ClientApp\src\components\others\Screens.tsx" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js" />
     <None Remove="ClientApp\src\components\pages\adminPages\AdminEditCar.js.map" />
@@ -57,6 +58,8 @@
     <None Remove="ClientApp\src\components\pages\userPages\RetrieveConfirmation.tsx" />
     <None Remove="ClientApp\src\components\pages\userPages\RetrieveVehicle.tsx~RFf943969.TMP" />
     <None Remove="ClientApp\src\components\pages\userPages\StoreConfirmation.tsx" />
+    <None Remove="ClientApp\src\components\pages\userPages\TestingPage.tsx" />
+    <None Remove="ClientApp\src\components\test2.tsx" />
     <None Remove="ClientApp\src\index.tsx~RF4a36eaa.TMP" />
     <None Remove="ClientApp\src\reduxStore\admin.ts" />
     <None Remove="ClientApp\src\reduxStore\car.ts" />
@@ -71,10 +74,6 @@
     <None Remove="SQLScripts\01-Tables.sql" />
     <None Remove="SQLScripts\02-Inserts.sql" />
     <None Remove="SQLScripts\03-Procedures.sql" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ClientApp\src\assets\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -103,10 +102,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\others\MpsHeader.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\others\Screens.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\pages\adminPages\AdminEditDriver.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\pages\userPages\RetrieveConfirmation.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\pages\userPages\StoreConfirmation.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\pages\TestingPage.tsx" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\car.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\driver.ts" />
     <TypeScriptCompile Include="ClientApp\src\reduxStore\admin.ts" />

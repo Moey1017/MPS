@@ -5,20 +5,21 @@ import * as DriverStore from '../../../reduxStore/driver';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../../reduxStore/index';
 import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
+import { MpsHeader } from '../../others/MpsHeader';
 
 // At runtime, Redux will merge together..., merge everything into this.props
 type DriverProps =
     DriverStore.DriverState // ... state we've requested from the Redux store
     & typeof DriverStore.actionCreators; // ... plus action creators we've requested
 
-class AdminRegisterDriver extends React.Component<DriverProps,any> // first Param is Props, second Param is State
+class AdminRegisterDriver extends React.Component<DriverProps, any> // first Param is Props, second Param is State
 {
     constructor(props: any) {
         super(props);
         this.state = {
             name: '',
-            email:'',
-            telNo:''
+            email: '',
+            telNo: ''
         };
 
         //this.handleOpenModal = this.handleOpenModal.bind(this);
@@ -42,7 +43,7 @@ class AdminRegisterDriver extends React.Component<DriverProps,any> // first Para
         // pass in driver object here 
         this.props.insertDriver(driverObj);
     }
-        
+
 
     //handleOpenModal() {
     //    this.setState({ showModal: true });
@@ -76,38 +77,45 @@ class AdminRegisterDriver extends React.Component<DriverProps,any> // first Para
     render() {
 
         return (
-            <div className="container mh-100 b-banner-image">
-                <h1 className="display-1 p-center-driver">Register Driver</h1>
+            <div className="mpsContainer">
+                <MpsHeader />
+                <div className="central_container ">
 
-                <div className="row fixed-bottom justify-content-center cus-margin-l">
+                    <div className="text-center">
+                        <h1 className="display-1">Register Driver</h1>
+                    </div>
 
-                    <Form onSubmit={this.handleSubmit}>
-                        <FormGroup>
-                            <Label className="d-block">Name</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="name" value={this.state.name} onChange={this.handleChange}></Input>
-                        </FormGroup>
-                        
-                        <FormGroup>
-                            <Label className="d-block">Email</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter email" name="email" value={this.state.email} onChange={this.handleChange}></Input>
-                        </FormGroup>
 
-                        <FormGroup>
-                            <Label className="d-block">Mobile Number</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="telNo" value={this.state.telNo} onChange={this.handleChange}></Input>
-                        </FormGroup>
+                    <div className="row justify-content-center">
 
-                        <Link className="btn btn-danger cus-btn mr-5" to='/admin-options'>
-                            Back
-                        </Link> 
+                        <Form onSubmit={this.handleSubmit}>
+                            <FormGroup>
+                                <Label className="d-block">Name</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="name" value={this.state.name} onChange={this.handleChange}></Input>
+                            </FormGroup>
 
-                        {/*Link className="btn  btn-success cus-btn" onClick={this.handleOpenModal} to='#'>*/}
-                        <Button className="btn  btn-success cus-btn" type="submit" onClick={this.handleSubmit}>
-                            Register
+                            <FormGroup>
+                                <Label className="d-block">Email</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter email" name="email" value={this.state.email} onChange={this.handleChange}></Input>
+                            </FormGroup>
+
+                            <FormGroup>
+                                <Label className="d-block">Mobile Number</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="telNo" value={this.state.telNo} onChange={this.handleChange}></Input>
+                            </FormGroup>
+
+                            <Link className="btn btn-danger cus_btn mr-5" to='/admin-options'>
+                                Back
+                        </Link>
+
+                            {/*Link className="btn  btn-success cus-btn" onClick={this.handleOpenModal} to='#'>*/}
+                            <Button className="btn  btn-success cus_btn" type="submit" onClick={this.handleSubmit}>
+                                Register
                         </Button>
 
-                    </Form>
-                    {/* {this.showModalBox()}  */}
+                        </Form>
+                        {/* {this.showModalBox()}  */}
+                    </div>
                 </div>
             </div>
         );

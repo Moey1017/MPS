@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { MpsHeader } from '../../others/MpsHeader';
 
 export default class AdminLogin extends React.Component<{}>
 {
     render() {
         return (
-            <div className="container mh-100 b-banner-image">
-                <div className="row fixed-bottom justify-content-center cus-margin-l">
+            <div className="mpsContainer">
+                <MpsHeader />
+                <div className="central_container">
 
                     <form>
                         <h1 className="display-1 p-center">Login</h1>
