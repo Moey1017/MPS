@@ -5,71 +5,90 @@ import { Link } from 'react-router-dom';
 import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../reduxStore/index';
-import { RouteComponentProps } from 'react-router';
 import { bindActionCreators } from 'redux';
-import * as CarStore from '../../reduxStore/car';
 import * as Store from '../../reduxStore/store';
-import { LoadingScreen } from '../others/Screens';
 import { MpsHeader } from '../others/MpsHeader';
 import {
     HubConnectionBuilder,
     HubConnectionState,
     HubConnection,
 } from '@aspnet/signalr';
-import * as SignalR from '@aspnet/signalr';
 
-type storeProps = CarStore.CarState
-    & Store.StoreState
-    & typeof CarStore.actionCreators
-    & typeof Store.actionCreators
-    & any;
+type storeProps = Store.StoreState & typeof Store.actionCreators;
 const TestingPage2: FC<storeProps> = (props) => {
 
     const [registration, setRegistration] = useState("");
     const [scan, setScan] = useState("");
-    const [connection, setConnection] = useState();
+    const [retrieve, setRetrieve] = useState("");
+    const [hubConnection, setHubConnection] = useState<HubConnection>();
 
-    // on submmit, create outbound order
-    const addInbound = (e: any) => {
-        e.preventDefault();
-        console.log(registration);
-        //this.props.createInbound(this.state.registration);
-    }
+    const setUpSignalRConnection = async () => {
+        //set up SignalR Connection
+        const connection = new HubConnectionBuilder()
+            .withUrl('https://192.168.20.216:5006/socket/control-system')
+            .withAutomaticReconnect()
+            .build();
 
-    const scanLicencePlate = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
-        console.log(scan);
-    }
+        //hubConnection.on('', (message) => {});
 
-    const confirm = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
-        alert("Confirm");
+        // Starts the SignalR connection
+        connection.start().then(() => {
+            if (connection.connectionId) {
+                console.log("Connection has been set up, ID:" + connection.connectionId)
+            }
+        }).catch(error => { console.log('Error while establishing connection :('); });
 
+        setHubConnection(connection);
     }
 
     useEffect(() => {
-        //set up SignalR Connection
-        const setUpSignalRConnection = async () => {
-            const hubConnection = new HubConnectionBuilder()
-                .withUrl('https://192.168.20.216:5001/socket/control-system',
-                    { skipNegotiation: true, transport: SignalR.HttpTransportType.WebSockets }) 
-                .withAutomaticReconnect()
-                .build();
-
-            // Starts the SignalR connection
-            hubConnection.start().then(a => {
-                // Once started, invokes the functions
-                if (hubConnection.connectionId) {
-                    console.log(hubConnection.connectionId);
-                    //hubConnection.invoke("ScanLicensePlate", scan);
-                }
-            }).catch(error => { console.log('Error while establishing connection :('); });
-        }
-
         setUpSignalRConnection();
-    });
+    }, []);
 
+    // on submit, create outbound order
+    const createInbound = (e: any) => {
+        e.preventDefault();
+        props.createInbound(registration, false);
+        setScan("");
+    }
 
+    // on submit, scan licence plate and open the barrier 
+    const scanLicencePlate = (e: any) => {
+        e.preventDefault();
+        if (hubConnection) {
+            hubConnection.send("ScanLicensePlate", scan);
+            console.log("send");
+            //hubConnection.invoke("ScanLicensePlate", scan);
+        } else {
+            alert("Server is not Connected");
+        }
+    }
+
+    // on submit, close the barrier
+    const confirm = (e: any) => {
+        e.preventDefault();
+        if (hubConnection) {
+            hubConnection.send("ConfirmCarOnInput", scan);
+        } else {
+            alert("Server is not Connected");
+        }
+        setRegistration("");
+    }
+
+    const createOutbound = (e: any) => {
+        e.preventDefault();
+        props.createOutbound2(retrieve);
+        setRetrieve(""); 
+    }
+
+    const confirmExit = (e: any) => {
+        e.preventDefault();
+        if (hubConnection) {
+            hubConnection.send("ConfirmCarExited");
+        } else {
+            alert("Server is not Connected");
+        }
+    }
 
     return (
         <div className="mpsContainer">
@@ -79,40 +98,61 @@ const TestingPage2: FC<storeProps> = (props) => {
                 Back
                 </Link>
 
-            <div className="text-center">
-                <h1 className="display-1">Testing Form</h1>
-            </div>
+            <div className="central_container">
 
+                <div className="text-center">
+                    <h1 className="display-1">Testing Form</h1>
+                </div>
 
-            <div className="d-flex flex-column align-items-center">
-                <Form onSubmit={addInbound}>
+                <div className="d-flex">
 
-                    <FormGroup>
-                        <Label className="d-block">Licence plate</Label>
-                        <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={registration} onChange={(e) => { setRegistration(e.target.value); }}></Input>
-                    </FormGroup>
+                    <div className="d-flex flex-column align-items-center">
+                        <Form>
+                            <FormGroup>
+                                <Label className="d-block">Licence plate</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={registration} onChange={(e) => { setRegistration(e.target.value); }}></Input>
+                            </FormGroup>
 
-                    <Button className="btn btn-success cus_btn-ls" type="submit">
-                        Add Licence plate
+                            <Button className="btn btn-success cus_btn-ls" type="submit" onClick={createInbound}>
+                                Add Licence plate
                         </Button>
-                </Form>
+                        </Form>
 
-                <div className="p-5 testing_section2">
-                    <Form onSubmit={scanLicencePlate}>
+                        <div className="p-3 testing_section2">
+                            <Form>
 
-                        <FormGroup>
-                            <Label className="d-block">Scan Car Registration</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Scan car registration" name="scan" value={scan} onChange={(e) => { setScan(e.target.value); }}></Input>
-                        </FormGroup>
+                                <FormGroup>
+                                    <Label className="d-block">Scan Car Registration</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Scan car registration" name="scan" value={scan} onChange={(e) => { setScan(e.target.value); }}></Input>
+                                </FormGroup>
 
-                        <Button className="btn btn-success cus_btn-ls" type="submit">
-                            Scan
+                                <Button className="btn btn-success cus_btn-ls" type="submit" onClick={scanLicencePlate}>
+                                    Scan
                         </Button>
-                    </Form>
+                            </Form>
 
-                    <Button className="mt-2 btn btn-success cus_btn-ls" type="submit" onClick={confirm}>
-                        Confirm
+                            <Button className="mt-2 btn btn-success cus_btn-ls" type="submit" onClick={confirm}>
+                                Confirm
                         </Button>
+                        </div>
+                    </div>
+
+                    <div >
+                        <Form className="d-flex flex-column align-items-center">
+                            <FormGroup>
+                                <Label className="d-block">Exit Panel</Label>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Scan car registration" name="scan" value={retrieve} onChange={(e) => { setRetrieve(e.target.value); }}></Input>
+                            </FormGroup>
+
+                            <Button className="btn btn-success cus_btn-ls" type="submit" onClick={createOutbound}>
+                                Request
+                        </Button>
+
+                            <Button className="mt-2 btn btn-success cus_btn-ls" type="submit" onClick={confirmExit}>
+                                Confirm Exited
+                        </Button>
+                        </Form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -121,7 +161,7 @@ const TestingPage2: FC<storeProps> = (props) => {
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        storeProps: state.store
+        ...state.store
     }
 }
 

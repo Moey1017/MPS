@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Dapper;
+using System.IO;
 
 namespace MPS_Main
 {
@@ -22,6 +23,12 @@ namespace MPS_Main
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+
+                    //Here
+                    //webBuilder.UseKestrel() //here to 
+                    //.UseContentRoot(Directory.GetCurrentDirectory())
+                    //.UseUrls("http://*:5000") //here
+                    //.UseStartup<Startup>();
                 });
     }
 }

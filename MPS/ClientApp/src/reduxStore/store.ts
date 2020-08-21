@@ -4,6 +4,12 @@ import { history } from '../index';
 import axios from 'axios';
 import { InboundOrder } from '../reduxStore/inboundOrder';
 import { OutboundOrder } from '../reduxStore/outboundOrder';
+import {
+    HubConnectionBuilder,
+    HubConnectionState,
+    HubConnection,
+} from '@aspnet/signalr';
+
 
 // Frontend DB, to connect with the existing DB system 
 export interface StoreState {
@@ -12,6 +18,7 @@ export interface StoreState {
     readonly hasSpace: boolean;
     readonly inbound_order: InboundOrder | null;
     readonly outbound_order: OutboundOrder | null;
+    readonly signalR_connection: HubConnection | null;
 }
 
 export interface Pallet {
@@ -19,6 +26,8 @@ export interface Pallet {
     readonly car_reg: string | null;
 }
 
+// Variables
+const SIGNALR_SERVER_URL = 'https://192.168.20.216:5006/socket/control-system';
 // Order status names
 const ACTIVE = "ACTIVE";
 const ACCEPTED = "ACCEPTED";
@@ -41,6 +50,7 @@ const UPDATE_INBOUND_ORDER = 'UPDATE_INBOUND_ORDER';
 const UPDATE_OUTBOUND_ORDER = 'UPDATE_OUTBOUND_ORDER';
 const RECEIVED_ERROR_STATUS = 'RECEIVED_ERROR_STATUS';
 const USER_CANCEL = 'USER_CANCEL';
+const SETUP_SIGNALR_CONNECTION = 'SETUP_SIGNALR_CONNECTION';
 
 //Types
 interface RequestStoreStateAction {
@@ -111,6 +121,11 @@ interface UserCancelAction {
     type: typeof USER_CANCEL
 }
 
+interface SetupSignalRConnection {
+    type: typeof SETUP_SIGNALR_CONNECTION
+    signalRConnection: HubConnection
+}
+
 //General Functions
 //Get Order status, run function and dispatch
 function getStatus(orderType: string, status: string, b_id: string, p_id: string, f: any | null, url: string | null, param: string | null, dispatch: any) {
@@ -166,7 +181,7 @@ type StoreAction = RequestStoreStateAction | ReceiveStoreStateAction | StoringCa
     | StoredCarAction | RetrievingCarAction | RetrievedCarAction | UpdateSpaceStatusAction
     | CreteInboundOrder | CreteOutboundOrder | GettingOrderStatusAction | GotOrderStatusAction
     | UpdateInboundOrderAction | UpdateOutboundOrderAction | ReceiveErrorStatusAction
-    | UserCancelAction;
+    | UserCancelAction | SetupSignalRConnection;
 
 export const actionCreators = {
     requestStoreState: (): AppThunkAction<StoreAction> => (dispatch, getState) => {
@@ -186,7 +201,7 @@ export const actionCreators = {
                 })
         }
     },
-    createInbound: (carRegToStore: string): AppThunkAction<StoreAction> => (dispatch) => { // check if valid first, if valid create inbound order with status ACTIVE
+    createInbound: (carRegToStore: string, redirectOption: boolean): AppThunkAction<StoreAction> => (dispatch) => { // check if valid first, if valid create inbound order with status ACTIVE
         dispatch({ type: STORING_CAR });                                                    // else create inbound order with status ERROR 
 
         // Create inbound Order 
@@ -211,21 +226,33 @@ export const actionCreators = {
         axios.get('api/car/get-car-byReg' + carRegToStore)
             .then(res => {
                 if (res.data !== '') {
-                    //// Car valid
-                    console.log("Car Reg valid");
-                    // Insert inbound order
-                    axios.post('api/inbound/insert-inboundOrder', inboundOrder)
+                    // Car valid
+                    console.log("Car Reg was registered");
+
+                    axios.get('api/store/ifCarExistStore' + carRegToStore)
                         .then(res => {
-                            if (res.status === 201 && res.data == true) {
-                                console.log("Inserted inbound order.");
+                            if (res.data === false) {
+                                console.log("Car Reg is valid");
 
-                                dispatch({ type: CREATE_INBOUND_ORDER, inboundOrder: inboundOrder });
+                                // Insert inbound order
+                                axios.post('api/inbound/insert-inboundOrder', inboundOrder)
+                                    .then(res => {
+                                        if (res.status === 201 && res.data == true) {
+                                            console.log("Inserted inbound order.");
+
+                                            dispatch({ type: CREATE_INBOUND_ORDER, inboundOrder: inboundOrder });
+                                            //Get inbound status
+                                            if (redirectOption) {
+                                                getStatus("inbound", ACCEPTED, inboundOrder.batch_id, inboundOrder.pallet_id,
+                                                    redirectTo, '/store-confirmation/', carRegToStore, dispatch);
+                                            } else {
+                                                getStatus("inbound", ACCEPTED, inboundOrder.batch_id, inboundOrder.pallet_id,
+                                                    null, '', carRegToStore, dispatch);
+                                            }
+                                        }
+                                    }).catch(error => { console.log(error); })
                             }
-                        }).catch(error => { console.log(error); })
-
-                    //Get inbound status
-                    getStatus("inbound", ACCEPTED, inboundOrder.batch_id, inboundOrder.pallet_id, 
-                        redirectTo, '/store-confirmation/', carRegToStore, dispatch);
+                        }).catch(error => { console.log("someting went wrong while checking if car exist in store.") });
                 } else {
                     // car not valid 
                     alert("Car reg doesnt existed, please re-enter.");
@@ -262,13 +289,15 @@ export const actionCreators = {
                         dispatch({ type: STORED_CAR, pallet: res.data });
 
                         console.log("Car has been successfully stored.")
-                        history.push('/');// Redirect to home
+                        //history.push('/');// Redirect to home
                     }
                     else {
                         console.log("Something went wrong while storing the car into car store");
                     }
                 }).catch(error => {
-                    console.log("storeCar caught an error while storing./Car reg is found in store.");
+                    alert("Car reg has found in store./storeCar caught an error while storing.")
+                    dispatch({ type: USER_CANCEL });
+                    redirectTo('/', '');
                 })
         }
         //Get inbound Status
@@ -294,11 +323,10 @@ export const actionCreators = {
         }
 
         //Check if Car valid in store
-        axios.get('api/outbound/ifCarRegExist' + carRegToRetrieve)
+        axios.get('api/store/ifCarExistStore' + carRegToRetrieve)
             .then(res => {
                 if (res.data === true) {
-                    console.log("Car reg is found in the store.")
-
+                    console.log("Car reg is exist in the store and ready to be retrieve.")
                     axios.post('api/outbound/insert-outboundOrder', outboundOrder)
                         .then(res => {
                             if (res.status === 201 && res.data == true) {
@@ -306,7 +334,7 @@ export const actionCreators = {
                                 dispatch({ type: CREATE_OUTBOUND_ORDER, outboundOrder: outboundOrder })
 
                                 //Get inbound status
-                                getStatus("outbound", COMPLETE, outboundOrder.batch_id, outboundOrder.pallet_id,
+                                getStatus("outbound", ACCEPTED, outboundOrder.batch_id, outboundOrder.pallet_id,
                                     null, null, null, dispatch);
                             }
                         }).catch(error => {
@@ -327,7 +355,6 @@ export const actionCreators = {
             .then(res => {
                 if (res.status === 202 && res.data !== '') {
                     console.log("Car has been retrieved.");
-                    console.log(res.data);
                     dispatch({ type: RETRIEVED_CAR, pallet: res.data });
                     redirectTo('/', "");// Redirect to home
                 }
@@ -347,26 +374,71 @@ export const actionCreators = {
     },
     //When user Cancel
     userCancelAndReturn: (orderType: string, order: any): AppThunkAction<StoreAction> => (dispatch) => {
-        if (order !== null) {
-            order.status = CANCELLED;
-            axios.put('api/' + orderType + '/update-' + orderType + 'Status', order)
-                .then(res => {
-                    console.log(res);
-                    if (res.status === 202) {
-                        console.log("Order has been cancelled.");
-                    }
-                }).catch(error => {
-                    console.log("Something went wrong while updating order status to cancel");
-                })
-        // Maybe update the order status to Cancelled? 
-        }
+        //if (order !== null) {
+        //    // update the order status to Cancelled when user cancel 
+        //    order.status = CANCELLED;
+        //    axios.put('api/' + orderType + '/update-' + orderType + 'Status', order)
+        //        .then(res => {
+        //            if (res.status === 202) {
+        //                console.log("Order has been cancelled.");
+        //            }
+        //        }).catch(error => {
+        //            console.log("Something went wrong while updating order status to cancel");
+        //        })
+        //}
         dispatch({ type: USER_CANCEL });
         redirectTo('/', "");
+    },
+    setUpSignalRConnection: (): AppThunkAction<StoreAction> => (dispatch) => {
+        //set up SignalR Connection
+        const connection = new HubConnectionBuilder()
+            .withUrl(SIGNALR_SERVER_URL)
+            .withAutomaticReconnect()
+            .build();
+
+        // use parameter to define what to listen to 
+        //hubConnection.on('', (message) => {});
+
+        // Starts the SignalR connection
+        connection.start().then(() => {
+            if (connection.connectionId) {
+                dispatch({ type: SETUP_SIGNALR_CONNECTION, signalRConnection: connection });
+                console.log("Connection has been set up, ID:" + connection.connectionId)
+            }
+        }).catch(error => { console.log('Error while establishing connection :('); });
+    },
+    createOutbound2: (carRegToRetrieve: string): AppThunkAction<StoreAction> => (dispatch) => {
+        dispatch({ type: RETRIEVING_CAR });
+
+        let b_id = new Date().valueOf().toString();
+        const outboundOrder: OutboundOrder = {
+            batch_id: b_id,
+            pallet_id: carRegToRetrieve,
+            order_pallet_count: 1,
+            expected_activation_time: null,
+            status: ACTIVE,
+            index: 0,
+            source: null,
+            wms_link_id: null,
+            wms_request_status_read: null,
+            wms_output_status_read: null,
+            automated_activation_time: null,
+            target: 100001
+        }
+
+        axios.post('api/outbound/insert-outboundOrder', outboundOrder)
+            .then(res => {
+                if (res.status === 201 && res.data == true) {
+                    console.log("Inserted outbound order.");
+                }
+            }).catch(error => {
+                console.log("retrieveCar caught an error./Failed to insert outbound order.")
+            })
     }
 }
 
 const unloadedStoreState: StoreState = {
-    pallets: [], isLoading: false, hasSpace: false, inbound_order: null, outbound_order: null
+    pallets: [], isLoading: false, hasSpace: false, inbound_order: null, outbound_order: null, signalR_connection: null
 };
 
 export const reducer: Reducer<StoreState> = (state: StoreState | undefined, incomingAction: StoreAction): StoreState => {
@@ -455,7 +527,7 @@ export const reducer: Reducer<StoreState> = (state: StoreState | undefined, inco
                 ...state,
                 isLoading: false,
                 inbound_order: null,
-                outbound_order:null
+                outbound_order: null
             }
         case USER_CANCEL:
             return {
@@ -463,6 +535,11 @@ export const reducer: Reducer<StoreState> = (state: StoreState | undefined, inco
                 isLoading: false,
                 inbound_order: null,
                 outbound_order: null
+            }
+        case SETUP_SIGNALR_CONNECTION:
+            return {
+                ...state,
+                signalR_connection: action.signalRConnection
             }
         default:
             return {

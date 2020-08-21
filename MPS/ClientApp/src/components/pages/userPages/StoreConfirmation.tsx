@@ -1,6 +1,6 @@
 ﻿import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import * as Reactstrap from 'react-bootstrap';
 import * as Store from '../../../reduxStore/store';
 import { connect } from 'react-redux';
@@ -8,11 +8,15 @@ import { ApplicationState } from '../../../reduxStore/index';
 import { RouteComponentProps } from 'react-router';
 import { LoadingScreen } from '../../others/Screens';
 import { MpsHeader } from '../../others/MpsHeader';
+import {
+    HubConnectionBuilder,
+    HubConnectionState,
+    HubConnection,
+} from '@aspnet/signalr';
 
 type storeProps = Store.StoreState
     & typeof Store.actionCreators
-    & RouteComponentProps<{ reg: string }>
-    & any;
+    & RouteComponentProps<{ reg: string }>;
 
 class StoreConfirmation extends React.Component<storeProps, any>
 {
@@ -22,6 +26,9 @@ class StoreConfirmation extends React.Component<storeProps, any>
         this.state = {
             isChecked: false,
             showModal: false,
+            infoModal: true,
+            redirectModal: false,
+            stored: false
         };
 
         this.handleChecked = this.handleChecked.bind(this);
@@ -63,6 +70,10 @@ class StoreConfirmation extends React.Component<storeProps, any>
         this.setState({ showModal: false });
     }
 
+    redirectToggle() {
+        this.setState({ redirectModal: !this.state.redirectModal })
+    }
+
     showModalBox() {
         var toReturn = []
         //Need to change the onClick for Link,add a half black transparent overlay behind
@@ -80,7 +91,21 @@ class StoreConfirmation extends React.Component<storeProps, any>
 
                     <Reactstrap.Modal.Footer>
                         <Button className="btn btn-success" type="submit" onClick={() => {
-                            this.props.storeCar(this.props.match.params.reg, this.props.inbound_order.batch_id, this.props.inbound_order.pallet_id);
+                            if (this.props.inbound_order) {
+                                //SignalR
+                                if (this.props.signalR_connection) {
+                                    this.props.signalR_connection.send("ConfirmCarOnInput", this.props.match.params.reg);
+                                } else {
+                                    alert("Server is not Connected");
+                                }
+                                this.props.storeCar(this.props.match.params.reg, this.props.inbound_order.batch_id, this.props.inbound_order.pallet_id);
+                                this.setState({ stored: true });
+                            }
+                            else {
+                                alert("Something went wrong. Batch id is empty."); // return back to home here 
+                                this.setState({ stored: true });
+                            }
+                            
                             this.handleCloseModal();
                         }}>Continue</Button>
                     </Reactstrap.Modal.Footer>
@@ -90,10 +115,30 @@ class StoreConfirmation extends React.Component<storeProps, any>
         return toReturn
     }
 
+    toggle = (e: any) => {
+        e.preventDefault();
+        this.setState({ infoModal: !this.state.infoModal })
+    }
+
     render() {
         let loadingScreen;
         if (this.props.isLoading === true) {
             loadingScreen = <LoadingScreen />
+        }
+
+        let redirectScreen;
+        if (this.state.stored && this.props.isLoading === false) {
+            redirectScreen = <div>
+                <Modal isOpen={true} toggle={this.toggle}>
+                    <ModalHeader toggle={this.state.redirectToggle}>Thanks you</ModalHeader>
+                    <ModalBody>
+                        Your car has been completely retrieved, Thanks for using our service!
+                        </ModalBody>
+                    <ModalFooter>
+                        <Link color="secondary" to='/'>Ok</Link>
+                    </ModalFooter>
+                </Modal>
+            </div>
         }
 
         return (
@@ -101,6 +146,21 @@ class StoreConfirmation extends React.Component<storeProps, any>
                 <MpsHeader />
 
                 {loadingScreen}
+
+                <div>
+                    <Button color="danger" className="position-absolute question_mark_icon" onClick={this.toggle}>?</Button>
+                    <Modal isOpen={this.state.infoModal} toggle={this.toggle}>
+                        <ModalHeader toggle={this.toggle}>IMPORTANT</ModalHeader>
+                        <ModalBody>
+                            Only Press STORE when you have left the car area.
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="secondary" onClick={this.toggle}>Ok</Button>
+                        </ModalFooter>
+                    </Modal>
+                </div>
+
+                {redirectScreen};
 
                 <Button className="btn btn-danger cus_btn" onClick={() => { this.props.userCancelAndReturn("inbound", this.props.inbound_order); }}>
                     Cancel

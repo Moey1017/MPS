@@ -45,13 +45,6 @@ namespace MPS.Controllers
                 return Conflict(outboundOrder);
         }
 
-        [HttpGet("ifCarRegExist{CarReg}")]
-        public IActionResult IfCarRegExistInStore(string CarReg)
-        {
-            var result = _dataRepository.IfCarRegExistInStore(CarReg);
-            return Ok(result);
-        }
-
         //Update outbound order status 
         [HttpPut("update-outboundStatus")]
         public IActionResult UpdateInboundOrder([FromBody] OutboundOrder outboundOrder)

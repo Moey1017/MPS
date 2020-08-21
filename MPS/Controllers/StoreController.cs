@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MPS.Data.Repository;
 using MPS.Models;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MPS.Controllers
 {
@@ -50,6 +51,13 @@ namespace MPS.Controllers
         public IActionResult IfStoreHasSpace()
         {
             var result = _dataRepository.IfStoreHasSpace();
+            return Ok(result);
+        }
+
+        [HttpGet("ifCarExistStore{carReg}")]
+        public IActionResult IfCarRegExistInStore(string carReg)
+        {
+            var result = _dataRepository.IfCarRegExistInStore(carReg);
             return Ok(result);
         }
     }

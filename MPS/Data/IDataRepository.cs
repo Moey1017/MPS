@@ -15,6 +15,7 @@ namespace MPS.Data.Repository
         public Store StoreCar(Store store);
         public Store RetrieveCar(string carReg);
         public bool IfStoreHasSpace();
+        public bool IfCarRegExistInStore(string carReg);
 
         //Inbound order Interface Repository 
         public IEnumerable<InboundOrder> GetAllInboundOrders();
@@ -26,7 +27,6 @@ namespace MPS.Data.Repository
         public IEnumerable<OutboundOrder> GetAllOutboundOrders();
         public OutboundOrder GetOutboundOrder(string batch_id, string pallet_id);
         public bool InsertOutboundOrder(OutboundOrder outboundOrder);
-        public bool IfCarRegExistInStore(string carReg);
         public bool UpdateOutboundOrder(OutboundOrder outboundOrder);
 
         //Driver Interface Repository 

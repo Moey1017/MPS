@@ -58,13 +58,6 @@ class RetrieveVehicle extends React.Component<StoreProps, any>
     }
 }
 
-// Cant use for some reason 
-//function mapStateToProps(state: ApplicationState) {
-//    return {
-//        store: state.store
-//    }
-//}
-
 function mapDispatchToProps(dispatch: any) {
     return bindActionCreators(
         { ...Store.actionCreators },

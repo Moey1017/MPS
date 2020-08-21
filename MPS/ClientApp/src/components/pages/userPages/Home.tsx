@@ -15,8 +15,11 @@ class Home2 extends React.Component<storeProps, any>
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.checkIfStoreHasSpace();
+        if (this.props.signalR_connection === null || this.props.signalR_connection === undefined) {
+            this.props.setUpSignalRConnection();
+        }
     }
 
     render() {
@@ -47,7 +50,7 @@ class Home2 extends React.Component<storeProps, any>
 
                                 <Link className="btn btn-success cus_btn" to='/retrieve-vehicle'>
                                     Retrieve Vehicle
-                        </Link>
+                                </Link>
                             </div>
 
 
@@ -59,12 +62,11 @@ class Home2 extends React.Component<storeProps, any>
                         </Link>
 
                         </div>
-
-                        <Link className="btn btn-secondary m-auto position-absolute" to='/test'>
-                            Testing Form
-                        </Link>
                     </div>
                 </div>
+                <Link className="btn btn-secondary m-auto position-absolute bot_btn" to='/test'>
+                    Testing Form
+                        </Link>
             </div>
         );
     }

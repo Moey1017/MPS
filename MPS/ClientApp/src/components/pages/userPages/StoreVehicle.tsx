@@ -18,8 +18,7 @@ import {
 type storeProps = CarStore.CarState
     & Store.StoreState
     & typeof CarStore.actionCreators
-    & typeof Store.actionCreators
-    & any;
+    & typeof Store.actionCreators;
 class StoreConfirmation extends React.Component<storeProps, any>
 {
     constructor(props: any) {
@@ -30,31 +29,25 @@ class StoreConfirmation extends React.Component<storeProps, any>
         }
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.checkIfStoreHasSpace();
     }
-
-    //set up SignalR Connection
-    //setUpSignalRConnection = async () => {
-    //    const connection = new HubConnectionBuilder()
-    //        .withUrl('http://localhost:5001/storeHub')
-    //        .withAutomaticReconnect()
-    //        .build();
-    //}
-
-
 
     handleChange = (e: any) => {
         this.setState({ [e.target.name]: e.target.value })
     }
 
-    // on submmit, create outbound order
-    handleSubmit = (e: { preventDefault: () => void; }) => {
+    // on submmit, create inbound order
+    handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-
-        this.props.createInbound(this.state.registration);
-        //this.props.storeCar(this.state.registration);
-        // pass in car to be stored here
+        await this.props.createInbound(this.state.registration, true);
+        setTimeout(() => {
+            if (this.props.signalR_connection) {
+                this.props.signalR_connection.send("ScanLicensePlate", this.state.registration);
+            } else {
+                alert("Server is not connected.");
+            }
+        }, 1000)
     }
 
 
@@ -62,19 +55,19 @@ class StoreConfirmation extends React.Component<storeProps, any>
     // confirm and agree 
     render() {
         let storeButton;
-        if (this.props.storeProps.hasSpace) {
+        if (this.props.hasSpace) {
             storeButton = <Button className="btn  btn-success cus_btn-ls" type="submit" onClick={this.handleSubmit}>
-                Scan Car Reg
+                Scan
                         </Button>;
         }
         else {
             storeButton = <Button className="btn  btn-success cus_btn-ls" type="submit" onClick={this.handleSubmit} disabled>
-                Scan Car Reg
+                Scan
                         </Button>;
         }
 
         let loadingScreen;
-        if (this.props.storeProps.isLoading === true) {
+        if (this.props.isLoading === true) {
             loadingScreen = <LoadingScreen />
         }
 
@@ -84,15 +77,21 @@ class StoreConfirmation extends React.Component<storeProps, any>
 
                 {loadingScreen}
 
-                <Link className="btn btn-danger cus_btn" to='/'>
-                    Back
+                <div className="d-flex justify-content-between">
+                    <Link className="btn btn-danger cus_btn" to='/'>
+                        Back
                 </Link>
+
+                    <Button className="btn btn-success cus_btn" onClick={this.handleSubmit} disabled>
+                        Next
+                </Button>
+                </div>
 
                 <div className="text-center">
                     <h1 className="display-1">Car Registration</h1>
                     <h1>Is this your Car?</h1>
                 </div>
-                
+
 
                 <div className="row justify-content-center mb-5 bottom_section">
                     <Form onSubmit={this.handleSubmit}>
@@ -105,17 +104,17 @@ class StoreConfirmation extends React.Component<storeProps, any>
                         { /*
                         <FormGroup>
                             <Label className="d-block">Car Make</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.carProps.car.make} disabled></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.car.make} disabled></Input>
                         </FormGroup>
 
                         <FormGroup>
                             <Label className="d-block">Car Model</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.props.carProps.car.model} disabled></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.props.car.model} disabled></Input>
                         </FormGroup>
 
                         <FormGroup>
                             <Label className="d-block">Car Colour</Label>
-                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.props.carProps.car.colour} disabled></Input>
+                            <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.props.car.colour} disabled></Input>
                         </FormGroup>
 
                         <Link className="btn btn-danger cus-btn mr-5" to='/'>
@@ -135,7 +134,7 @@ class StoreConfirmation extends React.Component<storeProps, any>
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        storeProps: state.store
+        ...state.store
     }
 }
 

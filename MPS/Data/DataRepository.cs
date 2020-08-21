@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MPS.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata;
 
 namespace MPS.Data.Repository
 {
@@ -32,8 +33,6 @@ namespace MPS.Data.Repository
         {
             throw new NotImplementedException();
         }
-
-
 
         //Store
         public IEnumerable<Store> GetAllRegistration()
@@ -105,6 +104,17 @@ namespace MPS.Data.Repository
                 return false;
         }
 
+        //Check if car had existed in Store already
+        public bool IfCarRegExistInStore(string carReg)
+        {
+            var param = new{ car_reg = carReg };
+            var query = "SELECT * FROM store WHERE car_reg = @car_reg;";
+            var result = this._conn.Query(query, param);
+            if (result.Count() >= 1)
+                return true;
+            else
+                return false;
+        }
 
         //Inbound Order 
         public IEnumerable<InboundOrder> GetAllInboundOrders()
@@ -228,21 +238,6 @@ namespace MPS.Data.Repository
                 toReturn = true;
             }
             return toReturn;
-        }
-
-        public bool IfCarRegExistInStore(string carReg)
-        {
-            Console.WriteLine("Called IfCarRegExistInStore");
-            var query = "SELECT pallet_id from store WHERE car_reg=@car_reg;";
-            var param = new
-            {
-                car_reg = carReg 
-            };
-            var result = this._conn.Query<int>(query, param).FirstOrDefault();
-            if (result != -1)
-                return true;
-            else
-                return false;
         }
 
         public bool UpdateOutboundOrder(OutboundOrder outboundOrder)

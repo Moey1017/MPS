@@ -16,8 +16,9 @@ using System.Linq;
 using MPS.Models;
 using Microsoft.EntityFrameworkCore;
 using MPS.Data.Repository;
-using MPS.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 //using MPS.Data.Services;
 
 namespace MPS_Main
@@ -74,6 +75,13 @@ namespace MPS_Main
                 .AllowAnyHeader()
                 .WithOrigins("http://localhost:5001")
                 .AllowCredentials()));
+
+
+            //here for onto the server 
+            //services.Configure<ForwardedHeadersOptions>(options =>
+            //{
+            //    options.KnownProxies.Add(IPAddress.Parse("192.168.100.1"));
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -97,12 +105,19 @@ namespace MPS_Main
 
             app.UseRouting();
 
+            //here for onto the server 
+            //app.UseForwardedHeaders(new ForwardedHeadersOptions
+            //{
+            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            //});
+
+            app.UseAuthentication();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-                //endpoints.MapHub<ControlSystemHub>("/control-system");
             });
 
 

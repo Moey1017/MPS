@@ -11,12 +11,15 @@
 /*  
     General
 */
-html, body
+.bot_btn
 {
+    bottom:0;
+}
+html, body {
     overflow: hidden;
-    margin:0;
-    padding:0;
-    height:100%;
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
 .mpsContainer {
@@ -69,11 +72,17 @@ html, body
     margin-top:-4.5%;
 }
 
+.question_mark_icon{
+    opacity:0.7;
+    z-index:1000000;
+    right:0;
+    margin:12px;
+}
 /*Custom Table*/
 .cus_tb {
     background-color: #343a40;
     width: 70%;
-    color:white;
+    color: white;
 }
 
     .cus_tb tr:nth-child(odd) {

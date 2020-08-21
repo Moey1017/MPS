@@ -15,29 +15,30 @@ type carProps = CarStore.CarState
     & Store.StoreState
     & typeof CarStore.actionCreators
     & typeof Store.actionCreators
-    & RouteComponentProps<{ car_reg: string }> // maybe
-    & any;
+    & RouteComponentProps<{ car_reg: string }>;
 
 class RetrieveConfirmation extends React.Component<carProps, any>
 {
     componentDidMount() {
         this.props.fetchCar(this.props.match.params.car_reg);
-        console.log(this.props);
     }
 
     // on submmit, create outbound order
     handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        this.props.createOutbound(this.props.car.registration);
+        this.props.createOutbound(this.props.match.params.car_reg);
     }
 
     handleOk = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
+        if (this.props.signalR_connection) {
+            this.props.signalR_connection.send("ConfirmCarExited");
+        } else {
+            alert("Server is not connected.");
+        }        
         this.props.retrieveCar(this.props.car.registration);
     }
 
-    // display current car 
-    // confirm and agree 
     render() {
 
         let screen;
@@ -45,7 +46,7 @@ class RetrieveConfirmation extends React.Component<carProps, any>
             screen = <LoadingScreen />
 
         if (this.props.outbound_order !== null) {
-            if (this.props.outbound_order.status === 'COMPLETE') {
+            if (this.props.outbound_order.status === 'ACCEPTED') {
                 // Ok screen, when ok is presssed, retrieve sucess and return to main page 
                 screen = <div id="popup1" className="overlay">
                     <div className="popup">
@@ -76,7 +77,7 @@ class RetrieveConfirmation extends React.Component<carProps, any>
                         <Form>
                             <FormGroup>
                                 <Label className="d-block">Car Registration</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.car.registration} disabled></Input>
+                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.match.params.car_reg} disabled></Input>
                             </FormGroup>
 
                             <FormGroup>
