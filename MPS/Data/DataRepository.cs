@@ -7,6 +7,7 @@ using System.Linq;
 using MPS.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata;
+using MySqlX.XDevAPI.Common;
 
 namespace MPS.Data.Repository
 {
@@ -24,14 +25,37 @@ namespace MPS.Data.Repository
 
         //All methods with queries 
         //Admin
-        public IEnumerable<Admin> GetAdmin(string login_id, string password)
+        public Admin AuthAdmin(string login_id)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Called getAdmin");
+            var param = new { login_id = login_id };
+            var query = "SELECT login_id, password FROM admins WHERE login_id=@login_id";
+            var result = this._conn.Query<Admin>(query, param).FirstOrDefault();
+            return result;
         }
 
-        public bool AdminExists(int adminId)
+        public bool RegisterAdmin(Admin admin)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Called RegisterAdmin");
+            var param = new { login_id = admin.Login_id, password = admin.Password };
+            var query = "INSERT INTO admins(login_id, password)VALUES(@login_id, @password);";
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
+                return true;
+            else
+                return false;
+        }
+
+        public bool RemoveAdmin(string login_id)
+        {
+            Console.WriteLine("Called RemoveAdmin");
+            var param = new { login_id = login_id };
+            var query = "DELETE FROM admins WHERE login_id=@login_id;";
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
+                return true;
+            else
+                return false;
         }
 
         //Store
@@ -111,6 +135,48 @@ namespace MPS.Data.Repository
             var query = "SELECT * FROM store WHERE car_reg = @car_reg;";
             var result = this._conn.Query(query, param);
             if (result.Count() >= 1)
+                return true;
+            else
+                return false;
+        }
+
+        public bool InsertPallet(Store pallet)
+        {
+            Console.WriteLine(pallet.Pallet_id);
+            var param = new { pallet_id = pallet.Pallet_id, car_reg =  pallet.Car_reg};
+            var query = "INSERT INTO store (pallet_id, car_reg)VALUES(@pallet_id, @car_reg)";
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
+                return true;
+            else
+                return false;
+        }
+
+        public bool RemovePallet(string pallet_id)
+        {
+            var param = new { pallet_id = pallet_id };
+            var query = "DELETE FROM store WHERE pallet_id=@pallet_id;";
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
+                return true;
+            else
+                return false;
+        }
+
+        //Store History
+        public IEnumerable<StoreHistory> GetAllStoreHistory()
+        {
+            var query = "SELECT history_no, registration, activity, ts from store_history;";
+            var result = this._conn.Query<StoreHistory>(query).ToList();
+            return result;
+        }
+
+        public bool InsertHistory(StoreHistory history)
+        {
+            var query = "INSERT INTO store_history (history_no, registration, activity, ts) VALUES(DEFAULT, @registration, @activity, NOW());";
+            var param = new { history_no = history.History_no, registration = history.Registration, activity = history.Activity};
+            var result = this._conn.Execute(query, param);
+            if (result == 1)
                 return true;
             else
                 return false;
@@ -337,7 +403,11 @@ namespace MPS.Data.Repository
         public IEnumerable<Car> GetAllCars()
         {
             Console.WriteLine("Called GetAllCars");
-            var query = "SELECT registration, make, colour, model FROM cars;";
+            var query = "SELECT c.registration, c.driver_id, c.make, c.model, c.colour, d.name AS driver_name"
+                        + " FROM cars c, drivers d"
+                        + " WHERE c.driver_id = d.driver_id"
+                        + " OR c.driver_id IS NULL"
+                        + " GROUP BY c.registration;";
             var result = this._conn.Query<Car>(query).ToList();
             return result;
         }
@@ -346,20 +416,29 @@ namespace MPS.Data.Repository
         {
             Console.WriteLine("Called GetCarByID");
             var param = new { REG = reg }; // bind param 
-            var query = "SELECT registration, make, model, colour from cars WHERE registration=@REG;";
+            var query = "SELECT registration, driver_id, make, model, colour from cars WHERE registration=@REG;";
             var result = this._conn.Query<Car>(query, param);
             return result.FirstOrDefault();
+        }
+        public IEnumerable<Car> GetCarByDriver(int driver_id)
+        {
+            Console.WriteLine("Called GetCarByID");
+            var param = new { driver_id = driver_id }; // bind param 
+            var query = "SELECT registration, driver_id, make, model, colour from cars WHERE driver_id=@driver_id;";
+            var result = this._conn.Query<Car>(query, param).ToList();
+            return result;
         }
 
         public bool InsertCar(Car car)
         {
             Console.WriteLine("Called InsertCar");
             bool toReturn = false;
-            var query = "INSERT INTO cars(registration, make, model, colour) VALUES(@registration, @make, @model, @colour);";
+            var query = "INSERT INTO cars(registration, driver_id, make, model, colour) VALUES(@registration, @driver_id, @make, @model, @colour);";
             var result = this._conn.Execute(query,
                 new
                 {
                     registration = car.Registration,
+                    driver_id = car.Driver_id,
                     make = car.Make,
                     model = car.Model,
                     colour = car.Colour
@@ -391,20 +470,17 @@ namespace MPS.Data.Repository
             var param = new
             {
                 registration = car.Registration,
+                driver_id = car.Driver_id,
                 make = car.Make,
                 model = car.Model,
                 colour = car.Colour
             };
-            var query = "UPDATE cars SET make=@make, model=@model, colour=@colour WHERE registration=@registration";
+            var query = "UPDATE cars SET driver_id=@driver_id, make=@make, model=@model, colour=@colour WHERE registration=@registration";
             var result = this._conn.Execute(query, param);
             if (result == 1)
                 return true;
             else
                 return false;
         }
-
-        //Driver_Car
-
-
     }
 }

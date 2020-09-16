@@ -2,8 +2,8 @@
 import { AppThunkAction } from './';
 import { history } from '../index';
 import axios from 'axios';
-import { InboundOrder } from '../reduxStore/inboundOrder';
-import { OutboundOrder } from '../reduxStore/outboundOrder';
+import { InboundOrder } from '../reduxStore/orders';
+import { OutboundOrder } from '../reduxStore/orders';
 import {
     HubConnectionBuilder,
     HubConnectionState,
@@ -13,21 +13,33 @@ import {
 
 // Frontend DB, to connect with the existing DB system 
 export interface StoreState {
-    readonly pallets: Pallet[];
-    readonly isLoading: boolean;
-    readonly hasSpace: boolean;
-    readonly inbound_order: InboundOrder | null;
-    readonly outbound_order: OutboundOrder | null;
-    readonly signalR_connection: HubConnection | null;
+    pallets: Pallet[];
+    isLoading: boolean;
+    hasSpace: boolean;
+    inbound_order: InboundOrder | null;
+    outbound_order: OutboundOrder | null;
+    signalR_connection: HubConnection | null;
+    store_histories: History[];
 }
 
 export interface Pallet {
-    readonly pallet_id: string;
-    readonly car_reg: string | null;
+    pallet_id: string;
+    car_reg: string | null;
+}
+
+export enum activities {
+    IN = "IN",
+    OUT = "OUT"
+};
+export interface History {
+    history_no: number;
+    registration: string;
+    activity: activities;
+    ts: Date | null;
 }
 
 // Variables
-const SIGNALR_SERVER_URL = 'https://192.168.20.216:5006/socket/control-system';
+const SIGNALR_SERVER_URL = 'https://192.168.30.1:5006/socket/control-system';
 // Order status names
 const ACTIVE = "ACTIVE";
 const ACCEPTED = "ACCEPTED";
@@ -51,6 +63,10 @@ const UPDATE_OUTBOUND_ORDER = 'UPDATE_OUTBOUND_ORDER';
 const RECEIVED_ERROR_STATUS = 'RECEIVED_ERROR_STATUS';
 const USER_CANCEL = 'USER_CANCEL';
 const SETUP_SIGNALR_CONNECTION = 'SETUP_SIGNALR_CONNECTION';
+const REMOVE_PALLET = 'REMOVE_PALLET';
+const ADD_PALLET = 'ADD_PALLET';
+const GET_HISTORIES = 'GET_HISTORIES';
+const ADD_HISTORY = 'ADD_HISTORY';
 
 //Types
 interface RequestStoreStateAction {
@@ -121,9 +137,29 @@ interface UserCancelAction {
     type: typeof USER_CANCEL
 }
 
-interface SetupSignalRConnection {
+interface SetupSignalRConnectionAction {
     type: typeof SETUP_SIGNALR_CONNECTION
     signalRConnection: HubConnection
+}
+
+interface RemovePalletAction {
+    type: typeof REMOVE_PALLET;
+    pallet_id: string;
+}
+
+interface AddPalletAction {
+    type: typeof ADD_PALLET;
+    pallet: Pallet;
+}
+
+interface GetHistoryAction {
+    type: typeof GET_HISTORIES;
+    store_histories: History[];
+}
+
+interface AddHistoryAction {
+    type: typeof ADD_HISTORY;
+    store_history: History;
 }
 
 //General Functions
@@ -181,7 +217,8 @@ type StoreAction = RequestStoreStateAction | ReceiveStoreStateAction | StoringCa
     | StoredCarAction | RetrievingCarAction | RetrievedCarAction | UpdateSpaceStatusAction
     | CreteInboundOrder | CreteOutboundOrder | GettingOrderStatusAction | GotOrderStatusAction
     | UpdateInboundOrderAction | UpdateOutboundOrderAction | ReceiveErrorStatusAction
-    | UserCancelAction | SetupSignalRConnection;
+    | UserCancelAction | SetupSignalRConnectionAction | RemovePalletAction | AddPalletAction
+    | AddHistoryAction | GetHistoryAction;
 
 export const actionCreators = {
     requestStoreState: (): AppThunkAction<StoreAction> => (dispatch, getState) => {
@@ -250,7 +287,13 @@ export const actionCreators = {
                                                     null, '', carRegToStore, dispatch);
                                             }
                                         }
+                                        else {
+                                            console.log("Something went wrong");
+                                        }
                                     }).catch(error => { console.log(error); })
+                            } else {
+                                alert("Car reg has been found in the store.");
+                                redirectTo('/', '');
                             }
                         }).catch(error => { console.log("someting went wrong while checking if car exist in store.") });
                 } else {
@@ -288,17 +331,30 @@ export const actionCreators = {
                         //Dispatch Stored car , need to some how get the actual pallet id
                         dispatch({ type: STORED_CAR, pallet: res.data });
 
-                        console.log("Car has been successfully stored.")
-                        //history.push('/');// Redirect to home
-                    }
-                    else {
-                        console.log("Something went wrong while storing the car into car store");
-                    }
-                }).catch(error => {
-                    alert("Car reg has found in store./storeCar caught an error while storing.")
-                    dispatch({ type: USER_CANCEL });
-                    redirectTo('/', '');
-                })
+                        //Create History Object 
+                        const history: History = {
+                            history_no: 0,
+                            registration: carRegToStore,
+                            activity: activities.IN,
+                            ts: null
+                        }   
+                    console.log(history);
+                    axios.post('api/storehistory/insert-history', history)
+                        .then(res => {
+                            if (res.status === 201 && res.data == true) {
+                                dispatch({ type: ADD_HISTORY, store_history: history })
+                                console.log("Car has been successfully stored.")
+                            } else {
+                                console.log("Something went wrong");
+                            }
+                        }).catch(err => { console.log("Something went wrong when inserting Store History.") })
+                }
+                else {
+                    console.log("Car was not successfully retrieved.")
+                }
+            }).catch(error => {
+                console.log("something went wrong while retriving Car from the store.");
+            })
         }
         //Get inbound Status
         getStatus("inbound", COMPLETE, batch_id, pallet_id, storeAndRedirect, null, null, dispatch);
@@ -336,6 +392,8 @@ export const actionCreators = {
                                 //Get inbound status
                                 getStatus("outbound", ACCEPTED, outboundOrder.batch_id, outboundOrder.pallet_id,
                                     null, null, null, dispatch);
+                            } else {
+                                console.log("Something went wrong");
                             }
                         }).catch(error => {
                             console.log("retrieveCar caught an error./Failed to insert outbound order.")
@@ -354,9 +412,28 @@ export const actionCreators = {
         axios.put('api/store/retrieve-car' + carRegToRetrieve)
             .then(res => {
                 if (res.status === 202 && res.data !== '') {
-                    console.log("Car has been retrieved.");
-                    dispatch({ type: RETRIEVED_CAR, pallet: res.data });
-                    redirectTo('/', "");// Redirect to home
+                    
+                    let empty_pallet: Pallet = { pallet_id: res.data, car_reg: null };
+                    dispatch({ type: RETRIEVED_CAR, pallet: empty_pallet });
+
+                    //Create History Object 
+                    const history: History = {
+                        history_no: 0,
+                        registration: carRegToRetrieve,
+                        activity: activities.OUT,
+                        ts: null
+                    }
+                    axios.post('api/storehistory/insert-history', history)
+                        .then(res => {
+                            if (res.status === 201 && res.data == true) {
+                                dispatch({ type: ADD_HISTORY, store_history: history })
+
+                                console.log("Car has been retrieved.");
+                                redirectTo('/', "");// Redirect to home
+                            } else {
+                                console.log("Something went wrong");
+                            }
+                        }).catch(err => { console.log("Something went wrong when inserting Store History.") })
                 }
                 else {
                     console.log("Car was not successfully retrieved.")
@@ -403,10 +480,10 @@ export const actionCreators = {
         connection.start().then(() => {
             if (connection.connectionId) {
                 dispatch({ type: SETUP_SIGNALR_CONNECTION, signalRConnection: connection });
-                console.log("Connection has been set up, ID:" + connection.connectionId)
             }
         }).catch(error => { console.log('Error while establishing connection :('); });
     },
+    //For testing form
     createOutbound2: (carRegToRetrieve: string): AppThunkAction<StoreAction> => (dispatch) => {
         dispatch({ type: RETRIEVING_CAR });
 
@@ -434,11 +511,45 @@ export const actionCreators = {
             }).catch(error => {
                 console.log("retrieveCar caught an error./Failed to insert outbound order.")
             })
+    },
+    removePallet: (pallet_id: string): AppThunkAction<StoreAction> => (dispatch) => {
+        axios.delete('api/store/delete-pallet' + pallet_id)
+            .then(res => {
+                dispatch({ type: REMOVE_PALLET, pallet_id: pallet_id })
+                console.log("Pallet " + pallet_id + " has been removed");
+            })
+            .catch(error => { console.log(error); })
+    },
+    registerPallet: (pallet: Pallet): AppThunkAction<StoreAction> => (dispatch) => {
+        axios.post('api/store/insert-pallet', pallet)
+            .then(res => {
+                if (res.status === 201 && res.data == true) {
+                    dispatch({ type: ADD_PALLET, pallet: pallet });
+                    console.log("Pallet Added.")
+                }
+                else {
+                    console.log("Something went wrong");
+                }
+            })
+            .catch(err => { console.log(err); })
+    },
+    getStoreHistories: (): AppThunkAction<StoreAction> => (dispatch) => {
+        axios.get('api/storeHistory/get-store-history')
+            .then(res => {
+                if (res.data) {
+                    dispatch({ type: GET_HISTORIES, store_histories: res.data })
+                } else {
+                    console.log("getStoreHistory did not receive any data.");
+                }
+            }).catch(err => {
+                console.log("Something went wrong while fetching the store history.");
+            })
     }
 }
 
 const unloadedStoreState: StoreState = {
-    pallets: [], isLoading: false, hasSpace: false, inbound_order: null, outbound_order: null, signalR_connection: null
+    pallets: [], isLoading: false, hasSpace: false, inbound_order: null,
+    outbound_order: null, signalR_connection: null, store_histories:[]
 };
 
 export const reducer: Reducer<StoreState> = (state: StoreState | undefined, incomingAction: StoreAction): StoreState => {
@@ -491,7 +602,7 @@ export const reducer: Reducer<StoreState> = (state: StoreState | undefined, inco
             return {
                 ...state,
                 ...state.pallets.map(p => {
-                    if (p.pallet_id === action.pallet.pallet_id) { return { pallet_id: action.pallet.pallet_id, car_reg: null } };
+                    if (p.pallet_id === action.pallet.pallet_id) return action.pallet;
                     return p;
                 }),
                 outbound_order: null,
@@ -541,11 +652,30 @@ export const reducer: Reducer<StoreState> = (state: StoreState | undefined, inco
                 ...state,
                 signalR_connection: action.signalRConnection
             }
+        case ADD_PALLET:
+            return {
+                ...state,
+                pallets: [...state.pallets, action.pallet]
+            }
+        case REMOVE_PALLET:
+            return {
+                ...state,
+                pallets: [...state.pallets.filter(pallet => { return pallet.pallet_id !== action.pallet_id })]
+            }
+        case GET_HISTORIES:
+            return {
+                ...state,
+                store_histories: action.store_histories
+            }
+        case ADD_HISTORY:
+            return {
+                ...state,
+                store_histories: [...state.store_histories, action.store_history] 
+            }
         default:
             return {
                 ...state
             }
     }
-
 }
 

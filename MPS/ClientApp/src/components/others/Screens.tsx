@@ -1,6 +1,7 @@
 ﻿import * as React from 'react';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { MpsHeader } from '../others/MpsHeader';
 
 export class LoadingScreen extends React.Component {
     render() {
@@ -42,7 +43,21 @@ export class OkScreen extends React.Component<any> {
                     <h2>{this.props.title}</h2>
                     <div className="content">
                         <Button onClick={this.handleSubmit}>OK</Button>
-		            </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+export class NoPermission extends React.Component<{}>{
+    render() {
+        return (
+            <div className="mpsContainer">
+                <MpsHeader />
+                <div className="central_container">
+                    <h1 className="text-center">Opps! You do not have the permission to view this page.</h1>
+                    <Link className="btn btn-secondary" to='/'>Return To Main Page</Link>
                 </div>
             </div>
         );

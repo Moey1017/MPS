@@ -16,6 +16,8 @@ import AdminViewCars from './components/pages/adminPages/AdminViewCars';
 import AdminViewDrivers from './components/pages/adminPages/AdminViewDrivers';
 import AdminEditCar from './components/pages/adminPages/AdminEditCar';
 import AdminEditDriver from './components/pages/adminPages/AdminEditDriver';
+import AdminViewStore from './components/pages/adminPages/AdminViewStore';
+import AdminViewHistories from './components/pages/adminPages/AdminViewHistories';
 //Public Pages 
 import PageNotFound from './components/pages/PageNotFound';
 import TestingPage from './components/pages/TestingPage';
@@ -37,7 +39,9 @@ export default () => (
             <Route exact path='/admin-register-car' component={AdminRegisterCar} />
             <Route exact path='/admin-view-cars' component={AdminViewCars} />
             <Route exact path='/admin-view-drivers' component={AdminViewDrivers} />
-            <Route exact path='/admin-edit-car/:id' component={AdminEditCar} />
+            <Route exact path='/admin-view-store' component={AdminViewStore} />
+            <Route exact path='/admin-view-histories' component={AdminViewHistories} />
+            <Route exact path='/admin-edit-car/:car_reg' component={AdminEditCar} />
             <Route exact path='/admin-edit-driver/:id' component={AdminEditDriver} />
             <Route path='*' component={PageNotFound} />
         </Switch>

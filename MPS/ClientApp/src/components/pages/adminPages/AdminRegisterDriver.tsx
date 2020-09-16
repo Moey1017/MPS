@@ -6,10 +6,15 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../../../reduxStore/index';
 import { FormGroup, Form, Label, Input, FormText, Button } from 'reactstrap';
 import { MpsHeader } from '../../others/MpsHeader';
+import { NoPermission } from '../../others/Screens';
+import { bindActionCreators } from 'redux';
+import * as AdminStore from '../../../reduxStore/admin';
 
 // At runtime, Redux will merge together..., merge everything into this.props
 type DriverProps =
     DriverStore.DriverState // ... state we've requested from the Redux store
+    & AdminStore.AdminState
+    & typeof AdminStore.actionCreators
     & typeof DriverStore.actionCreators; // ... plus action creators we've requested
 
 class AdminRegisterDriver extends React.Component<DriverProps, any> // first Param is Props, second Param is State
@@ -30,20 +35,40 @@ class AdminRegisterDriver extends React.Component<DriverProps, any> // first Par
         this.setState({ [e.target.name]: e.target.value })
     }
 
-    handleSubmit = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
-
-        const driverObj = {
-            driver_id: 0,
-            name: this.state.name,
-            email: this.state.email,
-            tel_no: this.state.telNo
-        };
-
-        // pass in driver object here 
-        this.props.insertDriver(driverObj);
+    validateName() {
+        return this.state.name.length >= 3;
     }
 
+    validateTel() {
+        return this.state.telNo.length >= 3;
+    }
+
+    validate() {
+        const name = this.state.name;
+        const tel_no = this.state.telNo;
+        return {
+            name: this.validateName(),
+            telNo: this.validateTel()
+        };
+    }
+
+    handleSubmit = (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        const formInputState = this.validate();
+        if (Object.keys(formInputState).every(index => formInputState[index])) { // check while submitting the form
+            const driverObj = {
+                driver_id: 0,
+                name: this.state.name,
+                email: this.state.email,
+                tel_no: this.state.telNo
+            };
+            // pass in driver object here 
+            this.props.insertDriver(driverObj);
+        } else { // invalid inputs in form
+            alert('Form Criteria has not been met!');
+            return;
+        }
+    }
 
     //handleOpenModal() {
     //    this.setState({ showModal: true });
@@ -75,54 +100,79 @@ class AdminRegisterDriver extends React.Component<DriverProps, any> // first Par
     //    return toReturn
     //}
     render() {
+        if (this.props.login_id) {
+            return (
+                <div className="mpsContainer">
+                    <MpsHeader />
+                    <div className="central_container ">
 
-        return (
-            <div className="mpsContainer">
-                <MpsHeader />
-                <div className="central_container ">
-
-                    <div className="text-center">
-                        <h1 className="display-1">Register Driver</h1>
-                    </div>
+                        <div className="text-center">
+                            <h1>Register Driver</h1>
+                        </div>
 
 
-                    <div className="row justify-content-center">
+                        <div className="row justify-content-center">
 
-                        <Form onSubmit={this.handleSubmit}>
-                            <FormGroup>
-                                <Label className="d-block">Name</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="name" value={this.state.name} onChange={this.handleChange}></Input>
-                            </FormGroup>
+                            <Form onSubmit={this.handleSubmit}>
+                                <FormGroup>
+                                    <Label className="d-block">Name</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter name" name="name" value={this.state.name} onChange={this.handleChange}></Input>
+                                </FormGroup>
 
-                            <FormGroup>
-                                <Label className="d-block">Email</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter email" name="email" value={this.state.email} onChange={this.handleChange}></Input>
-                            </FormGroup>
+                                <FormGroup>
+                                    <Label className="d-block">Email</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter email" name="email" value={this.state.email} onChange={this.handleChange}></Input>
+                                </FormGroup>
 
-                            <FormGroup>
-                                <Label className="d-block">Mobile Number</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="telNo" value={this.state.telNo} onChange={this.handleChange}></Input>
-                            </FormGroup>
+                                <FormGroup>
+                                    <Label className="d-block">Mobile Number</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter Mobile number" name="telNo" value={this.state.telNo} onChange={this.handleChange}></Input>
+                                </FormGroup>
 
-                            <Link className="btn btn-danger cus_btn mr-5" to='/admin-options'>
-                                Back
+                                <div className="form_btn_small">
+
+                                    <Link className="btn btn-danger mr-5 cus_form_btn" to='/admin-options'>
+                                        Back
                         </Link>
 
-                            {/*Link className="btn  btn-success cus-btn" onClick={this.handleOpenModal} to='#'>*/}
-                            <Button className="btn  btn-success cus_btn" type="submit" onClick={this.handleSubmit}>
-                                Register
+                                    {/*Link className="btn  btn-success cus-btn" onClick={this.handleOpenModal} to='#'>*/}
+                                    <Button className="btn  btn-success cus_form_btn" type="submit" onClick={this.handleSubmit}>
+                                        Register
                         </Button>
 
-                        </Form>
-                        {/* {this.showModalBox()}  */}
+                                </div>
+
+                            </Form>
+                            {/* {this.showModalBox()}  */}
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        } else {
+            return (<NoPermission />);
+        }
+
     }
 }
 
+function mapStateToProps(state: ApplicationState) {
+    return {
+        ...state.drivers,
+        ...state.admin
+    }
+}
+
+function mapDispatchToProps(dispatch: any) {
+    return bindActionCreators(
+        {
+            ...AdminStore.actionCreators,
+            ...DriverStore.actionCreators
+        },
+        dispatch
+    )
+}
+
 export default connect(
-    (state: ApplicationState) => state.drivers,
-    DriverStore.actionCreators
-)(AdminRegisterDriver);
+    mapStateToProps,
+    mapDispatchToProps
+)(AdminRegisterDriver as any);

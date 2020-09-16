@@ -70,17 +70,17 @@ namespace MPS_Main
             services.AddScoped<IDataRepository, DataRepository>();
 
             services.AddCors(options =>
-                options.AddPolicy("CorsPolicy", builder =>
-                builder.AllowAnyMethod()
-                .AllowAnyHeader()
-                .WithOrigins("http://localhost:5001")
-                .AllowCredentials()));
+            options.AddPolicy("CorsPolicy", builder =>
+            builder.AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins("http://localhost:5001")
+            .AllowCredentials()));
 
 
             //here for onto the server 
             //services.Configure<ForwardedHeadersOptions>(options =>
             //{
-            //    options.KnownProxies.Add(IPAddress.Parse("192.168.100.1"));
+            //    options.KnownProxies.Add(IPAddress.Parse("192.168.30.1"));
             //});
         }
 
@@ -106,10 +106,10 @@ namespace MPS_Main
             app.UseRouting();
 
             //here for onto the server 
-            //app.UseForwardedHeaders(new ForwardedHeadersOptions
-            //{
-            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            //});
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseAuthentication();
 

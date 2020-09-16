@@ -24,18 +24,6 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 -- ----------------------------------------------------------------------------
--- Table mps.car
--- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mps`.`cars` (
-  `registration` VARCHAR(15) NOT NULL,
-  `make` VARCHAR(100) NOT NULL,
-  `model` VARCHAR(100) NOT NULL,
-  `colour` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`registration`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
--- ----------------------------------------------------------------------------
 -- Table mps.driver
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mps`.`drivers` (
@@ -49,21 +37,16 @@ AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 -- ----------------------------------------------------------------------------
--- Table mps.driver_car
+-- Table mps.car
 -- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mps`.`driver_car` (
-  `driver_id` INT(6) NOT NULL,
+CREATE TABLE IF NOT EXISTS `mps`.`cars` (
   `registration` VARCHAR(15) NOT NULL,
-  PRIMARY KEY (`driver_id`, `registration`),
-  INDEX `registration` (`registration` ASC) ,
-  CONSTRAINT `driver_car_ibfk_1`
-    FOREIGN KEY (`driver_id`)
-    REFERENCES `mps`.`drivers` (`driver_id`),
-  CONSTRAINT `driver_car_ibfk_2`
-    FOREIGN KEY (`registration`)
-    REFERENCES `mps`.`cars` (`registration`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `driver_id` INT(6),
+  `make` VARCHAR(100) NOT NULL,
+  `model` VARCHAR(100) NOT NULL,
+  `colour` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`registration`),
+  FOREIGN KEY (`driver_id`)REFERENCES `mps`.`drivers`(`driver_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
@@ -119,6 +102,14 @@ CREATE TABLE IF NOT EXISTS `mps`.`outbound_order` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
+-- ----------------------------------------------------------------------------
+-- Store History
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mps`.`store_history` (
+	`history_no` INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+	`registration` VARCHAR(15) NOT NULL,
+	`activity` VARCHAR(10) NOT NULL,
+	`ts` TIMESTAMP NOT NULL);    
 
 -- ----------------------------------------------------------------------------
 -- Indexes for mps.inbound_order

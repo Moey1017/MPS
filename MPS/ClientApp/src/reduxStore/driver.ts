@@ -76,7 +76,8 @@ interface FetchedDriverAction {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 // Aggregate all actions together and to ensure will only receive these actions 
-type DriverAction = RequestDriversListAction | ReceiveDriversListAction | InsertingDriverAction | InsertedDriverAction | DeleteDriverAction | UpdateDriverAction | FetchingDriverAction | FetchedDriverAction;
+type DriverAction = RequestDriversListAction | ReceiveDriversListAction | InsertingDriverAction | InsertedDriverAction |
+    DeleteDriverAction | UpdateDriverAction | FetchingDriverAction | FetchedDriverAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -122,22 +123,28 @@ export const actionCreators = {
         //TODO:Create Dispatch type if error 
     },
     deleteDriver: (driverIdToDelete: number): AppThunkAction<DriverAction> => (dispatch) => {
-        axios.delete('api/driver/delete-driver' + driverIdToDelete)
+        axios.get('api/car/get-car-byDriver' + driverIdToDelete)
             .then(res => {
-                if (res.status === 204) {
-                    dispatch({ type: DELETE_DRIVER, driver_id: driverIdToDelete });
-                    console.log('Driver Deleted.');
+                if (res.data.length === 0) {
+                    axios.delete('api/driver/delete-driver' + driverIdToDelete)
+                        .then(res => {
+                            if (res.status === 204) {
+                                dispatch({ type: DELETE_DRIVER, driver_id: driverIdToDelete });
+                                console.log('Driver Deleted.');
+                            }
+                            else {
+                                console.log("Driver Delete Failed.");
+                            }
+                        })
+                        .catch(error => {
+                            console.log("deleteDriver caught an error/Failed to delete.");
+                            console.log(error);
+                        })
                 }
                 else {
-                    console.log("Driver Delete Failed.");
+                    alert("Cannot be deleted, car is registered under this driver.");
                 }
-            })
-            .catch(error => {
-                console.log("deleteDriver caught an error/Failed to delete.");
-                console.log(error);
-            })
-        
-
+            }).catch(error => { console.log(error); })
     },
     fetchDriver: (driverIdToGet: number): AppThunkAction<DriverAction> => (dispatch) => {
         dispatch({ type: FETCHING_DRIVER, driver_id: driverIdToGet })

@@ -9,7 +9,6 @@ import * as CarStore from '../../../reduxStore/car';
 import * as Store from '../../../reduxStore/store';
 import { LoadingScreen } from '../../others/Screens';
 import { MpsHeader } from '../../others/MpsHeader';
-import { ok } from 'assert';// what is this? why is this here?
 
 type carProps = CarStore.CarState
     & Store.StoreState
@@ -33,10 +32,11 @@ class RetrieveConfirmation extends React.Component<carProps, any>
         e.preventDefault();
         if (this.props.signalR_connection) {
             this.props.signalR_connection.send("ConfirmCarExited");
+            this.props.retrieveCar(this.props.car.registration);
         } else {
             alert("Server is not connected.");
-        }        
-        this.props.retrieveCar(this.props.car.registration);
+        }
+        //this.props.retrieveCar(this.props.car.registration);
     }
 
     render() {
@@ -50,7 +50,7 @@ class RetrieveConfirmation extends React.Component<carProps, any>
                 // Ok screen, when ok is presssed, retrieve sucess and return to main page 
                 screen = <div id="popup1" className="overlay">
                     <div className="popup">
-                        <h2>Press Ok when the Car has been completed retrieved.</h2>
+                        <h2>Only press Ok when the car has been completed retrieved. Have a nice day!</h2>
                         <div className="content">
                             <Button onClick={this.handleOk}>OK</Button>
                         </div>
@@ -68,44 +68,44 @@ class RetrieveConfirmation extends React.Component<carProps, any>
 
                     <div>
 
-                    <div className="text-center">
-                        <h1 className="display-1">Retrieve Vehicle</h1>
-                    </div>
+                        <div className="text-center">
+                            <h1>Retrieve Vehicle</h1>
+                        </div>
 
-                    <div className="row justify-content-center">
+                        <div className="row justify-content-center">
 
-                        <Form>
-                            <FormGroup>
-                                <Label className="d-block">Car Registration</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.match.params.car_reg} disabled></Input>
-                            </FormGroup>
+                            <Form>
+                                <FormGroup>
+                                    <Label className="d-block">Car Registration</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car registration" name="registration" value={this.props.match.params.car_reg} disabled></Input>
+                                </FormGroup>
 
-                            <FormGroup>
-                                <Label className="d-block">Car Make</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.car.make} disabled></Input>
-                            </FormGroup>
+                                <FormGroup>
+                                    <Label className="d-block">Car Make</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter make" name="make" value={this.props.car.make} disabled></Input>
+                                </FormGroup>
 
-                            <FormGroup>
-                                <Label className="d-block">Car Model</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.props.car.model} disabled></Input>
-                            </FormGroup>
+                                <FormGroup>
+                                    <Label className="d-block">Car Model</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car model" name="model" value={this.props.car.model} disabled></Input>
+                                </FormGroup>
 
-                            <FormGroup>
-                                <Label className="d-block">Car Colour</Label>
-                                <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.props.car.colour} disabled></Input>
-                            </FormGroup>
+                                <FormGroup>
+                                    <Label className="d-block">Car Colour</Label>
+                                    <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.props.car.colour} disabled></Input>
+                                </FormGroup>
 
-                            <div className="button_section">
-                                <Link className="btn btn-danger cus_btn" to='/retrieve-vehicle'>
-                                    Back
+                                <div className="button_section">
+                                    <Link className="btn btn-danger mr-5 cus_form_btn" to='/retrieve-vehicle'>
+                                        Back
                         </Link>
 
-                                <Button className="btn btn-success cus_btn" type="submit" onClick={this.handleSubmit}>
-                                    Confirm Retrieve
+                                    <Button className="btn btn-success cus_form_btn" type="submit" onClick={this.handleSubmit}>
+                                        Confirm Retrieve
                         </Button>
-                            </div>
-                        </Form>
-                    </div>
+                                </div>
+                            </Form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -133,9 +133,3 @@ export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(RetrieveConfirmation as any);
-
-
-//export default connect(
-//    (state: ApplicationState) => { return (state.cars, state.store); },
-//    mapDispatchToProps
-//)(RetrieveConfirmation as any);

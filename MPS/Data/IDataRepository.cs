@@ -7,8 +7,9 @@ namespace MPS.Data.Repository
     public interface IDataRepository
     {
         //Admin Interface Repository 
-        public IEnumerable<Admin> GetAdmin(string loginID, string password);
-        bool AdminExists(int admin);
+        public Admin AuthAdmin(string loginID);
+        public bool RegisterAdmin(Admin admin);
+        public bool RemoveAdmin(string login_id);
 
         //Store Interface Repository 
         public IEnumerable<Store> GetAllRegistration();
@@ -16,6 +17,12 @@ namespace MPS.Data.Repository
         public Store RetrieveCar(string carReg);
         public bool IfStoreHasSpace();
         public bool IfCarRegExistInStore(string carReg);
+        public bool InsertPallet(Store pallet);
+        public bool RemovePallet(string pallet_id);
+
+        //Store history Interface Repository 
+        public IEnumerable<StoreHistory> GetAllStoreHistory();
+        public bool InsertHistory(StoreHistory history);
 
         //Inbound order Interface Repository 
         public IEnumerable<InboundOrder> GetAllInboundOrders();
@@ -39,6 +46,7 @@ namespace MPS.Data.Repository
         //Car Interface Repository 
         public IEnumerable<Car> GetAllCars();
         public Car GetCarByReg(string reg);
+        public IEnumerable<Car> GetCarByDriver(int driver_id);
         public bool InsertCar(Car car);
         public bool DeleteCar(string reg);
         public bool UpdateCar(Car car);

@@ -17,12 +17,12 @@ namespace MPS.Models
 
         public virtual DbSet<Admin> Admin { get; set; }
         public virtual DbSet<Car> Car { get; set; }
-        public virtual DbSet<DriverCar> DriverCar { get; set; }
         public virtual DbSet<Driver> Driver { get; set; }
         public virtual DbSet<InboundOrder> InboundOrder { get; set; }
         public virtual DbSet<OutboundOrder> OutboundOrder { get; set; }
         public virtual DbSet<Schemaversions> Schemaversions { get; set; }
         public virtual DbSet<Store> Store { get; set; }
+        public virtual DbSet<StoreHistory> StoreHistory { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,6 +48,7 @@ namespace MPS.Models
 
                 entity.Property(e => e.Password)
                     .IsRequired()
+                    .HasColumnName("password")
                     .HasMaxLength(255)
                     .IsUnicode(false);
             });
@@ -59,6 +60,9 @@ namespace MPS.Models
 
                 entity.ToTable("cars");
 
+                entity.HasIndex(e => e.Driver_id)
+                    .HasName("driver_id");
+
                 entity.Property(e => e.Registration)
                     .HasMaxLength(15)
                     .IsUnicode(false);
@@ -67,6 +71,11 @@ namespace MPS.Models
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Driver_id)
+                    .HasColumnName("driver_id")
+                    .HasColumnType("int(6)")
+                    .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.Make)
                     .IsRequired()
@@ -77,37 +86,16 @@ namespace MPS.Models
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
-            });
 
-            modelBuilder.Entity<DriverCar>(entity =>
-            {
-                entity.HasKey(e => new { e.Driver_id, e.Registration })
-                    .HasName("PRIMARY");
-
-                entity.ToTable("driver_car");
-
-                entity.HasIndex(e => e.Registration)
-                    .HasName("registration");
-
-                entity.Property(e => e.Driver_id)
-                    .HasColumnName("driver_id")
-                    .HasColumnType("int(6)");
-
-                entity.Property(e => e.Registration)
-                    .HasMaxLength(15)
+                entity.Property(e => e.driver_name)
+                    .IsRequired()
+                    .HasMaxLength(25)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.Driver)
-                    .WithMany(p => p.DriverCar)
+                    .WithMany(p => p.Car)
                     .HasForeignKey(d => d.Driver_id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("driver_car_ibfk_1");
-
-                entity.HasOne(d => d.RegistrationNavigation)
-                    .WithMany(p => p.DriverCar)
-                    .HasForeignKey(d => d.Registration)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("driver_car_ibfk_2");
+                    .HasConstraintName("cars_ibfk_1");
             });
 
             modelBuilder.Entity<Driver>(entity =>
@@ -118,7 +106,7 @@ namespace MPS.Models
                 entity.ToTable("drivers");
 
                 entity.Property(e => e.Driver_id)
-                    .HasColumnName("DriverID")
+                    .HasColumnName("driver_id")
                     .HasColumnType("int(6)");
 
                 entity.Property(e => e.Email)
@@ -310,7 +298,7 @@ namespace MPS.Models
                     .HasName("car_reg");
 
                 entity.Property(e => e.Pallet_id)
-                    .HasColumnName("pallet_iD")
+                    .HasColumnName("pallet_id")
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
@@ -319,6 +307,35 @@ namespace MPS.Models
                     .HasMaxLength(15)
                     .IsUnicode(false)
                     .HasDefaultValueSql("'NULL'");
+            });
+
+            modelBuilder.Entity<StoreHistory>(entity =>
+            {
+                entity.HasKey(e => e.History_no)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("store_history");
+
+                entity.Property(e => e.History_no)
+                    .HasColumnName("history_no")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Activity)
+                    .IsRequired()
+                    .HasColumnName("activity")
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Registration)
+                    .IsRequired()
+                    .HasColumnName("registration")
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Ts)
+                    .HasColumnName("ts")
+                    .HasDefaultValueSql("'current_timestamp()'")
+                    .ValueGeneratedOnAddOrUpdate();
             });
 
             OnModelCreatingPartial(modelBuilder);

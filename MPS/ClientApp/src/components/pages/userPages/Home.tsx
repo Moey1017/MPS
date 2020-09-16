@@ -24,16 +24,24 @@ class Home2 extends React.Component<storeProps, any>
 
     render() {
         let storeButton;
-        if (this.props.hasSpace) {
+        let retrieveButton = <Link className="btn btn-success cus_btn" to='/retrieve-vehicle'>
+                                Retrieve Vehicle
+                                </Link>;
+        if (this.props.hasSpace && this.props.signalR_connection) {
             storeButton = <Link className="btn btn-danger cus_btn" to='/store-vehicle'>
                 Store Vehicle
                         </Link>
         }
         else {
             storeButton = <Link className="btn btn-danger cus_btn"
-                onClick={() => { alert("Car Space is full"); }} to='/'>
+                onClick={() => { alert("Car Space is full/Server disconnected."); }} to='/'>
                 Store Vehicle
                         </Link>
+
+            retrieveButton = <Link className="btn btn-success cus_btn"
+                onClick={() => { alert("Unavailable/Server disconnected."); }} to='/'>
+                Retrieve Vehicle
+                                </Link>;
 
         }
         return (
@@ -47,10 +55,7 @@ class Home2 extends React.Component<storeProps, any>
 
                             <div className="d-flex m-auto home_btn_div">
                                 {storeButton}
-
-                                <Link className="btn btn-success cus_btn" to='/retrieve-vehicle'>
-                                    Retrieve Vehicle
-                                </Link>
+                                {retrieveButton}
                             </div>
 
 

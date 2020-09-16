@@ -24,10 +24,10 @@ namespace MPS_Main
                 {
                     webBuilder.UseStartup<Startup>();
 
-                    //Here
-                    //webBuilder.UseKestrel() //here to 
+                    //Here for server
+                    //webBuilder.UseKestrel()
                     //.UseContentRoot(Directory.GetCurrentDirectory())
-                    //.UseUrls("http://*:5000") //here
+                    //.UseUrls("http://*:5000")
                     //.UseStartup<Startup>();
                 });
     }

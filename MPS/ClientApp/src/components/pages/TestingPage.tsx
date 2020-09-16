@@ -94,14 +94,14 @@ const TestingPage2: FC<storeProps> = (props) => {
         <div className="mpsContainer">
             <MpsHeader />
 
-            <Link className="btn btn-danger position-absolute cus_btn" to='/'>
+            <Link className="btn btn-danger cus_btn" to='/'>
                 Back
                 </Link>
 
             <div className="central_container">
 
                 <div className="text-center">
-                    <h1 className="display-1">Testing Form</h1>
+                    <h1>Testing Form</h1>
                 </div>
 
                 <div className="d-flex">
@@ -137,7 +137,7 @@ const TestingPage2: FC<storeProps> = (props) => {
                         </div>
                     </div>
 
-                    <div >
+                    <div className="d-flex align-items-center">
                         <Form className="d-flex flex-column align-items-center">
                             <FormGroup>
                                 <Label className="d-block">Exit Panel</Label>

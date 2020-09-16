@@ -34,6 +34,13 @@ namespace MPS.Controllers
             return Ok(carData);
         }
 
+        [HttpGet("get-car-byDriver{driver_id}")]
+        public IActionResult GetCarByDriver(int driver_id)
+        {
+            var carData = _dataRepository.GetCarByDriver(driver_id);
+            return Ok(carData);
+        }
+
         [HttpPost("insert-car")]
         public IActionResult InsertCar([FromBody] Car car)
         {

@@ -32,6 +32,8 @@ var reactstrap_1 = require("reactstrap");
 var react_redux_1 = require("react-redux");
 var redux_1 = require("redux");
 var MpsHeader_1 = require("../../others/MpsHeader");
+var Screens_1 = require("../../others/Screens");
+var AdminStore = require("../../../reduxStore/admin");
 var AdminEditCar = /** @class */ (function (_super) {
     __extends(AdminEditCar, _super);
     function AdminEditCar(props) {
@@ -42,22 +44,34 @@ var AdminEditCar = /** @class */ (function (_super) {
         };
         _this.handleSubmit = function (e) {
             e.preventDefault();
-            var newCarObj = {
-                registration: _this.state.registration,
-                make: _this.state.make,
-                model: _this.state.model,
-                colour: _this.state.colour
-                //driver: this.state.driver,
-            };
-            _this.props.updateCar(newCarObj);
+            var formInputState = _this.validate();
+            if (Object.keys(formInputState).every(function (index) { return formInputState[index]; })) { // check while submitting the form
+                var carObj = {
+                    registration: _this.state.registration,
+                    make: _this.state.make,
+                    model: _this.state.model,
+                    colour: _this.state.colour,
+                    driver_id: _this.state.driver_id
+                };
+                if (_this.state.driver_id == -1) {
+                    carObj.driver_id = null;
+                }
+                else {
+                    carObj.driver_id = parseInt(carObj.driver_id);
+                }
+                _this.props.updateCar(carObj);
+            }
+            else { // invalid inputs in form
+                alert('Form Criteria has not been met!');
+                return;
+            }
         };
         _this.state = {
             registration: '',
-            driver: '',
+            driver_id: -1,
             make: '',
             model: '',
-            colour: '',
-            driverNameList: []
+            colour: ''
         };
         return _this;
     }
@@ -69,78 +83,100 @@ var AdminEditCar = /** @class */ (function (_super) {
     };
     //getting all necessary data 
     AdminEditCar.prototype.ensureDataFetched = function () {
-        this.props.fetchCar(this.props.carReg);
+        if (this.props.drivers.length === 0) {
+            this.props.requestDriverList();
+        }
+        this.props.fetchCar(this.props.match.params.car_reg);
+        if (this.props.car.driver_id === null) {
+            this.setState({
+                driver_id: -1
+            });
+        }
+        else {
+            this.setState({
+                driver_id: this.props.car.driver_id
+            });
+        }
         this.setState({
-            registration: this.props.carProps['car'].registration,
-            make: this.props.carProps['car'].make,
-            model: this.props.carProps['car'].model,
-            colour: this.props.carProps['car'].colour
+            registration: this.props.car.registration,
+            make: this.props.car.make,
+            model: this.props.car.model,
+            colour: this.props.car.colour
         });
-        //if (this.state.driverNameList.length === 0) { // check if drivers have been loaded into redux store
-        //    this.props.requestDriverList();
-        //}
-        //this.getDriverNameList();
     };
-    // get all drivers'name into an array 
-    //private getDriverNameList() {
-    //    this.setState({
-    //        driverNameList: this.props.drivers.map(d => { return d.name })
-    //    })
-    //}
-    //private createDropDown() {
-    //    return (
-    //        <DropDownListComponent id="ddlelement" dataSource={this.state.driverNameList} placeholder="Select a driver" />
-    //    );
-    //}
     // States update late, need this to update component 
     AdminEditCar.prototype.componentDidUpdate = function (prevProps) {
-        if (this.props.carProps !== prevProps.carProps) {
+        if (this.props.car !== prevProps.car) {
+            if (this.props.car.driver_id === null) {
+                this.setState({
+                    driver_id: -1
+                });
+            }
+            else {
+                this.setState({
+                    driver_id: this.props.car.driver_id
+                });
+            }
             this.setState({
-                registration: this.props.carProps['car'].registration,
-                make: this.props.carProps['car'].make,
-                model: this.props.carProps['car'].model,
-                colour: this.props.carProps['car'].colour
+                registration: this.props.car.registration,
+                make: this.props.car.make,
+                model: this.props.car.model,
+                colour: this.props.car.colour
             });
         }
     };
+    AdminEditCar.prototype.validateRegistration = function () {
+        return this.state.registration.length >= 3;
+    };
+    AdminEditCar.prototype.validate = function () {
+        var registration = this.state.registration;
+        return {
+            registration: this.validateRegistration()
+        };
+    };
     AdminEditCar.prototype.render = function () {
-        return (React.createElement("div", { className: "mpsContainer" },
-            React.createElement(MpsHeader_1.MpsHeader, null),
-            React.createElement("div", { className: "central_container " },
-                React.createElement("div", { className: "text-center" },
-                    React.createElement("h1", { className: "display-1" }, "Update Car")),
-                React.createElement("div", { className: "row justify-content-center" },
-                    React.createElement(reactstrap_1.Form, { onSubmit: this.handleSubmit },
-                        React.createElement(reactstrap_1.FormGroup, null,
-                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Select A Driver")),
-                        React.createElement(reactstrap_1.FormGroup, null,
-                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Registration"),
-                            React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car registration", name: "registration", value: this.state.registration || "", onChange: this.handleChange, disabled: true })),
-                        React.createElement(reactstrap_1.FormGroup, null,
-                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Make"),
-                            React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter make", name: "make", value: this.state.make || "", onChange: this.handleChange })),
-                        React.createElement(reactstrap_1.FormGroup, null,
-                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Model"),
-                            React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car model", name: "model", value: this.state.model || "", onChange: this.handleChange })),
-                        React.createElement(reactstrap_1.FormGroup, null,
-                            React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Colour"),
-                            React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car colour", name: "colour", value: this.state.colour || "", onChange: this.handleChange })),
-                        React.createElement(react_router_dom_1.Link, { className: "btn btn-danger cus_btn mr-5", to: '/admin-view-cars' }, "Back"),
-                        React.createElement(reactstrap_1.Button, { className: "btn btn-success cus_btn", type: "submit", onClick: this.handleSubmit }, "Update"))))));
+        if (this.props.login_id) {
+            return (React.createElement("div", { className: "mpsContainer" },
+                React.createElement(MpsHeader_1.MpsHeader, null),
+                React.createElement("div", { className: "central_container " },
+                    React.createElement("div", { className: "text-center" },
+                        React.createElement("h1", null, "Update Car")),
+                    React.createElement("div", { className: "row justify-content-center" },
+                        React.createElement(reactstrap_1.Form, { onSubmit: this.handleSubmit },
+                            React.createElement(reactstrap_1.FormGroup, null,
+                                React.createElement(reactstrap_1.Label, { className: "d-block" }, "Select A Driver"),
+                                React.createElement("select", { className: "d-block mb-3 cus-input-driver", value: this.state.driver_id, name: "driver_id", onChange: this.handleChange },
+                                    React.createElement("option", { value: "-1" }, "None"),
+                                    this.props.drivers.map(function (d) { return React.createElement("option", { key: d.driver_id, value: d.driver_id },
+                                        d.driver_id,
+                                        " - ",
+                                        d.name); }))),
+                            React.createElement(reactstrap_1.FormGroup, null,
+                                React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Registration"),
+                                React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car registration", name: "registration", value: this.state.registration || "", onChange: this.handleChange, disabled: true })),
+                            React.createElement(reactstrap_1.FormGroup, null,
+                                React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Make"),
+                                React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter make", name: "make", value: this.state.make || "", onChange: this.handleChange })),
+                            React.createElement(reactstrap_1.FormGroup, null,
+                                React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Model"),
+                                React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car model", name: "model", value: this.state.model || "", onChange: this.handleChange })),
+                            React.createElement(reactstrap_1.FormGroup, null,
+                                React.createElement(reactstrap_1.Label, { className: "d-block" }, "Car Colour"),
+                                React.createElement(reactstrap_1.Input, { className: "d-block mb-3 cus-input-driver", placeholder: "Enter car colour", name: "colour", value: this.state.colour || "", onChange: this.handleChange })),
+                            React.createElement(react_router_dom_1.Link, { className: "btn btn-danger mr-5 cus_form_btn", to: '/admin-view-cars' }, "Back"),
+                            React.createElement(reactstrap_1.Button, { className: "btn btn-success cus_form_btn", type: "submit", onClick: this.handleSubmit }, "Update"))))));
+        }
+        else {
+            return (React.createElement(Screens_1.NoPermission, null));
+        }
     };
     return AdminEditCar;
 }(React.Component));
-function mapStateToProps(state, ownProps) {
-    return {
-        carProps: state.cars,
-        driverProps: state.drivers,
-        carReg: ownProps.match.params.id
-    };
+function mapStateToProps(state) {
+    return __assign(__assign(__assign({}, state.cars), state.drivers), state.admin);
 }
 function mapDispatchToProps(dispatch) {
-    return redux_1.bindActionCreators(__assign(__assign({}, CarStore.actionCreators), DriverStore.actionCreators), dispatch);
+    return redux_1.bindActionCreators(__assign(__assign(__assign({}, CarStore.actionCreators), DriverStore.actionCreators), AdminStore.actionCreators), dispatch);
 }
-exports.default = react_redux_1.connect(
-//(state: ApplicationState) => ({ cars:state.cars }),
-mapStateToProps, mapDispatchToProps)(AdminEditCar);
+exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(AdminEditCar);
 //# sourceMappingURL=AdminEditCar.js.map

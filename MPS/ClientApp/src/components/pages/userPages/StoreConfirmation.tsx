@@ -95,11 +95,13 @@ class StoreConfirmation extends React.Component<storeProps, any>
                                 //SignalR
                                 if (this.props.signalR_connection) {
                                     this.props.signalR_connection.send("ConfirmCarOnInput", this.props.match.params.reg);
+                                    this.props.storeCar(this.props.match.params.reg, this.props.inbound_order.batch_id, this.props.inbound_order.pallet_id);
+                                    this.setState({ stored: true });
                                 } else {
                                     alert("Server is not Connected");
                                 }
-                                this.props.storeCar(this.props.match.params.reg, this.props.inbound_order.batch_id, this.props.inbound_order.pallet_id);
-                                this.setState({ stored: true });
+                                //this.props.storeCar(this.props.match.params.reg, this.props.inbound_order.batch_id, this.props.inbound_order.pallet_id);
+                                //this.setState({ stored: true });
                             }
                             else {
                                 alert("Something went wrong. Batch id is empty."); // return back to home here 
@@ -132,10 +134,10 @@ class StoreConfirmation extends React.Component<storeProps, any>
                 <Modal isOpen={true} toggle={this.toggle}>
                     <ModalHeader toggle={this.state.redirectToggle}>Thanks you</ModalHeader>
                     <ModalBody>
-                        Your car has been completely retrieved, Thanks for using our service!
+                        Your car has been completely stored, Thanks for using our service! Have a nice day!
                         </ModalBody>
                     <ModalFooter>
-                        <Link color="secondary" to='/'>Ok</Link>
+                        <Link className="btn btn-secondary" to='/'>Ok</Link>
                     </ModalFooter>
                 </Modal>
             </div>
@@ -146,6 +148,7 @@ class StoreConfirmation extends React.Component<storeProps, any>
                 <MpsHeader />
 
                 {loadingScreen}
+                {redirectScreen}
 
                 <div>
                     <Button color="danger" className="position-absolute question_mark_icon" onClick={this.toggle}>?</Button>
@@ -160,14 +163,12 @@ class StoreConfirmation extends React.Component<storeProps, any>
                     </Modal>
                 </div>
 
-                {redirectScreen};
-
                 <Button className="btn btn-danger cus_btn" onClick={() => { this.props.userCancelAndReturn("inbound", this.props.inbound_order); }}>
                     Cancel
                 </Button>
 
                 <div className="text-center">
-                    <h1 className="display-1">Store Confirmation</h1>
+                    <h1>Store Confirmation</h1>
                 </div>
 
                 <div className="d-flex flex-column align-items-center store_confirmation_content">

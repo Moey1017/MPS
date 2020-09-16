@@ -12,7 +12,8 @@ export interface CarState {
 
 export interface Car {
     registration: string;
-    driver?: string;
+    driver_id?: number | null;
+    driver_name?: string;
     make: string;
     model: string;
     colour: string;
@@ -109,7 +110,6 @@ export const actionCreators = {
         dispatch({ type: INSERTING_CAR, car: carFromClient });
         axios.post('api/car/insert-car', carFromClient)
             .then(res => {
-                console.log(res);
                 if (res.status === 201 && res.data == true) {
                     dispatch({ type: INSERTED_CAR, car: carFromClient }); // driver: data(driverFromDb From DBS)???
                     console.log("Car Added.")
@@ -178,7 +178,7 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 const unloadedCarState: CarState = {
     cars: [], car: { registration: '', make: '', model: '', colour: '' }, isLoading: false
-}; // change: cars:[] -> cars: tempCarList, for testing 
+}; 
 
 export const reducer: Reducer<CarState> = (state: CarState | undefined, incomingAction: Action): CarState => {
     if (state === undefined) {

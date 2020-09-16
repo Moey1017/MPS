@@ -9,7 +9,7 @@
 
 INSERT IGNORE INTO `mps`.`admins` (`login_id`, `password`)
 VALUES 
-('mpsAdminUsername','$2y$12$v7E5wQzQyfsa0mr07eUFBOsEi5U7lmbpQ9cakKkUQnLEmMHbnec7y');
+('admin','$2y$12$v7E5wQzQyfsa0mr07eUFBOsEi5U7lmbpQ9cakKkUQnLEmMHbnec7y');
 
 -- ----------------------------------------------------------------------------
 --

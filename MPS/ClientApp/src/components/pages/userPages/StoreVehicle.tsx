@@ -88,7 +88,7 @@ class StoreConfirmation extends React.Component<storeProps, any>
                 </div>
 
                 <div className="text-center">
-                    <h1 className="display-1">Car Registration</h1>
+                    <h1>Car Registration</h1>
                     <h1>Is this your Car?</h1>
                 </div>
 

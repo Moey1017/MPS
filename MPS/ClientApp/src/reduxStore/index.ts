@@ -2,6 +2,7 @@ import * as Cars from './car';
 import * as Drivers from './driver';
 import * as Store from './store';
 import * as Admin from './admin';
+import * as Orders from './orders';
 
 // The top-level state object
 export interface ApplicationState {
@@ -10,6 +11,7 @@ export interface ApplicationState {
     admin: Admin.AdminState;
     isLoggedIn: boolean;
     store: Store.StoreState;
+    orders: Orders.OrdersState;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -18,7 +20,9 @@ export interface ApplicationState {
 export const reducers = {
     cars: Cars.reducer,
     drivers: Drivers.reducer,
-    store: Store.reducer
+    store: Store.reducer,
+    admin: Admin.reducer,
+    orders: Orders.reducer
 };
 
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are

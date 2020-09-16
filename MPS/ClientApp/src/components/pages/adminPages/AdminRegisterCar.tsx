@@ -8,28 +8,30 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ApplicationState } from '../../../reduxStore/index';
 import { MpsHeader } from '../../others/MpsHeader';
+import { NoPermission } from '../../others/Screens';
+import * as AdminStore from '../../../reduxStore/admin';
 
 
 // At runtime, Redux will merge together..., merge everything into this.props
-type CarPropsAndDriverState =
+type Props =
     CarStore.CarState // ... state we've requested from the Redux store
     & DriverStore.DriverState
+    & AdminStore.AdminState
+    & typeof AdminStore.actionCreators
     & typeof CarStore.actionCreators // ... plus action creators we've requested
     & typeof DriverStore.actionCreators;
 
-class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
+class AdminRegisterCar extends React.Component<Props, any>
 {
     constructor(props: any) {
         super(props);
 
         this.state = {
             registration: '',
-            driver: '',
+            driver_id: -1,
             make: '',
             model: '',
-            colour: '',
-            drivers: [],
-            //driverNameList:[]
+            colour: ''
         }
     }
 
@@ -37,60 +39,69 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
 
         setTimeout(() => {
             this.ensureDataFetched();
-            //this.getDriverNameList();
         }, 200)
-
     }
 
     private ensureDataFetched() {
-        //if (this.props.drivers.length === 0 || this.props.drivers.length === undefined) { // check if drivers have been loaded into redux store
-        //    this.props.requestDriverList();
-        //    this.setState({
-        //        drivers: this.props.drivers,
-        //        isLoading: false
-        //    })
-        //}
+        if (this.props.drivers.length === 0) {
+            this.props.requestDriverList();
+        }
     }
 
-    // this is not working bcuz it doenst know what is this.props.drivers 
-    //private getDriverNameList() {
-    //    this.setState({
-    //        // driverNameList: this.props.drivers.map(d => { return d.driverName })
-    //        drivers: this.props.drivers
-    //    })
+    //private driverString = JSON.stringify(this.props.drivers);
+    //private driverJson: { [key: string]: Object }[] = JSON.parse(this.driverString);
+    //private driversFields: object = { text: 'name', value: 'driver_id' };
+
+    //private createDropDown() {
+    //    return (
+    //        //<DropDownListComponent id="ddlelement" value='string' dataSource={this.driverJson} fields={this.driversFields} placeholder="Select a driver" />
+
+    //    );
     //}
-
-    private createDropDown() {
-        return (
-            <DropDownListComponent id="ddlelement" dataSource={this.state.drivers} placeholder="Select a driver" />
-        );
-    }
 
     handleChange = (e: { target: { name: any; value: any; }; }) => {
         this.setState({ [e.target.name]: e.target.value })
     }
 
-    handleSubmit = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
+    validateRegistration() {
+        return this.state.registration.length >= 3;
+    }
 
-        const carObj = {
-            registration: this.state.registration,
-            make: this.state.make,
-            model: this.state.model,
-            colour: this.state.colour
-            //driver: this.state.driver,
+    validate() {
+        const registration = this.state.registration;
+        return {
+            registration: this.validateRegistration()
         };
-
-        // Calling action cretor to insert a driver object here  
-        this.props.insertCar(carObj);
     }
 
 
-    render() {
-        if (this.state.isLoading) {
-            return (<span>Loading</span>);
+
+    handleSubmit = (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        const formInputState = this.validate();
+        if (Object.keys(formInputState).every(index => formInputState[index])) { // check while submitting the form
+            const carObj = {
+                registration: this.state.registration,
+                make: this.state.make,
+                model: this.state.model,
+                colour: this.state.colour,
+                driver_id: this.state.driver_id
+            };
+            if (this.state.driver_id == -1) {
+                carObj.driver_id = null;
+            } else {
+                carObj.driver_id = parseInt(carObj.driver_id);
+            }
+            // Calling action cretor to insert a driver object here  
+            this.props.insertCar(carObj);
+        } else { // invalid inputs in form
+            alert('Form Criteria has not been met!');
+            return;
         }
-        else {
+    }
+
+    render() {
+        if (this.props.login_id) {
             return (
                 <div className="mpsContainer">
                     <MpsHeader />
@@ -98,15 +109,18 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
                     <div className="central_container">
 
                         <div className="text-center">
-                            <h1 className="display-1">Register Car</h1>
+                            <h1>Register Car</h1>
                         </div>
 
                         <div className="row justify-content-center">
 
-                            <Form onSubmit={this.handleSubmit}>
+                            <Form>
                                 <FormGroup>
                                     <Label className="d-block">Select A Driver</Label>
-                                    {/*this.createDropDown()*/}
+                                    <select className="d-block mb-3 cus-input-driver" value={this.state.driver_id} name="driver_id" onChange={this.handleChange}>
+                                        <option value="-1">None</option>
+                                        {this.props.drivers.map(d => { return <option key={d.driver_id} value={d.driver_id}>{d.driver_id} - {d.name}</option> })}
+                                    </select>
                                 </FormGroup>
 
                                 <FormGroup>
@@ -129,38 +143,41 @@ class AdminRegisterCar extends React.Component<CarPropsAndDriverState, any>
                                     <Input className="d-block mb-3 cus-input-driver" placeholder="Enter car colour" name="colour" value={this.state.colour} onChange={this.handleChange}></Input>
                                 </FormGroup>
 
-                                <Link className="btn btn-danger cus_btn mr-5" to='/admin-options'>
+                                <Link className="btn btn-danger mr-5 cus_form_btn" to='/admin-options'>
                                     Back
-                        </Link>
+                                </Link>
 
-                                <Button className="btn  btn-success cus_btn" type="submit" onClick={this.handleSubmit}>
+                                <Button className="btn  btn-success cus_form_btn" type="submit" onClick={this.handleSubmit}>
                                     Register
-                        </Button>
+                                </Button>
                             </Form>
                         </div>
                     </div>
                 </div>
             );
         }
+        else {
+            return (<NoPermission />);
+        }
     }
 }
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        carProps: state.cars,
-        driverProps: state.drivers
+        ...state.cars,
+        ...state.drivers,
+        ...state.admin
     }
 }
 
 function mapDispatchToProps(dispatch: any) {
     return bindActionCreators(
-        { ...CarStore.actionCreators, ...DriverStore.actionCreators, },
+        { ...CarStore.actionCreators, ...DriverStore.actionCreators, ...AdminStore.actionCreators },
         dispatch
     )
 }
 
 export default connect(
-    //(state: ApplicationState) => ({ cars:state.cars }),
     mapStateToProps,
     mapDispatchToProps
 )(AdminRegisterCar as any);

@@ -37,7 +37,7 @@ class RetrieveVehicle extends React.Component<StoreProps, any>
                     </Link>
 
                 <div className="text-center">
-                    <h1 className="display-1">Car Store</h1>
+                    <h1>Car Store</h1>
                 </div>
 
                 <div className="row justify-content-center overflow-auto pallet_container">

@@ -40,6 +40,7 @@ namespace MPS.Controllers
         [HttpPut("retrieve-car{carReg}")]
         public IActionResult UpdateCar(string carReg)
         {
+            //return pallet id 
             var result = _dataRepository.RetrieveCar(carReg);
             if (result != null)
                 return Accepted("retrieve-car", result);
@@ -59,6 +60,28 @@ namespace MPS.Controllers
         {
             var result = _dataRepository.IfCarRegExistInStore(carReg);
             return Ok(result);
+        }
+
+        [HttpPost("insert-pallet")]
+        public IActionResult InsertPallet([FromBody] Store pallet)
+        {
+            Console.WriteLine(pallet.Pallet_id);
+            Console.WriteLine(pallet.Car_reg);
+            var result = _dataRepository.InsertPallet(pallet);
+            if (result)
+                return Created("insert-pallet", result);
+            else
+                return Conflict(pallet);
+        }
+
+        [HttpDelete("delete-pallet{pallet_id}")]
+        public IActionResult DeletePallet(string pallet_id)
+        {
+            var result = _dataRepository.RemovePallet(pallet_id);
+            if (result)
+                return NoContent();
+            else
+                return NotFound();
         }
     }
 }
